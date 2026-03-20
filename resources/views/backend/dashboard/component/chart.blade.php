@@ -19,7 +19,7 @@
                     <div class="col-lg-3">
                         <ul class="stat-list">
                             <li>
-                                <h2 class="no-margins">{{ $stats['visitRequestCount'] }}</h2>
+                                <h2 class="no-margins">{{ $stats['contactRequestCount'] }}</h2>
                                 <small>Tổng số lượt liên hệ</small>
                                 <div class="progress progress-mini">
                                     <div style="width: 100%;" class="progress-bar"></div>
@@ -36,8 +36,8 @@
 
 
 @php
-$data = json_encode($stats['vrChart']['data']);
-$label = json_encode($stats['vrChart']['label']);
+$data = json_encode($stats['crChart']['data']);
+$label = json_encode($stats['crChart']['label']);
 @endphp
 
 <script>

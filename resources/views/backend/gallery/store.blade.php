@@ -20,12 +20,14 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <select name="property_id" class="form-control setupSelect2">
+                                    <select name="real_estate_id" class="form-control setupSelect2">
                                         <option value="">[Chọn Bất động sản]</option>
-                                        @foreach ($properties as $property)
+                                        @foreach ($realEstates as $realEstate)
                                             <option
-                                                {{ $property->id == old('property_id', isset($record->property_id) ? $record->property_id : '') ? 'selected' : '' }}
-                                                value="{{ $property->id }}">{{ $property->title }}</option>
+                                                {{ $realEstate->id == old('real_estate_id', isset($record->real_estate_id) ? $record->real_estate_id : '') ? 'selected' : '' }}
+                                                value="{{ $realEstate->id }}">
+                                                {{ $realEstate->languages->first()->pivot->name ?? ($realEstate->title ?? 'N/A') }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>

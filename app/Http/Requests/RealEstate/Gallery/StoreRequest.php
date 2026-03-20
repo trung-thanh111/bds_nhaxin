@@ -22,7 +22,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'property_id' => 'required|exists:properties,id',
+            'real_estate_id' => 'required|exists:real_estates,id',
             'album' => 'required|array',
         ];
     }
@@ -30,8 +30,8 @@ class StoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'property_id.required' => 'Bạn chưa chọn bất động sản.',
-            'property_id.exists' => 'Bất động sản không hợp lệ.',
+            'real_estate_id.required' => 'Bạn chưa chọn bất động sản.',
+            'real_estate_id.exists' => 'Bất động sản không hợp lệ.',
             'album.required' => 'Bạn chưa chọn ảnh nào cho bộ sưu tập.',
             'album.array' => 'Dữ liệu ảnh không hợp lệ.',
         ];

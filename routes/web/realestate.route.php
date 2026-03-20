@@ -9,7 +9,7 @@ use App\Http\Controllers\Backend\V2\RealEstate\GalleryController;
 use App\Http\Controllers\Backend\V2\RealEstate\GalleryCatalogueController;
 use App\Http\Controllers\Backend\V2\RealEstate\LocationHighlightController;
 use App\Http\Controllers\Backend\V2\RealEstate\AgentController;
-use App\Http\Controllers\Backend\V2\RealEstate\VisitRequestController;
+use App\Http\Controllers\Backend\V2\RealEstate\ContactRequestController;
 
 Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale'], 'as' => ''], function () {
     // Property
@@ -56,6 +56,7 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale'], 'as
     Route::get('location_highlight/create', [LocationHighlightController::class, 'create'])->name('location_highlight.create');
     Route::post('location_highlight/store', [LocationHighlightController::class, 'store'])->name('location_highlight.store');
     Route::get('location_highlight/{id}/edit', [LocationHighlightController::class, 'edit'])->where(['id' => '[0-9]+'])->name('location_highlight.edit');
+    // NOTE: Check if there's a typo in the original file (location_highlight/{id}/update) vs property
     Route::post('location_highlight/{id}/update', [LocationHighlightController::class, 'update'])->where(['id' => '[0-9]+'])->name('location_highlight.update');
     Route::get('location_highlight/{id}/delete', [LocationHighlightController::class, 'delete'])->where(['id' => '[0-9]+'])->name('location_highlight.delete');
     Route::delete('location_highlight/{id}/destroy', [LocationHighlightController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('location_highlight.destroy');
@@ -69,12 +70,12 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale'], 'as
     Route::get('agent/{id}/delete', [AgentController::class, 'delete'])->where(['id' => '[0-9]+'])->name('agent.delete');
     Route::delete('agent/{id}/destroy', [AgentController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('agent.destroy');
 
-    // VisitRequest
-    Route::get('visit_request/index', [VisitRequestController::class, 'index'])->name('visit_request.index');
-    Route::get('visit_request/create', [VisitRequestController::class, 'create'])->name('visit_request.create');
-    Route::post('visit_request/store', [VisitRequestController::class, 'store'])->name('visit_request.store');
-    Route::get('visit_request/{id}/edit', [VisitRequestController::class, 'edit'])->where(['id' => '[0-9]+'])->name('visit_request.edit');
-    Route::post('visit_request/{id}/update', [VisitRequestController::class, 'update'])->where(['id' => '[0-9]+'])->name('visit_request.update');
-    Route::get('visit_request/{id}/delete', [VisitRequestController::class, 'delete'])->where(['id' => '[0-9]+'])->name('visit_request.delete');
-    Route::delete('visit_request/{id}/destroy', [VisitRequestController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('visit_request.destroy');
+    // ContactRequest
+    Route::get('contact_request/index', [ContactRequestController::class, 'index'])->name('contact_request.index');
+    Route::get('contact_request/create', [ContactRequestController::class, 'create'])->name('contact_request.create');
+    Route::post('contact_request/store', [ContactRequestController::class, 'store'])->name('contact_request.store');
+    Route::get('contact_request/{id}/edit', [ContactRequestController::class, 'edit'])->where(['id' => '[0-9]+'])->name('contact_request.edit');
+    Route::post('contact_request/{id}/update', [ContactRequestController::class, 'update'])->where(['id' => '[0-9]+'])->name('contact_request.update');
+    Route::get('contact_request/{id}/delete', [ContactRequestController::class, 'delete'])->where(['id' => '[0-9]+'])->name('contact_request.delete');
+    Route::delete('contact_request/{id}/destroy', [ContactRequestController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('contact_request.destroy');
 });

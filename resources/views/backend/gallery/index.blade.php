@@ -13,7 +13,7 @@
                 @php
                 $columns = [
                 'image' => ['label' => 'Hình ảnh đại diện', 'render' => fn($item) => '<img src="'.($item->image ? asset($item->image) : asset('backend/img/img-not-found.jpg')).'" style="width:100px;height:60px;object-fit:cover;border-radius:4px;" />'],
-                'property' => ['label' => 'Bất động sản', 'render' => fn($item) => $item->properties?->title ?? 'N/A'],
+                'real_estate' => ['label' => 'Bất động sản', 'render' => fn($item) => $item->real_estates?->languages->first()->pivot->name ?? ($item->real_estates?->title ?? 'N/A')],
                 'album_count' => ['label' => 'Số lượng ảnh', 'render' => fn($item) => is_array($item->album) ? count($item->album) : 0],
                 ];
                 @endphp

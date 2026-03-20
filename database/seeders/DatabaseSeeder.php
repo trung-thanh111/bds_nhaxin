@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             FloorplanRoomSeeder::class,
             GallerySeeder::class,
             LocationHighlightSeeder::class,
-            VisitRequestSeeder::class,
+            ContactRequestSeeder::class,
         ]);
     }
 }

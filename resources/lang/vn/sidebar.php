@@ -9,7 +9,7 @@ return [
             'class' => 'special'
         ],
         [
-            'title' => 'Quản lý Dự án',
+            'title' => 'Dự án',
             'icon' => 'fa fa-building',
             'name' => ['project'],
             'subModule' => [
@@ -18,7 +18,7 @@ return [
                     'route' => 'project/catalogue/index'
                 ],
                 [
-                    'title' => 'Danh sách dự án',
+                    'title' => 'Danh sách',
                     'route' => 'project/index'
                 ]
             ]
@@ -33,7 +33,7 @@ return [
                     'route' => 'real/estate/catalogue/index'
                 ],
                 [
-                    'title' => 'Bất Động Sản',
+                    'title' => 'Danh sách',
                     'route' => 'real/estate/index'
                 ],
                 [
@@ -43,31 +43,31 @@ return [
             ]
         ],
         [
-            'title' => 'QL Thuộc Tính BDS',
+            'title' => 'Thuộc tính',
             'icon' => 'fa fa-cube',
             'name' => ['attribute', 'attribute_catalogue'],
             'subModule' => [
                 [
-                    'title' => 'Nhóm Thuộc tính',
+                    'title' => 'Nhóm thuộc tính',
                     'route' => 'attribute/catalogue/index'
                 ],
                 [
-                    'title' => 'Danh Sách Thuộc tính',
+                    'title' => 'Danh sách',
                     'route' => 'attribute/index'
                 ]
             ]
         ],
         [
-            'title' => 'QL Tiện ích',
+            'title' => 'Tiện ích',
             'icon' => 'fa fa-wrench',
             'name' => ['amenity', 'amenity_catalogue'],
             'subModule' => [
                 [
-                    'title' => 'Nhóm Tiện ích',
+                    'title' => 'Nhóm tiện ích',
                     'route' => 'amenity/catalogue/index'
                 ],
                 [
-                    'title' => 'Danh Sách Tiện ích',
+                    'title' => 'Danh sách',
                     'route' => 'amenity/index'
                 ]
             ]
@@ -82,7 +82,7 @@ return [
                     'route' => 'post/catalogue/index'
                 ],
                 [
-                    'title' => 'Bài viết',
+                    'title' => 'Danh sách',
                     'route' => 'post/index'
                 ],
             ]
@@ -93,39 +93,39 @@ return [
             'name' => ['gallery', 'gallery_catalogue'],
             'subModule' => [
                 [
-                    'title' => 'Danh sách',
-                    'route' => 'gallery/index'
+                    'title' => 'Nhóm thư viện ảnh',
+                    'route' => 'gallery/catalogue/index'
                 ],
                 [
-                    'title' => 'Nhóm thư viện',
-                    'route' => 'gallery/catalogue/index'
+                    'title' => 'Danh sách',
+                    'route' => 'gallery/index'
                 ]
             ]
         ],
         [
-            'title' => 'Nhân viên môi giới',
+            'title' => 'Môi giới',
             'icon' => 'fa fa-users',
             'name' => ['agent'],
             'subModule' => [
                 [
-                    'title' => 'Danh sách nhân viên',
+                    'title' => 'Danh sách',
                     'route' => 'agent/index'
                 ],
             ]
         ],
         [
-            'title' => 'QL Liên Hệ',
+            'title' => 'Liên hệ',
             'icon' => 'fa fa-phone-square',
             'name' => ['contacts'],
             'subModule' => [
                 [
-                    'title' => 'QL Liên Hệ',
-                    'route' => 'visit_request/index'
+                    'title' => 'Danh sách',
+                    'route' => 'contact_request/index'
                 ]
             ]
         ],
         [
-            'title' => 'QL Menu',
+            'title' => 'Menu',
             'icon' => 'fa fa-bars',
             'name' => ['menu'],
             'subModule' => [

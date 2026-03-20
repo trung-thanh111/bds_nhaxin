@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\FrontendController;
-use App\Models\VisitRequest;
+use App\Models\ContactRequest;
 use Illuminate\Http\Request;
 
-class VisitRequestController extends FrontendController
+class ContactRequestController extends FrontendController
 {
     public function __construct()
     {
@@ -14,24 +14,23 @@ class VisitRequestController extends FrontendController
     }
 
     /**
-     * AJAX: Store visit request
+     * AJAX: Store contact request
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'property_id' => 'required|exists:properties,id',
+            'project_id' => 'required|exists:projects,id',
             'full_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
-            'preferred_date' => 'nullable|date',
-            'preferred_time' => 'nullable|string',
-            'message' => 'nullable|string',
+            'subject' => 'nullable|string|max:255',
+            'content' => 'nullable|string',
         ]);
 
         $validated['status'] = 'pending';
 
-        VisitRequest::create($validated);
+        ContactRequest::create($validated);
 
-        return response()->json(['success' => true, 'message' => 'Yêu cầu đã được ghi nhận.']);
+        return response()->json(['success' => true, 'message' => 'Yêu cầu của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm nhất có thể.']);
     }
 }

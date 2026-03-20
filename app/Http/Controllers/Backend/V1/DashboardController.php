@@ -19,7 +19,7 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = $this->statisticService->getStats();
-        $recentVisitRequests = $this->statisticService->getRecentVisitRequests();
+        $recentContactRequests = $this->statisticService->getRecentContactRequests();
 
         $config = $this->config();
         $template = 'backend.dashboard.home.index';
@@ -27,7 +27,7 @@ class DashboardController extends Controller
             'template',
             'config',
             'stats',
-            'recentVisitRequests'
+            'recentContactRequests'
         ));
     }
 

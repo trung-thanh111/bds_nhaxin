@@ -1,27 +1,23 @@
-<?php
-
+<?php  
 namespace App\Services\V2\Impl\RealEstate;
 
 use App\Services\V2\BaseService;
-use App\Repositories\RealEstate\VisitRequestRepo;
+use App\Repositories\RealEstate\RealEstateRepository;
 use Illuminate\Support\Facades\Auth;
 
-class VisitRequestService extends BaseService
+class RealEstateService extends BaseService 
 {
-
     protected $repository;
-
     protected $fillable;
-
-    protected $with = ['users', 'properties', 'agents'];
+    protected $with = ['users', 'languages'];
 
     public function __construct(
-        VisitRequestRepo $repository,
+        RealEstateRepository $repository,
     ) {
         $this->repository = $repository;
     }
 
-    public function prepareModelData(): static
+    public function prepareModelData(): static 
     {
         $request = $this->context['request'] ?? null;
         if (!is_null($request)) {

@@ -5,14 +5,14 @@
     <div class="linden-page">
 
         <section class="hp-luxury-header"
-            style="background-image: url('{{ $property->image ?? asset('frontend/resources/img/homely/slider/1.webp') }}');">
+            style="background-image: url('{{ $realEstate->image ?? asset('frontend/resources/img/homely/slider/1.webp') }}');">
             <div class="hp-hero-overlay"></div>
             <div class="hp-luxury-header__content">
                 <div class="uk-container uk-container-center">
                     <div class="hp-luxury-header__title-wrap" data-reveal="up">
                         <h1 class="hp-luxury-header__title">Thư viện ảnh</h1>
                         <p class="hp-luxury-header__desc hp-hero-subtitle-main">
-                            Thư viện ảnh của {{ $property->title ?? 'dự án' }}.
+                            Thư viện ảnh của {{ $realEstate->title ?? 'dự án' }}.
                         </p>
                     </div>
                     <div class="hp-luxury-breadcrumb" data-reveal="left">

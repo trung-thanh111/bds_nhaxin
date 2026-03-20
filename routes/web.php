@@ -12,7 +12,7 @@ use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\GalleryController;
 use App\Http\Controllers\Frontend\AmenitiesController;
 use App\Http\Controllers\Frontend\NeighbourhoodController;
-use App\Http\Controllers\Frontend\VisitRequestController;
+use App\Http\Controllers\Frontend\ContactRequestController;
 use App\Http\Controllers\CrawlerController;
 use App\Http\Controllers\Frontend\PostCatalogueController;
 use App\Http\Controllers\Frontend\PostController;
@@ -52,7 +52,7 @@ Route::group(['middleware' => ['locale']], function () {
     Route::get('xung-quanh.html', [NeighbourhoodController::class, 'index'])->name('neighbourhood.index');
     Route::get('lien-he.html', [ContactController::class, 'index'])->name('contact.index');
     Route::get('bai-viet.html', [PostController::class, 'index'])->name('fe.post.index');
-    Route::post('ajax/visit-request/store', [VisitRequestController::class, 'store'])->name('visit-request.store');
+    Route::post('ajax/contact-request/store', [ContactRequestController::class, 'store'])->name('contact-request.store');
     Route::get('/thumb', [App\Http\Controllers\ImageResizerController::class, 'resize'])->name('thumb');
 
     Route::get('tim-kiem', [FeProductCatalogueController::class, 'search'])->name('product.catalogue.search');

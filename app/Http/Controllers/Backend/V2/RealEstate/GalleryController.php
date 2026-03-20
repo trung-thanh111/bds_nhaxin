@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\RealEstate\Gallery\StoreRequest;
 use App\Http\Requests\RealEstate\Gallery\UpdateRequest;
 use App\Services\V2\Impl\RealEstate\GalleryService;
-use App\Services\V2\Impl\RealEstate\PropertyService;
+use App\Services\V2\Impl\RealEstate\RealEstateService;
 use App\Services\V2\Impl\RealEstate\GalleryCatalogueService;
 use App\Models\Language;
 
@@ -15,17 +15,17 @@ class GalleryController extends Controller
 {
 
     private $service;
-    protected $propertyService;
+    protected $realEstateService;
     protected $galleryCatalogueService;
     protected $language;
 
     public function __construct(
         GalleryService $service,
-        PropertyService $propertyService,
+        RealEstateService $realEstateService,
         GalleryCatalogueService $galleryCatalogueService
     ) {
         $this->service = $service;
-        $this->propertyService = $propertyService;
+        $this->realEstateService = $realEstateService;
         $this->galleryCatalogueService = $galleryCatalogueService;
         $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
@@ -59,13 +59,13 @@ class GalleryController extends Controller
             'method' => 'create',
             'extendJs' => true
         ];
-        $properties = $this->propertyService->all();
+        $realEstates = $this->realEstateService->all();
         $galleryCatalogues = $this->galleryCatalogueService->all();
         $template = 'backend.gallery.store';
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
-            'properties',
+            'realEstates',
             'galleryCatalogues'
         ));
     }
@@ -81,14 +81,14 @@ class GalleryController extends Controller
             'method' => 'update',
             'extendJs' => true
         ];
-        $properties = $this->propertyService->all();
+        $realEstates = $this->realEstateService->all();
         $galleryCatalogues = $this->galleryCatalogueService->all();
         $template = 'backend.gallery.store';
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
             'record',
-            'properties',
+            'realEstates',
             'galleryCatalogues'
         ));
     }

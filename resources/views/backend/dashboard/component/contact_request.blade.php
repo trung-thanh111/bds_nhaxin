@@ -7,27 +7,23 @@
             <thead>
                 <tr>
                     <th>Khách hàng</th>
-                    <th>Bất động sản</th>
-                    <th class="text-center">Ngày hẹn</th>
+                    <th>Dự án</th>
                     <th class="text-center">Trạng thái</th>
                 </tr>
             </thead>
             <tbody>
-                @if(isset($recentVisitRequests) && is_object($recentVisitRequests))
-                @foreach($recentVisitRequests as $vr)
+                @if(isset($recentContactRequests) && is_object($recentContactRequests))
+                @foreach($recentContactRequests as $cr)
                 <tr>
                     <td>
-                        <b>{{ $vr->full_name }}</b><br>
-                        <small>{{ $vr->phone }}</small>
+                        <b>{{ $cr->full_name }}</b><br>
+                        <small>{{ $cr->phone }}</small>
                     </td>
                     <td>
-                        {{ $vr->properties?->title ?? 'N/A' }}
+                        {{ $cr->projects?->languages->first()->pivot->name ?? ($cr->projects?->name ?? 'N/A') }}
                     </td>
                     <td class="text-center">
-                        {{ $vr->preferred_date }}
-                    </td>
-                    <td class="text-center">
-                        @switch($vr->status)
+                        @switch($cr->status)
                         @case('pending')
                         <span class="label label-warning">Pending</span>
                         @break
@@ -41,14 +37,14 @@
                         <span class="label label-default">Cancelled</span>
                         @break
                         @default
-                        {{ $vr->status }}
+                        {{ $cr->status }}
                         @endswitch
                     </td>
                 </tr>
                 @endforeach
                 @else
                 <tr>
-                    <td colspan="4" class="text-center">Không có dữ liệu contact mới</td>
+                    <td colspan="3" class="text-center">Không có dữ liệu liên hệ mới</td>
                 </tr>
                 @endif
             </tbody>

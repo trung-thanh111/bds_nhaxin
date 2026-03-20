@@ -9,7 +9,7 @@
 </div>
 @endif
 @php
-$url = ($config['method'] == 'create') ? route('visit_request.store') : route('visit_request.update', $record->id);
+$url = ($config['method'] == 'create') ? route('contact_request.store') : route('contact_request.update', $record->id);
 @endphp
 <form action="{{ $url }}" method="post" class="box">
     @csrf
@@ -24,11 +24,13 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Bất động sản quan tâm <span class="text-danger">(*)</span></label>
-                                    <select name="property_id" class="form-control setupSelect2">
-                                        <option value="">[Chọn Bất động sản]</option>
-                                        @foreach($properties as $property)
-                                        <option {{ $property->id == old('property_id', (isset($record->property_id)) ? $record->property_id : '') ? 'selected' : '' }} value="{{ $property->id }}">{{ $property->title }}</option>
+                                    <label for="" class="control-label text-left">Dự án quan tâm <span class="text-danger">(*)</span></label>
+                                    <select name="project_id" class="form-control setupSelect2">
+                                        <option value="">[Chọn Dự án]</option>
+                                        @foreach($projects as $project)
+                                        <option {{ $project->id == old('project_id', (isset($record->project_id)) ? $record->project_id : '') ? 'selected' : '' }} value="{{ $project->id }}">
+                                            {{ $project->languages->first()->pivot->name ?? ($project->name ?? 'N/A') }}
+                                        </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -70,33 +72,23 @@ $url = ($config['method'] == 'create') ? route('visit_request.store') : route('v
                             </div>
                         </div>
                         <div class="row mb15">
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Ngày hẹn dự kiến</label>
-                                    <input
-                                        type="date"
-                                        name="preferred_date"
-                                        value="{{ old('preferred_date', (isset($record->preferred_date)) ? date('Y-m-d', strtotime($record->preferred_date)) : '') }}"
-                                        class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-row">
-                                    <label for="" class="control-label text-left">Giờ hẹn <span class="text-danger">(*)</span></label>
+                                    <label for="" class="control-label text-left">Tiêu đề</label>
                                     <input
                                         type="text"
-                                        name="preferred_time"
-                                        value="{{ old('preferred_time', ($record->preferred_time) ?? '' ) }}"
+                                        name="subject"
+                                        value="{{ old('subject', ($record->subject) ?? '' ) }}"
                                         class="form-control"
-                                        placeholder="Ví dụ: 10:00 - 11:30">
+                                        autocomplete="off">
                                 </div>
                             </div>
                         </div>
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <label for="" class="control-label text-left">Lời nhắn từ khách hàng</label>
-                                    <textarea name="message" class="form-control" rows="4">{{ old('message', $record->message ?? '') }}</textarea>
+                                    <label for="" class="control-label text-left">Nội dung yêu cầu</label>
+                                    <textarea name="content" class="form-control" rows="6">{{ old('content', $record->content ?? '') }}</textarea>
                                 </div>
                             </div>
                         </div>

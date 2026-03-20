@@ -9,18 +9,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\HasQuery;
 
-class VisitRequest extends Model
+class ContactRequest extends Model
 {
     use HasFactory, Notifiable, SoftDeletes, HasQuery;
 
     protected $fillable = [
-        'property_id',
+        'project_id',
         'full_name',
         'email',
         'phone',
-        'preferred_date',
-        'preferred_time',
-        'message',
+        'subject',
+        'content',
         'status',
         'admin_notes',
         'assigned_agent_id',
@@ -29,7 +28,7 @@ class VisitRequest extends Model
 
     protected $casts = [];
 
-    protected $relationable = ['users', 'properties', 'agents'];
+    protected $relationable = ['users', 'projects', 'agents'];
 
     public function getRelationable()
     {
@@ -41,9 +40,9 @@ class VisitRequest extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function properties(): BelongsTo
+    public function projects(): BelongsTo
     {
-        return $this->belongsTo(Property::class, 'property_id', 'id');
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
     public function agents(): BelongsTo

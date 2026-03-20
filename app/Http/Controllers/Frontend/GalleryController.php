@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\FrontendController;
 use App\Services\V2\Impl\RealEstate\GalleryService;
 use App\Services\V2\Impl\RealEstate\FloorplanService;
-use App\Services\V2\Impl\RealEstate\PropertyService;
+use App\Services\V2\Impl\RealEstate\RealEstateService;
 use App\Services\V2\Impl\RealEstate\GalleryCatalogueService;
 use Illuminate\Http\Request;
 
@@ -13,18 +13,18 @@ class GalleryController extends FrontendController
 {
     protected $galleryService;
     protected $floorplanService;
-    protected $propertyService;
+    protected $realEstateService;
     protected $galleryCatalogueService;
 
     public function __construct(
         GalleryService $galleryService,
         FloorplanService $floorplanService,
-        PropertyService $propertyService,
+        RealEstateService $realEstateService,
         GalleryCatalogueService $galleryCatalogueService
     ) {
         $this->galleryService = $galleryService;
         $this->floorplanService = $floorplanService;
-        $this->propertyService = $propertyService;
+        $this->realEstateService = $realEstateService;
         $this->galleryCatalogueService = $galleryCatalogueService;
         parent::__construct();
     }
@@ -54,7 +54,7 @@ class GalleryController extends FrontendController
             relation: ['rooms'],
             orderBy: ['order', 'asc']
         );
-        $property = $this->propertyService->findByCondition([['publish', '=', 2]]);
+        $realEstate = $this->realEstateService->findByCondition([['publish', '=', 2]]);
 
         $system = $this->system;
         $seo = $this->buildSeo('Thư Viện Ảnh — HomePark');
@@ -69,7 +69,7 @@ class GalleryController extends FrontendController
             'galleryCatalogues',
             'galleries',
             'floorplans',
-            'property'
+            'realEstate'
         ));
     }
 

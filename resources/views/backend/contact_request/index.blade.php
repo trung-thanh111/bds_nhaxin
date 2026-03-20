@@ -7,7 +7,7 @@
                 @include('backend.dashboard.component.toolbox', ['model' => $config['model']])
             </div>
             <div class="ibox-content">
-                <x-backend.filter createRoute="visit_request.create" submitRoute="visit_request.index" />
+                <x-backend.filter createRoute="contact_request.create" submitRoute="contact_request.index" />
                 @php
                     $columns = [
                         'customer' => [
@@ -20,25 +20,30 @@
                                 e($item->email) .
                                 '</small>',
                         ],
-                        'property' => [
-                            'label' => 'Bất động sản',
-                            'render' => fn($item) => $item->properties?->title ?? 'N/A',
+                        'project' => [
+                            'label' => 'Dự án quan tâm',
+                            'render' => fn($item) => $item->projects?->languages->first()->pivot->name ??
+                                ($item->projects?->name ?? 'N/A'),
+                        ],
+                        'subject' => [
+                            'label' => 'Tiêu đề',
+                            'render' => fn($item) => e($item->subject) ?: '<i class="text-muted">Không có tiêu đề</i>',
                         ],
                         'status' => [
-                            'label' => 'Trang thái',
+                            'label' => 'Trạng thái',
                             'render' => fn($item) => match ($item->status) {
-                                'pending' => '<span class="label label-warning">Pending</span>',
-                                'confirmed' => '<span class="label label-info">Confirmed</span>',
-                                'completed' => '<span class="label label-primary">Completed</span>',
-                                'cancelled' => '<span class="label label-default">Cancelled</span>',
+                                'pending' => '<span class="label label-warning">Chờ xử lý</span>',
+                                'confirmed' => '<span class="label label-info">Đã xác nhận</span>',
+                                'completed' => '<span class="label label-primary">Hoàn thành</span>',
+                                'cancelled' => '<span class="label label-default">Hủy bỏ</span>',
                                 default => $item->status,
                             },
                         ],
                     ];
                 @endphp
                 <x-backend.customtable :records="$records->getCollection()" :columns="$columns" :actions="[
-                    ['route' => 'visit_request.edit', 'class' => 'btn-success', 'icon' => 'fa-edit'],
-                    ['route' => 'visit_request.delete', 'class' => 'btn-danger', 'icon' => 'fa-trash'],
+                    ['route' => 'contact_request.edit', 'class' => 'btn-success', 'icon' => 'fa-edit'],
+                    ['route' => 'contact_request.delete', 'class' => 'btn-danger', 'icon' => 'fa-trash'],
                 ]" :model="$config['model']" />
                 {{ $records->links('pagination::bootstrap-4') }}
             </div>

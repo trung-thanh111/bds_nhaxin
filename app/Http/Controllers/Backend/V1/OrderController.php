@@ -20,13 +20,14 @@ class OrderController extends Controller
         OrderService $orderService,
         OrderRepository $orderRepository,
         ProvinceRepository $provinceRepository,
-    ){
+    ) {
         $this->orderService = $orderService;
         $this->orderRepository = $orderRepository;
         $this->provinceRepository = $provinceRepository;
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
 
         $this->authorize('modules', 'order.index');
         $orders = $this->orderService->paginate($request);
@@ -55,7 +56,8 @@ class OrderController extends Controller
         ));
     }
 
-    public function detail(Request $request, $id){
+    public function detail(Request $request, $id)
+    {
         $order = $this->orderRepository->getOrderById($id, ['products']);
         $order = $this->orderService->getOrderItemImage($order);
 
@@ -65,11 +67,11 @@ class OrderController extends Controller
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
             ],
             'js' => [
-                'backend/library/order.js',
+                // 'backend/library/order.js',
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
             ],
         ];
-        
+
         $config['seo'] = __('messages.order');
         $template = 'backend.order.detail';
         return view('backend.dashboard.layout', compact(
@@ -79,5 +81,4 @@ class OrderController extends Controller
             'provinces',
         ));
     }
-
 }

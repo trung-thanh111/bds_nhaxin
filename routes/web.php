@@ -1,0 +1,67 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\RouterController;
+use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\Payment\VnpayController;
+use App\Http\Controllers\Frontend\Payment\PaypalController;
+use App\Http\Controllers\Frontend\ProductCatalogueController as FeProductCatalogueController;
+use App\Http\Controllers\Frontend\ContactController;
+use App\Http\Controllers\Frontend\AboutController;
+use App\Http\Controllers\Frontend\GalleryController;
+use App\Http\Controllers\Frontend\AmenitiesController;
+use App\Http\Controllers\Frontend\NeighbourhoodController;
+use App\Http\Controllers\Frontend\VisitRequestController;
+use App\Http\Controllers\CrawlerController;
+use App\Http\Controllers\Frontend\PostCatalogueController;
+use App\Http\Controllers\Frontend\PostController;
+
+//@@useController@@
+
+require __DIR__ . '/web/user.route.php';
+require __DIR__ . '/web/customer.route.php';
+require __DIR__ . '/web/core.route.php';
+require __DIR__ . '/web/product.route.php';
+require __DIR__ . '/web/post.route.php';
+require __DIR__ . '/web/auth.route.php';
+require __DIR__ . '/web/ajax.route.php';
+require __DIR__ . '/web/custom.route.php';
+require __DIR__ . '/web/realestate.route.php';
+require __DIR__ . '/web/real_estate.route.php';
+require __DIR__ . '/web/amenity.route.php';
+require __DIR__ . '/web/floorplan.route.php';
+require __DIR__ . '/web/project.route.php';
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+/* FRONTEND ROUTES  */
+Route::group(['middleware' => ['locale']], function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home.index');
+    Route::get('bat-dong-san.html', [AboutController::class, 'index'])->name('about.index');
+    Route::get('thu-vien-anh.html', [GalleryController::class, 'index'])->name('fe.gallery.index');
+    Route::get('tien-nghi.html', [AmenitiesController::class, 'index'])->name('amenities.index');
+    Route::get('xung-quanh.html', [NeighbourhoodController::class, 'index'])->name('neighbourhood.index');
+    Route::get('lien-he.html', [ContactController::class, 'index'])->name('contact.index');
+    Route::get('bai-viet.html', [PostController::class, 'index'])->name('fe.post.index');
+    Route::post('ajax/visit-request/store', [VisitRequestController::class, 'store'])->name('visit-request.store');
+    Route::get('/thumb', [App\Http\Controllers\ImageResizerController::class, 'resize'])->name('thumb');
+
+    Route::get('tim-kiem', [FeProductCatalogueController::class, 'search'])->name('product.catalogue.search');
+    Route::get('tim-kiem/trang-{page}', [FeProductCatalogueController::class, 'search'])->name('product.catalogue.search')->where('page', '[0-9]+');
+
+    Route::get('{canonical}/trang-{page}', [RouterController::class, 'page'])
+        ->where(['page' => '[0-9]+'])
+        ->name('router.page');
+
+    Route::get('{canonical}', [RouterController::class, 'index'])
+        ->name('router.index');
+});

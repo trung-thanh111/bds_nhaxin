@@ -73,6 +73,25 @@ return [
             ]
         ],
         [
+            'title' => 'Nhóm Thành Viên',
+            'icon' => 'fa fa-user',
+            'name' => ['user', 'permission'],
+            'subModule' => [
+                [
+                    'title' => 'Nhóm Thành Viên',
+                    'route' => 'user/catalogue/index'
+                ],
+                [
+                    'title' => 'Thành Viên',
+                    'route' => 'user/index'
+                ],
+                [
+                    'title' => 'Quyền',
+                    'route' => 'permission/index'
+                ]
+            ]
+        ],
+        [
             'title' => 'Bài viết',
             'icon' => 'fa fa-file',
             'name' => ['post'],

@@ -65,10 +65,17 @@ class ProjectController extends Controller
             'foreignkey' => 'project_catalogue_id',
             'language_id' => $this->language,
         ]))->Dropdown();
-        $agents = $this->getAgentDropdown();
-        $priceUnits = $this->getPriceUnits();
+        $dropdown = (new \App\Classes\Nestedsetbie([
+            'table' => 'project_catalogues',
+            'foreignkey' => 'project_catalogue_id',
+            'language_id' => $this->language,
+        ]))->Dropdown();
         $template = 'backend.realestate.project.store';
-        return view('backend.dashboard.layout', compact('config', 'template', 'realEstates', 'dropdown', 'agents', 'priceUnits'));
+        $dropdowns = $this->getDropdowns();
+        $allProjects = \App\Models\Project::with(['languages' => function ($query) {
+            $query->where('language_id', $this->language);
+        }])->get();
+        return view('backend.dashboard.layout', compact('config', 'template', 'realEstates', 'dropdown', 'dropdowns', 'allProjects'));
     }
 
     public function store(StoreProjectRequest $request)
@@ -94,10 +101,17 @@ class ProjectController extends Controller
             'foreignkey' => 'project_catalogue_id',
             'language_id' => $this->language,
         ]))->Dropdown();
-        $agents = $this->getAgentDropdown();
-        $priceUnits = $this->getPriceUnits();
+        $dropdown = (new \App\Classes\Nestedsetbie([
+            'table' => 'project_catalogues',
+            'foreignkey' => 'project_catalogue_id',
+            'language_id' => $this->language,
+        ]))->Dropdown();
         $template = 'backend.realestate.project.store';
-        return view('backend.dashboard.layout', compact('config', 'project', 'template', 'realEstates', 'dropdown', 'agents', 'priceUnits'));
+        $dropdowns = $this->getDropdowns();
+        $allProjects = \App\Models\Project::with(['languages' => function ($query) {
+            $query->where('language_id', $this->language);
+        }])->where('id', '!=', $id)->get();
+        return view('backend.dashboard.layout', compact('config', 'project', 'template', 'realEstates', 'dropdown', 'dropdowns', 'allProjects'));
     }
 
     public function update($id, UpdateProjectRequest $request)
@@ -125,32 +139,24 @@ class ProjectController extends Controller
         return redirect()->back()->with('error', 'Xóa bản ghi không thành công. Hãy thử lại');
     }
 
-    private function getAgentDropdown()
+    private function getDropdowns()
     {
-        $agents = \App\Models\Agent::select(['id', 'full_name'])->get();
-        $temp = [0 => '[Chọn Nhân Viên]'];
-        foreach ($agents as $item) {
-            $temp[$item->id] = $item->full_name;
+        $codes = ['phap_ly'];
+        $result = [];
+        foreach ($codes as $code) {
+            $catalogue = \App\Models\AttributeCatalogue::with(['attributes.languages' => function ($query) {
+                $query->where('language_id', $this->language);
+            }])->where('code', $code)->first();
+
+            if ($catalogue) {
+                $temp = [];
+                foreach ($catalogue->attributes as $attr) {
+                    $temp[$attr->id] = $attr->languages->first()->pivot->name ?? '';
+                }
+                $result[$code] = $temp;
+            }
         }
-        return $temp;
-    }
-
-    private function getPriceUnits()
-    {
-        $catalogue = \App\Models\AttributeCatalogue::where('code', 'loai_gia')->first();
-        if (!$catalogue) return [0 => '[Đơn vị giá]'];
-
-        $priceUnits = \App\Models\Attribute::select(['attributes.id', 'tb2.name'])
-            ->join('attribute_language as tb2', 'tb2.attribute_id', '=', 'attributes.id')
-            ->where('attributes.attribute_catalogue_id', $catalogue->id)
-            ->where('tb2.language_id', $this->language)
-            ->get();
-
-        $temp = [0 => '[Đơn vị giá]'];
-        foreach ($priceUnits as $item) {
-            $temp[$item->id] = $item->name;
-        }
-        return $temp;
+        return $result;
     }
 
     private function configData()

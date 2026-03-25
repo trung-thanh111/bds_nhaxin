@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             GallerySeeder::class,
             LocationHighlightSeeder::class,
             ContactRequestSeeder::class,
+            ProjectCatalogueSeeder::class,
         ]);
     }
 }

@@ -13,6 +13,8 @@ class ProjectCatalogue extends Model
 
     protected $fillable = [
         'parent_id',
+        'name',
+        'slug',
         'lft',
         'rgt',
         'level',

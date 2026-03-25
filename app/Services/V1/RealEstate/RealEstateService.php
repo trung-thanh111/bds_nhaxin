@@ -174,6 +174,13 @@ class RealEstateService extends BaseService
 
     private function formatPayload($request){
         $payload = $request->only($this->payload());
+        $payload['album'] = $this->formatAlbum($request);
+        if (isset($payload['price_sale'])) {
+            $payload['price_sale'] = str_replace('.', '', $payload['price_sale']);
+        }
+        if (isset($payload['price_rent'])) {
+            $payload['price_rent'] = str_replace('.', '', $payload['price_rent']);
+        }
         
         // Handle New Address Names (After 01/07)
         if(!empty($payload['province_code'])){
@@ -318,6 +325,11 @@ class RealEstateService extends BaseService
             'interior',
             'video_url',
             'tour_url',
+            'album',
+            'price_sale',
+            'price_rent',
+            'price_unit',
+            'transaction_type',
             'publish',
             'order',
             'follow'

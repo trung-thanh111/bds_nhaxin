@@ -50,9 +50,7 @@ class ProjectService extends BaseService
 
         $joins = [
             ['project_language as tb2', 'tb2.project_id', '=', 'projects.id'],
-            ['agents as ag', 'ag.id', '=', 'projects.agent_id', 'left'],
             [DB::raw('(SELECT project_catalogue_id, name FROM project_catalogue_language WHERE language_id = ' . $languageId . ') as cat_lang'), 'cat_lang.project_catalogue_id', '=', 'projects.project_catalogue_id', 'left'],
-            [DB::raw('(SELECT attribute_id, name FROM attribute_language WHERE language_id = ' . $languageId . ') as pu_lang'), 'pu_lang.attribute_id', '=', 'projects.price_unit', 'left']
         ];
 
         return $this->projectRepository->pagination(
@@ -74,6 +72,9 @@ class ProjectService extends BaseService
             if ($project->id > 0) {
                 $this->updateLanguageForProject($project, $request, $languageId);
                 $this->createRouter($project, $request, $this->controllerName, $languageId);
+                if ($request->has('related_projects')) {
+                    $project->related_projects()->sync($request->input('related_projects'));
+                }
             }
             DB::commit();
             return true;
@@ -94,6 +95,9 @@ class ProjectService extends BaseService
                 $project = $this->projectRepository->findById($id);
                 $this->updateLanguageForProject($project, $request, $languageId);
                 $this->updateRouter($project, $request, $this->controllerName, $languageId);
+                if ($request->has('related_projects')) {
+                    $project->related_projects()->sync($request->input('related_projects'));
+                }
             }
             DB::commit();
             return true;
@@ -126,14 +130,11 @@ class ProjectService extends BaseService
         $payload = $request->only([
             'real_estate_id',
             'project_catalogue_id',
-            'agent_id',
-            'type_code',
-            'transaction_type',
             'is_project',
-            'price',
-            'price_unit',
-            'price_vnd',
-            'price_negotiable',
+            'apartment_count',
+            'block_count',
+            'area',
+            'legal_status',
             'status',
             'publish',
             'is_featured',
@@ -146,10 +147,6 @@ class ProjectService extends BaseService
             'virtual_tour_url',
             'extra_fields'
         ]);
-
-        if (isset($payload['price'])) {
-            $payload['price'] = str_replace('.', '', $payload['price']);
-        }
 
         return $payload;
     }
@@ -180,14 +177,10 @@ class ProjectService extends BaseService
             'projects.cover_image',
             'projects.order',
             'projects.created_at',
-            'projects.price',
             'projects.status',
-            'projects.transaction_type',
             'tb2.name',
             'tb2.canonical',
-            'ag.full_name as agent_name',
             'cat_lang.name as catalogue_name',
-            'pu_lang.name as price_unit_name',
         ];
     }
 }

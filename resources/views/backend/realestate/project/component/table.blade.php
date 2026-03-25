@@ -5,8 +5,6 @@
                 <input type="checkbox" value="" id="checkAll" class="input-checkbox">
             </th>
             <th class="text-left">Thông tin Tin đăng</th>
-            <th style="width: 150px;">Giá niêm yết</th>
-            <th style="width: 120px;">Giao dịch</th>
             <th style="width: 100px;">Hiển thị</th>
             <th style="width: 100px;">Thao tác</th>
         </tr>
@@ -26,19 +24,10 @@
                             <div class="info">
                                 <div class="name"><strong>{{ $project->name }}</strong></div>
                                 <div class="canonical text-navy small">
-                                    Nhóm: {{ $project->catalogue_name ?? 'N/A' }} | 
-                                    Nhân viên: {{ $project->agent_name ?? 'N/A' }}
+                                    Nhóm: {{ $project->catalogue_name ?? 'N/A' }}
                                 </div>
                             </div>
                         </div>
-                    </td>
-                    <td>
-                        {{ $project->price > 0 ? number_format($project->price, 0, ',', '.') . ' ' . ($project->price_unit_name ?? '') : 'Thỏa thuận' }}
-                    </td>
-                    <td>
-                        <span class="badge badge-{{ $project->transaction_type == 'sale' ? 'primary' : 'success' }}">
-                            {{ $project->transaction_type == 'sale' ? 'Bán' : 'Cho thuê' }}
-                        </span>
                     </td>
                     <td class="text-center js-switch-{{ $project->id }}">
                         <input type="checkbox" value="{{ $project->publish }}" class="js-switch status "

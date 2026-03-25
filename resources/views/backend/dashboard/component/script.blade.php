@@ -13,6 +13,7 @@
 
 <!-- Library -->
 <script src="{{ asset('vendor/backend/library/dashboard.js') }}"></script>
+<script src="{{ asset('/backend/library/realestate.js') }}"></script>
 <script src="{{ asset('vendor/backend/library/finder.js') }}"></script>
 <script src="{{ asset('vendor/backend/library/location.js') }}"></script>
 <script src="{{ asset('vendor/backend/library/menu.js') }}"></script>

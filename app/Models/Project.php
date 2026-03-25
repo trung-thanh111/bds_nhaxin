@@ -17,14 +17,11 @@ class Project extends Model
         'code',
         'real_estate_id',
         'project_catalogue_id',
-        'agent_id',
-        'type_code',
-        'transaction_type',
         'is_project',
-        'price',
-        'price_unit',
-        'price_vnd',
-        'price_negotiable',
+        'apartment_count',
+        'block_count',
+        'area',
+        'legal_status',
         'status',
         'publish',
         'is_featured',
@@ -64,8 +61,8 @@ class Project extends Model
         return $this->hasMany(RealEstate::class, 'project_id');
     }
 
-    public function agent()
+    public function related_projects()
     {
-        return $this->belongsTo(Agent::class, 'agent_id');
+        return $this->belongsToMany(Project::class, 'project_relation', 'project_id', 'related_project_id');
     }
 }

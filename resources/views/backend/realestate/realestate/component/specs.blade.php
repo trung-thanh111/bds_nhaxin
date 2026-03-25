@@ -64,15 +64,25 @@
     <div class="col-lg-3">
         <div class="form-row">
             <label class="control-label text-left">Phòng ngủ</label>
-            <input name="bedrooms" value="{{ old('bedrooms', $model->bedrooms ?? '') }}" class="form-control"
-                placeholder="0">
+            <select name="bedrooms" class="form-control setupSelect2">
+                <option value="0">[Chọn số phòng ngủ]</option>
+                @for ($i = 1; $i <= 10; $i++)
+                    <option value="{{ $i }}" @if (old('bedrooms', $model->bedrooms ?? '') == $i) selected @endif>
+                        {{ $i }} phòng ngủ</option>
+                @endfor
+            </select>
         </div>
     </div>
     <div class="col-lg-3">
         <div class="form-row">
             <label class="control-label text-left">Phòng tắm</label>
-            <input name="bathrooms" value="{{ old('bathrooms', $model->bathrooms ?? '') }}" class="form-control"
-                placeholder="0">
+            <select name="bathrooms" class="form-control setupSelect2">
+                <option value="0">[Chọn số phòng tắm]</option>
+                @for ($i = 1; $i <= 10; $i++)
+                    <option value="{{ $i }}" @if (old('bathrooms', $model->bathrooms ?? '') == $i) selected @endif>
+                        {{ $i }} phòng tắm</option>
+                @endfor
+            </select>
         </div>
     </div>
     <div class="col-lg-3">

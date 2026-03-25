@@ -31,13 +31,29 @@ class DashboardController extends Controller
     public function changeStatus(Request $request){
         $serviceInstance = null;
         $post = $request->input();
+        Log::info('ChangeStatus Request: ', $post);
         $flag = false;
-        $namespace = $post['namespace'] ??  Str::words(Str::headline($post['model']), 1, '');
+        $model = $post['model'];
+        
+        $mapping = [
+            'RealEstate' => 'RealEstate',
+            'RealEstateCatalogue' => 'RealEstate',
+            'Project' => 'RealEstate',
+            'ProjectCatalogue' => 'RealEstate',
+            'Floorplan' => 'RealEstate',
+        ];
+
+        $namespace = $post['namespace'] ?? ($mapping[$model] ?? Str::words(Str::headline($model), 1, ''));
         $version = $post['version'] ?? 'V1';
-        $serviceInterfaceNamespace = '\App\Services\\' . $version . '\\' . $namespace . '\\'  . ucfirst($post['model']) . 'Service';
+        $serviceInterfaceNamespace = '\App\Services\\' . $version . '\\' . $namespace . '\\'  . ucfirst($model) . 'Service';
+        
+        Log::info('Service Namespace: ' . $serviceInterfaceNamespace);
+
         if (class_exists($serviceInterfaceNamespace)) {
             $serviceInstance = app($serviceInterfaceNamespace);
             $flag = $serviceInstance->updateStatus($post);
+        } else {
+            Log::error('Service Class Not Found: ' . $serviceInterfaceNamespace);
         }
         return response()->json(['flag' => $flag]); 
         
@@ -45,13 +61,23 @@ class DashboardController extends Controller
 
     public function changeStatusAll(Request $request){
         $post = $request->input();
+        $model = $post['model'];
         $version = $post['version'] ?? 'V1';
-        $namespace = Str::words(Str::headline($post['model']), 1, '');
-        $serviceInterfaceNamespace = '\App\Services\\' . $namespace . '\\' . $version . '\\' . ucfirst($post['model']) . 'Service';
+
+        $mapping = [
+            'RealEstate' => 'RealEstate',
+            'RealEstateCatalogue' => 'RealEstate',
+            'Project' => 'RealEstate',
+            'ProjectCatalogue' => 'RealEstate',
+            'Floorplan' => 'RealEstate',
+        ];
+
+        $namespace = $post['namespace'] ?? ($mapping[$model] ?? Str::words(Str::headline($model), 1, ''));
+        $serviceInterfaceNamespace = '\App\Services\\' . $version . '\\' . $namespace . '\\' . ucfirst($model) . 'Service';
         if (class_exists($serviceInterfaceNamespace)) {
             $serviceInstance = app($serviceInterfaceNamespace);
+            $flag = $serviceInstance->updateStatusAll($post);
         }
-        $flag = $serviceInstance->updateStatusAll($post);
         return response()->json(['flag' => $flag]); 
 
     }

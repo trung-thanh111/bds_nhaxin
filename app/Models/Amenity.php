@@ -49,4 +49,9 @@ class Amenity extends Model
     {
         return $this->belongsToMany(RealEstate::class, 'amenity_real_estate', 'amenity_id', 'real_estate_id');
     }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_amenity', 'amenity_id', 'project_id');
+    }
 }

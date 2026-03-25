@@ -15,15 +15,9 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|array|min:1',
-            'name.*' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('projects', 'name')->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                })
-            ]
+            'name' => 'required|string|max:255',
+            'canonical' => 'required|unique:routers',
+            'project_catalogue_id' => 'required|gt:0',
         ];
     }
 
@@ -31,12 +25,11 @@ class StoreProjectRequest extends FormRequest
     {
         return [
             'name.required' => 'Bạn chưa nhập tên dự án',
-            'name.array' => 'Dữ liệu không hợp lệ',
-            'name.min' => 'Phải có ít nhất một dự án',
-            'name.*.required' => 'Tên dự án không được để trống',
-            'name.*.string' => 'Tên dự án phải là dạng ký tự',
-            'name.*.max' => 'Tên dự án không được vượt quá 255 ký tự',
-            'name.*.unique' => 'Tên dự án ":input" đã tồn tại trong hệ thống',
+            'name.string' => 'Tên dự án phải là dạng ký tự',
+            'name.max' => 'Tên dự án không được vượt quá 255 ký tự',
+            'canonical.required' => 'Bạn chưa nhập vào ô đường dẫn',
+            'canonical.unique' => 'Đường dẫn đã tồn tại, Hãy chọn đường dẫn khác',
+            'project_catalogue_id.gt' => 'Bạn phải chọn cho dự án một nhóm cụ thể.',
         ];
     }
 }

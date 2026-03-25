@@ -123,13 +123,15 @@ class AttributeController extends Controller
 
     public function delete($id){
         $this->authorize('modules', 'attribute.destroy');
-        $config['seo'] = __('messages.attribute');
         $attribute = $this->attributeRepository->getAttributeById($id, $this->language);
+        $config = $this->configData();
+        $config['method'] = 'delete';
+        $config['seo'] = __('messages.attribute');
         $template = 'backend.attribute.attribute.delete';
         return view('backend.dashboard.layout', compact(
             'template',
             'attribute',
-            'config',
+            'config'
         ));
     }
 

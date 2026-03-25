@@ -122,7 +122,7 @@ $url = ($config['method'] == 'create') ? route('agent.store') : route('agent.upd
                         <div class="row mb15">
                             <div class="col-lg-12">
                                 <div class="form-row">
-                                    <div class="checkbox checkbox-primary">
+                                    <div class="gl-checkbox-wrapper">
                                         <input id="is_primary" type="checkbox" name="is_primary" value="1" {{ old('is_primary', $record->is_primary ?? 0) ? 'checked' : '' }}>
                                         <label for="is_primary">Nhân viên chính (Hotline)</label>
                                     </div>

@@ -157,19 +157,29 @@ class RealEstateService extends BaseService
     private function createRealEstate($request){
         $payload = $this->formatPayload($request);
         $payload['user_id'] = Auth::id();
-        if(empty($payload['code'])){
-            $payload['code'] = generate_code($request->input('name'));
-        }
         $realEstate = $this->realEstateRepository->create($payload);
+        $code = trim($payload['code'] ?? '');
+        if($realEstate->id > 0 && ($code === '' || (strlen($code) >= 4 && substr($code, -4) === 'SXG-'))){
+            $timePart = strtoupper(base_convert(date('YmdHis'), 10, 36));
+            $prefix = ($code !== '') ? $code : 'BDS-' . $timePart . '-SXG-';
+            $newCode = $prefix . $realEstate->id;
+            $this->realEstateRepository->update($realEstate->id, ['code' => $newCode]);
+            $realEstate->code = $newCode;
+        }
         return $realEstate;
     }
 
     private function uploadRealEstate($realEstate, $request){
         $payload = $this->formatPayload($request);
-        if(empty($payload['code'])){
-            $payload['code'] = generate_code($request->input('name'));
+        $result = $this->realEstateRepository->update($realEstate->id, $payload);
+        $code = trim($payload['code'] ?? '');
+        if($result && empty($realEstate->code) && ($code === '' || (strlen($code) >= 4 && substr($code, -4) === 'SXG-'))){
+            $timePart = strtoupper(base_convert(date('YmdHis'), 10, 36));
+            $prefix = ($code !== '') ? $code : 'BDS-' . $timePart . '-SXG-';
+            $newCode = $prefix . $realEstate->id;
+            $this->realEstateRepository->update($realEstate->id, ['code' => $newCode]);
         }
-        return $this->realEstateRepository->update($realEstate->id, $payload);
+        return $result;
     }
 
     private function formatPayload($request){

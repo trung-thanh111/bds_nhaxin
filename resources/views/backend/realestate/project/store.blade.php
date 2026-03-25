@@ -27,31 +27,6 @@
 
                 <div class="ibox">
                     <div class="ibox-title">
-                        <h5>Thông tin bất động sản</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="row mb15">
-                            <div class="col-lg-12">
-                                <div class="form-row">
-                                    <label class="control-label text-left">Chọn Tài sản (BĐS) <span
-                                            class="text-danger">(*)</span></label>
-                                    <select name="real_estate_id" class="form-control setupSelect2">
-                                        <option value="0">[Chọn tài sản]</option>
-                                        @foreach ($realEstates as $item)
-                                            <option value="{{ $item->id }}"
-                                                {{ old('real_estate_id', $project->real_estate_id ?? '') == $item->id ? 'selected' : '' }}>
-                                                {{ $item->code }} - {{ $item->languages->first()->pivot->name ?? '' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ibox">
-                    <div class="ibox-title">
                         <h5>Quy mô dự án</h5>
                     </div>
                     <div class="ibox-content">
@@ -95,6 +70,30 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                @include('backend.realestate.project.component.location', [
+                    'model' => $project ?? null,
+                ])
+
+                @include('backend.realestate.realestate.component.amenity', [
+                    'model' => $project ?? null,
+                    'amenityCatalogues' => $amenityCatalogues ?? null,
+                ])
+
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>Mặt bằng dự án</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <select name="floorplans[]" class="form-control setupSelect2" multiple>
+                            @foreach ($floorplans as $item)
+                                <option value="{{ $item->id }}"
+                                    {{ isset($project) && $project->floorplans->contains($item->id) ? 'selected' : '' }}>
+                                    {{ $item->languages->first()->pivot->name ?? 'N/A' }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 

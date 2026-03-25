@@ -90,15 +90,16 @@ class BaseService
         DB::beginTransaction();
         try{
             $model = lcfirst($post['model']).'Repository';
+            Log::info('Updating status for model: ' . $model . ' with ID: ' . $post['modelId']);
             $payload[$post['field']] = (($post['value'] == 1)?2:1);
-            $post = $this->{$model}->update($post['modelId'], $payload);
+            $result = $this->{$model}->update($post['modelId'], $payload);
 
             DB::commit();
+            Log::info('Update successful for ID: ' . $post['modelId']);
             return true;
         }catch(\Exception $e ){
             DB::rollBack();
-            // Log::error($e->getMessage());
-            echo $e->getMessage();die();
+            Log::error('Update failed: ' . $e->getMessage());
             return false;
         }
     }

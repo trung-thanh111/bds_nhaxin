@@ -140,6 +140,8 @@ class RealEstateController extends Controller
     {
         $this->authorize('modules', 'realEstate.delete');
         $realEstate = $this->realEstateRepository->getRealEstateById($id, $this->language);
+        $config = $this->configData();
+        $config['method'] = 'delete';
         $config['seo'] = __('messages.realEstate');
         $template = 'backend.realestate.realestate.delete';
         return view('backend.dashboard.layout', compact('realEstate', 'template', 'config'));

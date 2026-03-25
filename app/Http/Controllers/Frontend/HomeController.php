@@ -12,6 +12,9 @@ use App\Services\V2\Impl\RealEstate\AgentService;
 use App\Services\V1\Core\SlideService;
 use App\Services\V1\Post\PostService;
 use App\Repositories\Core\SystemRepository;
+use App\Repositories\RealEstate\RealEstateRepository;
+use App\Repositories\RealEstate\RealEstateCatalogueRepository;
+use App\Repositories\RealEstate\ProjectRepository;
 use Illuminate\Http\Request;
 
 class HomeController extends FrontendController
@@ -25,6 +28,9 @@ class HomeController extends FrontendController
     protected $agentService;
     protected $slideService;
     protected $postService;
+    protected $realEstateRepository;
+    protected $realEstateCatalogueRepository;
+    protected $projectRepository;
 
     public function __construct(
         SystemRepository $systemRepository,
@@ -35,7 +41,10 @@ class HomeController extends FrontendController
         LocationHighlightService $locationHighlightService,
         AgentService $agentService,
         SlideService $slideService,
-        PostService $postService
+        PostService $postService,
+        RealEstateRepository $realEstateRepository,
+        RealEstateCatalogueRepository $realEstateCatalogueRepository,
+        ProjectRepository $projectRepository
     ) {
         $this->systemRepository = $systemRepository;
         $this->propertyService = $propertyService;
@@ -46,6 +55,9 @@ class HomeController extends FrontendController
         $this->agentService = $agentService;
         $this->slideService = $slideService;
         $this->postService = $postService;
+        $this->realEstateRepository = $realEstateRepository;
+        $this->realEstateCatalogueRepository = $realEstateCatalogueRepository;
+        $this->projectRepository = $projectRepository;
         parent::__construct();
     }
 
@@ -65,7 +77,6 @@ class HomeController extends FrontendController
         $floorplans = $this->floorplanService->findByCondition(
             condition: [['publish', '=', 2]],
             flag: true,
-            relation: ['rooms'],
             orderBy: ['order', 'asc']
         );
 
@@ -100,6 +111,79 @@ class HomeController extends FrontendController
             1
         );
 
+        $projects = $this->projectRepository->findByCondition(
+            condition: [config('apps.general.defaultPublish')],
+            flag: true,
+            relation: [
+                'languages' => function($query) {
+                    $query->where('language_id', $this->language);
+                },
+                'amenities.languages' => function($query) {
+                    $query->where('language_id', $this->language);
+                }
+            ],
+            orderBy: ['id', 'desc']
+        )->take(9);
+
+        // Fetch top-level categories and their 9 latest real estates
+        $homepageCatalogues = $this->realEstateCatalogueRepository->findByCondition(
+            [
+                ['parent_id', '=', 0],
+                config('apps.general.defaultPublish')
+            ],
+            true, // flag get()
+            ['languages' => function($query) {
+                $query->where('language_id', $this->language);
+            }],
+            ['order', 'desc']
+        );
+
+        if($homepageCatalogues){
+            $attributeIds = [];
+            foreach($homepageCatalogues as $key => $catalogue){
+                // Get all children IDs for this catalogue using Nested Set (lft, rgt)
+                $catIds = \Illuminate\Support\Facades\DB::table('real_estate_catalogues')
+                    ->where('lft', '>=', $catalogue->lft)
+                    ->where('rgt', '<=', $catalogue->rgt)
+                    ->pluck('id')
+                    ->toArray();
+
+                $catalogue->real_estates = $this->realEstateRepository->findByCondition(
+                    [
+                        config('apps.general.defaultPublish')
+                    ],
+                    true,
+                    [
+                        'languages' => function($query) {
+                            $query->where('language_id', $this->language);
+                        },
+                        'amenities.languages' => function($query) {
+                            $query->where('language_id', $this->language);
+                        }
+                    ],
+                    ['id', 'desc'],
+                    ['whereIn' => $catIds, 'whereInField' => 'real_estate_catalogue_id']
+                )->take(9);
+
+                foreach($catalogue->real_estates as $re) {
+                    if($re->transaction_type) $attributeIds[] = $re->transaction_type;
+                    if($re->price_unit) $attributeIds[] = $re->price_unit;
+                }
+            }
+
+            $attributeIds = array_unique(array_filter($attributeIds));
+            $attributeMap = [];
+            if(!empty($attributeIds)) {
+                $attributeMap = \App\Models\Attribute::whereIn('id', $attributeIds)
+                    ->with(['languages' => function($q) {
+                        $q->where('language_id', $this->language);
+                    }])
+                    ->get()
+                    ->pluck('languages.0.pivot.name', 'id')
+                    ->toArray();
+            }
+        }
+
         $system = $this->system;
         $seo = $this->buildSeo();
         $schema = $this->schema($seo);
@@ -120,6 +204,9 @@ class HomeController extends FrontendController
             'agents',
             'slides',
             'posts',
+            'projects',
+            'homepageCatalogues',
+            'attributeMap'
         ));
     }
 

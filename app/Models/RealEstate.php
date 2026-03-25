@@ -16,7 +16,6 @@ class RealEstate extends Model
     protected $fillable = [
         'code',
         'real_estate_catalogue_id',
-        'project_id',
         'agent_id',
         'image',
         'old_province_code',
@@ -82,16 +81,6 @@ class RealEstate extends Model
     public function catalogue()
     {
         return $this->belongsTo(RealEstateCatalogue::class, 'real_estate_catalogue_id');
-    }
-
-    public function projects()
-    {
-        return $this->hasMany(Project::class, 'real_estate_id');
-    }
-
-    public function project_development()
-    {
-        return $this->belongsTo(Project::class, 'project_id')->where('is_project', 1);
     }
 
     public function floorplans()

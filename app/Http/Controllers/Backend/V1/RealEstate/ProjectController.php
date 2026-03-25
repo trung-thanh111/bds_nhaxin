@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Backend\V1\RealEstate;
 use App\Http\Controllers\Controller;
 use App\Services\V1\RealEstate\ProjectService;
 use App\Repositories\RealEstate\ProjectRepository;
-use App\Http\Requests\RealEstate\StoreProjectRequest;
-use App\Http\Requests\RealEstate\UpdateProjectRequest;
+use App\Http\Requests\Project\StoreProjectRequest;
+use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Models\Language;
 use App\Models\Province;
 use Illuminate\Http\Request;
@@ -57,25 +57,27 @@ class ProjectController extends Controller
         $config = $this->configData();
         $config['method'] = 'create';
         $config['seo'] = __('messages.project');
-        $realEstates = \App\Models\RealEstate::with(['languages' => function ($query) {
-            $query->where('language_id', $this->language);
-        }])->get();
+        
         $dropdown = (new \App\Classes\Nestedsetbie([
             'table' => 'project_catalogues',
             'foreignkey' => 'project_catalogue_id',
             'language_id' => $this->language,
         ]))->Dropdown();
-        $dropdown = (new \App\Classes\Nestedsetbie([
-            'table' => 'project_catalogues',
-            'foreignkey' => 'project_catalogue_id',
-            'language_id' => $this->language,
-        ]))->Dropdown();
+        
         $template = 'backend.realestate.project.store';
         $dropdowns = $this->getDropdowns();
+        $provinces = $this->getProvincesFromJson('after');
+        $old_provinces = $this->getProvincesFromJson('before');
+        $amenityCatalogues = $this->getAmenityCatalogues();
+        $floorplans = \App\Models\Floorplan::with(['languages' => function ($query) {
+            $query->where('language_id', $this->language);
+        }])->get();
+        
         $allProjects = \App\Models\Project::with(['languages' => function ($query) {
             $query->where('language_id', $this->language);
         }])->get();
-        return view('backend.dashboard.layout', compact('config', 'template', 'realEstates', 'dropdown', 'dropdowns', 'allProjects'));
+        
+        return view('backend.dashboard.layout', compact('config', 'template', 'dropdown', 'dropdowns', 'provinces', 'old_provinces', 'amenityCatalogues', 'allProjects', 'floorplans'));
     }
 
     public function store(StoreProjectRequest $request)
@@ -93,25 +95,27 @@ class ProjectController extends Controller
         $config = $this->configData();
         $config['method'] = 'edit';
         $config['seo'] = __('messages.project');
-        $realEstates = \App\Models\RealEstate::with(['languages' => function ($query) {
-            $query->where('language_id', $this->language);
-        }])->get();
+        
         $dropdown = (new \App\Classes\Nestedsetbie([
             'table' => 'project_catalogues',
             'foreignkey' => 'project_catalogue_id',
             'language_id' => $this->language,
         ]))->Dropdown();
-        $dropdown = (new \App\Classes\Nestedsetbie([
-            'table' => 'project_catalogues',
-            'foreignkey' => 'project_catalogue_id',
-            'language_id' => $this->language,
-        ]))->Dropdown();
+        
         $template = 'backend.realestate.project.store';
         $dropdowns = $this->getDropdowns();
+        $provinces = $this->getProvincesFromJson('after');
+        $old_provinces = $this->getProvincesFromJson('before');
+        $amenityCatalogues = $this->getAmenityCatalogues();
+        $floorplans = \App\Models\Floorplan::with(['languages' => function ($query) {
+            $query->where('language_id', $this->language);
+        }])->get();
+        
         $allProjects = \App\Models\Project::with(['languages' => function ($query) {
             $query->where('language_id', $this->language);
         }])->where('id', '!=', $id)->get();
-        return view('backend.dashboard.layout', compact('config', 'project', 'template', 'realEstates', 'dropdown', 'dropdowns', 'allProjects'));
+        
+        return view('backend.dashboard.layout', compact('config', 'project', 'template', 'dropdown', 'dropdowns', 'provinces', 'old_provinces', 'amenityCatalogues', 'allProjects', 'floorplans'));
     }
 
     public function update($id, UpdateProjectRequest $request)
@@ -126,6 +130,8 @@ class ProjectController extends Controller
     {
         $this->authorize('modules', 'project.delete');
         $project = $this->projectRepository->getProjectById($id, $this->language);
+        $config = $this->configData();
+        $config['method'] = 'delete';
         $config['seo'] = __('messages.project');
         $template = 'backend.realestate.project.delete';
         return view('backend.dashboard.layout', compact('project', 'template', 'config'));
@@ -159,6 +165,29 @@ class ProjectController extends Controller
         return $result;
     }
 
+    private function getProvincesFromJson($source)
+    {
+        $filePath = resource_path('json/vie_address_' . $source . '_1_7.json');
+        if (!\Illuminate\Support\Facades\File::exists($filePath)) {
+            return [];
+        }
+        $data = json_decode(\Illuminate\Support\Facades\File::get($filePath), true);
+        $result = [];
+        foreach ($data as $item) {
+            $result[$item['codename']] = $item['name'];
+        }
+        return $result;
+    }
+
+    private function getAmenityCatalogues()
+    {
+        return \App\Models\AmenityCatalogue::with(['amenities.languages' => function ($query) {
+            $query->where('language_id', $this->language);
+        }, 'languages' => function ($query) {
+            $query->where('language_id', $this->language);
+        }])->get();
+    }
+
     private function configData()
     {
         return [
@@ -166,6 +195,7 @@ class ProjectController extends Controller
                 'backend/plugins/ckeditor/ckeditor.js',
                 'backend/library/finder.js',
                 'backend/library/seo.js',
+                'backend/library/location.js',
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
             ],
             'css' => [

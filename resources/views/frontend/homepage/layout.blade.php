@@ -5,8 +5,8 @@
     @include('frontend.component.head')
     @vite('resources/css/app.scss')
 </head>
-@if(isset($schema))
-{!! $schema !!}
+@if (isset($schema))
+    {!! $schema !!}
 @endif
 
 <body>

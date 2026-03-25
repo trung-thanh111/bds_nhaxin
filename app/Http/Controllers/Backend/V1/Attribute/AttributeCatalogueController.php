@@ -121,13 +121,15 @@ class AttributeCatalogueController extends Controller
 
     public function delete($id){
         $this->authorize('modules', 'attribute.catalogue.destroy');
-        $config['seo'] = __('messages.attributeCatalogue');
         $attributeCatalogue = $this->attributeCatalogueRepository->getAttributeCatalogueById($id, $this->language);
+        $config = $this->configData();
+        $config['method'] = 'delete';
+        $config['seo'] = __('messages.attributeCatalogue');
         $template = 'backend.attribute.catalogue.delete';
         return view('backend.dashboard.layout', compact(
             'template',
             'attributeCatalogue',
-            'config',
+            'config'
         ));
     }
 

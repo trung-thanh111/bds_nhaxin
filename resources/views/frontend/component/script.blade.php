@@ -1,3 +1,4 @@
+<script src="{{ asset('vendor/backend/js/plugins/select2/select2.full.min.js') }}"></script>
 <script src="{{ asset('vendor/backend/js/plugins/toastr/toastr.min.js') }}"></script>
 
 <script src="{{ asset('vendor/frontend/uikit/js/uikit.min.js') }}"></script>

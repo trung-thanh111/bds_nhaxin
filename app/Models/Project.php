@@ -15,7 +15,8 @@ class Project extends Model
 
     protected $fillable = [
         'code',
-        'real_estate_id',
+        'name',
+        'slug',
         'project_catalogue_id',
         'is_project',
         'apartment_count',
@@ -35,6 +36,22 @@ class Project extends Model
         'video_embed',
         'has_virtual_tour',
         'virtual_tour_url',
+        'province_code',
+        'province_name',
+        'district_code',
+        'district_name',
+        'ward_code',
+        'ward_name',
+        'old_province_code',
+        'old_province_name',
+        'old_district_code',
+        'old_district_name',
+        'old_ward_code',
+        'old_ward_name',
+        'street',
+        'iframe_map',
+        'lat',
+        'long',
         'extra_fields',
         'published_at',
     ];
@@ -46,19 +63,19 @@ class Project extends Model
             ->withTimestamps();
     }
 
-    public function real_estate()
-    {
-        return $this->belongsTo(RealEstate::class, 'real_estate_id');
-    }
-
     public function catalogue()
     {
         return $this->belongsTo(ProjectCatalogue::class, 'project_catalogue_id');
     }
 
-    public function listing_real_estates()
+    public function amenities()
     {
-        return $this->hasMany(RealEstate::class, 'project_id');
+        return $this->belongsToMany(Amenity::class, 'project_amenity', 'project_id', 'amenity_id');
+    }
+
+    public function floorplans()
+    {
+        return $this->belongsToMany(Floorplan::class, 'project_floorplan', 'project_id', 'floorplan_id');
     }
 
     public function related_projects()

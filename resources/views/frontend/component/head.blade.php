@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="{{ asset('frontend/resources/style.css') }}">
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
+<link rel="stylesheet" href="{{ asset('vendor/backend/css/plugins/select2/select2.min.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/resources/css/homepark.css') }}">
 
 <script type="text/javascript">
@@ -24,7 +25,7 @@
     var SUFFIX = '{{ config('apps.general.suffix') }}';
     window.LindenConfig = {
         csrfToken: '{{ csrf_token() }}',
-        visitRequestUrl: '{{ route('visit-request.store') }}'
+        contactRequestUrl: '{{ route('contact-request.store') }}'
     };
 </script>
 <link rel="canonical" href="{{ $seo['canonical'] }}" />

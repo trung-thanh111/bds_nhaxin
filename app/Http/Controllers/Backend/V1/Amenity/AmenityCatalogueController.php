@@ -121,13 +121,15 @@ class AmenityCatalogueController extends Controller
     public function delete($id)
     {
         $this->authorize('modules', 'amenity.catalogue.delete');
-        $config['seo'] = __('messages.amenityCatalogue');
         $amenityCatalogue = $this->amenityCatalogueRepository->getAmenityCatalogueById($id, $this->language);
+        $config = $this->configData();
+        $config['method'] = 'delete';
+        $config['seo'] = __('messages.amenityCatalogue');
         $template = 'backend.amenity.catalogue.delete';
         return view('backend.dashboard.layout', compact(
             'template',
             'amenityCatalogue',
-            'config',
+            'config'
         ));
     }
 

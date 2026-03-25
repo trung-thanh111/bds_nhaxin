@@ -36,4 +36,9 @@ class Floorplan extends Model
     {
         return $this->belongsTo(RealEstate::class, 'real_estate_id', 'id');
     }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_floorplan', 'floorplan_id', 'project_id');
+    }
 }

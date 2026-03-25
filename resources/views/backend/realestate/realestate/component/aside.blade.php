@@ -3,7 +3,14 @@
         <h5>Mã nội bộ</h5>
     </div>
     <div class="ibox-content">
-        <input type="text" name="code" value="{{ old('code', $model->code ?? '') }}" class="form-control"
+        @php
+            $currentCode = $model->code ?? '';
+            if (empty($currentCode) && $config['method'] == 'create') {
+                $timePart = strtoupper(base_convert(date('YmdHis'), 10, 36));
+                $currentCode = 'BDS-' . $timePart . '-SXG-';
+            }
+        @endphp
+        <input type="text" name="code" value="{{ old('code', $currentCode) }}" class="form-control"
             placeholder="Tự động sinh nếu để trống">
         <small class="text-warning mt5" style="display:block">Lưu ý*: Ưu tiên nhập mã từ Reex/phần mềm quản lý nếu
             có.</small>

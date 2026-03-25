@@ -14,16 +14,11 @@ class UpdateProjectRequest extends FormRequest
 
     public function rules(): array
     {
-        $areaId = $this->route('id'); 
+        $id = $this->route('id'); 
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('projects', 'name')
-                    ->whereNull('deleted_at')
-                    ->ignore($areaId)
-            ],
+            'name' => 'required|string|max:255',
+            'canonical' => 'required|unique:routers,canonical, '.$id.',module_id',
+            'project_catalogue_id' => 'required|gt:0',
         ];
     }
 
@@ -33,7 +28,9 @@ class UpdateProjectRequest extends FormRequest
             'name.required' => 'Bạn chưa nhập tên dự án',
             'name.string' => 'Tên dự án phải là dạng ký tự',
             'name.max' => 'Tên dự án không được vượt quá 255 ký tự',
-            'name.unique' => 'Tên dự án ":input" đã tồn tại trong hệ thống',
+            'canonical.required' => 'Bạn chưa nhập vào ô đường dẫn',
+            'canonical.unique' => 'Đường dẫn đã tồn tại, Hãy chọn đường dẫn khác',
+            'project_catalogue_id.gt' => 'Bạn phải chọn cho dự án một nhóm cụ thể.',
         ];
     }
 }

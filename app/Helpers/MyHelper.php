@@ -75,6 +75,22 @@ if (!function_exists('convert_price')) {
     }
 }
 
+if (!function_exists('formatPrice')) {
+    function formatPrice($price)
+    {
+        if ($price >= 1000000000) {
+            $value = $price / 1000000000;
+            return number_format($value, ($value == floor($value) ? 0 : 2), ',', '.') . ' tỷ';
+        } elseif ($price >= 1000000) {
+            $value = $price / 1000000;
+            return number_format($value, ($value == floor($value) ? 0 : 2), ',', '.') . ' triệu';
+        } elseif ($price > 0) {
+            return number_format($price, 0, ',', '.') . ' đ';
+        }
+        return 'Liên hệ';
+    }
+}
+
 if (!function_exists('getPercent')) {
     function getPercent($product = null, $discountValue = 0)
     {
@@ -513,12 +529,18 @@ if (!function_exists('loadClass')) {
     function loadClass(string $model = '', $folder = 'Repositories', $interface = 'Repository')
     {
         $serviceInstance = null;
-        $namespace = Str::words(Str::headline($model), 1, '');
+        $mapping = [
+            'RealEstate' => 'RealEstate',
+            'RealEstateCatalogue' => 'RealEstate',
+            'Project' => 'RealEstate',
+            'ProjectCatalogue' => 'RealEstate',
+            'Floorplan' => 'RealEstate',
+        ];
+        $namespace = $mapping[$model] ?? Str::words(Str::headline($model), 1, '');
         $version2 = ['Scholar', 'School', 'Major', 'Admission'];
         if (in_array($namespace, $version2)) {
             $interface = 'Repo';
         }
-        // $serviceInterfaceNamespace = '\App\\'.$folder.'\\' . ucfirst($model) . $interface;
         $serviceInterfaceNamespace = '\App\\' . $folder . '\\' . $namespace . '\\' . $model . $interface;
         if (class_exists($serviceInterfaceNamespace)) {
             $serviceInstance = app($serviceInterfaceNamespace);

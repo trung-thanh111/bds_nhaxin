@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Http\ViewComposers\MenuComposer;
 use App\Http\ViewComposers\CartComposer;
 use App\Http\ViewComposers\CustomerComposer;
+use App\Http\ViewComposers\LocationComposer;
 use App\Models\Language;
 
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -76,6 +77,7 @@ class AppServiceProvider extends ServiceProvider
             $composerClasses = [
                 MenuComposer::class,
                 CartComposer::class,
+                LocationComposer::class,
             ];
 
             foreach($composerClasses as $key => $val){

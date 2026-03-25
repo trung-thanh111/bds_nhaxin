@@ -110,13 +110,15 @@ class AmenityController extends Controller
 
     public function delete($id){
         $this->authorize('modules', 'amenity.delete');
-        $config['seo'] = __('messages.amenity');
         $amenity = $this->amenityRepository->getAmenityById($id, $this->language);
+        $config = $this->configData();
+        $config['method'] = 'delete';
+        $config['seo'] = __('messages.amenity');
         $template = 'backend.amenity.amenity.delete';
         return view('backend.dashboard.layout', compact(
             'template',
             'amenity',
-            'config',
+            'config'
         ));
     }
 

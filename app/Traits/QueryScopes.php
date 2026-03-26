@@ -51,9 +51,12 @@ trait QueryScopes
 
     public function scopeRelationCount($query, $relation){
         if(!empty($relation)){
-            foreach($relation as $item){
-                $query->withCount($item);
-                $query->with($item);
+            foreach($relation as $key => $item){
+                $relationName = is_string($key) ? $key : $item;
+                if (is_string($relationName)) {
+                    $query->withCount($relationName);
+                }
+                $query->with([$key => $item]);
             }
         }
         return $query;

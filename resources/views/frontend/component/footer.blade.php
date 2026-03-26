@@ -57,7 +57,7 @@
                 <img src="{{ $system['homepage_logo'] ?? asset('frontend/resources/img/homely/logo.webp') }}" alt="Logo" class="footer-logo-bottom">
                 <p class="footer-contact-info">
                     Email: <span>{{ $system['contact_email'] ?? 'bdsguland@gmail.com' }}</span> 
-                    - Hotline CSKH: <span>{{ $system['contact_hotline'] ?? '098.328.4379' }}</span>
+                    - Hotline CSKH: <span>{{ get_hotline($agent ?? null, $system['contact_hotline'] ?? '098.328.4379') }}</span>
                 </p>
                 <p class="footer-disclaimer">
                     Guland.vn có trách nhiệm chuyển tải thông tin. Mọi thông tin chỉ có giá trị tham khảo. 

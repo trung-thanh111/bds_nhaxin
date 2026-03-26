@@ -52,8 +52,8 @@ class RealEstateService extends BaseService
         return $rawCondition;
     }
 
-    public function paginate($request, $languageId, $realEstateCatalogue = null, $page = 1, $extend = [], $sort = null){
-        if(!is_null($realEstateCatalogue)){
+    public function paginate($request, $languageId, $realEstateCatalogue = null, $page = 1, $extend = [], $sort = null, $attributeId = null){
+        if(!is_null($realEstateCatalogue) || !is_null($attributeId)){
             Paginator::currentPageResolver(function () use ($page) {
                 return $page;
             });
@@ -61,11 +61,55 @@ class RealEstateService extends BaseService
         $perPage = (!is_null($realEstateCatalogue))  ? 8 : 20;
         $condition = [
             'keyword' => addslashes($request->input('keyword')),
-            'publish' => $request->integer('publish'),
+            'publish' => $request->integer('publish', 2),
             'where' => [
                 ['tb2.language_id', '=', $languageId],
             ],
         ];
+
+        // Address Filter
+        foreach (['province_code', 'ward_code', 'old_province_code', 'old_district_code', 'old_ward_code'] as $f) {
+            if ($request->filled($f) && $request->input($f) != '0') {
+                $condition['where'][] = ['real_estates.' . $f, '=', $request->input($f)];
+            }
+        }
+
+        // Transaction Type
+        if ($request->filled('transaction_type')) {
+            $condition['where'][] = ['real_estates.transaction_type', '=', $request->input('transaction_type')];
+        }
+
+        // Price Filter
+        if ($request->filled('price_min')) {
+            $condition['where'][] = ['real_estates.price_sale', '>=', $request->input('price_min') * 1000000000];
+        }
+        if ($request->filled('price_max')) {
+            $condition['where'][] = ['real_estates.price_sale', '<=', $request->input('price_max') * 1000000000];
+        }
+
+        // Area Filter
+        if ($request->filled('area_min')) {
+            $condition['where'][] = ['real_estates.area', '>=', $request->input('area_min')];
+        }
+        if ($request->filled('area_max')) {
+            $condition['where'][] = ['real_estates.area', '<=', $request->input('area_max')];
+        }
+
+        // Specs Filter
+        if ($request->filled('bedrooms')) {
+            $condition['where'][] = ['real_estates.bedrooms', '=', $request->input('bedrooms')];
+        }
+        if ($request->filled('bathrooms')) {
+            $condition['where'][] = ['real_estates.bathrooms', '=', $request->input('bathrooms')];
+        }
+
+        // Directions
+        if ($request->filled('house_direction')) {
+            $condition['where'][] = ['real_estates.house_direction', '=', $request->input('house_direction')];
+        }
+        if ($request->filled('balcony_direction')) {
+            $condition['where'][] = ['real_estates.balcony_direction', '=', $request->input('balcony_direction')];
+        }
 
         $paginationConfig = [
             'path' => ($extend['path']) ?? 'real/estate/index', 
@@ -76,6 +120,13 @@ class RealEstateService extends BaseService
         $orderBy = isset($sort) ? $sort : ['real_estates.id', 'DESC'];
         $relations = ['catalogue'];
         $rawQuery = $this->whereRaw($request, $languageId, $realEstateCatalogue);
+
+        if (!is_null($attributeId)) {
+            $rawQuery['whereRaw'][] = [
+                '(real_estates.house_direction = ? OR real_estates.balcony_direction = ? OR real_estates.ownership_type = ? OR real_estates.price_unit = ? OR real_estates.floor = ? OR real_estates.transaction_type = ?)',
+                [$attributeId, $attributeId, $attributeId, $attributeId, $attributeId, $attributeId]
+            ];
+        }
 
         $joins = [
             ['real_estate_language as tb2', 'tb2.real_estate_id', '=', 'real_estates.id'],
@@ -280,8 +331,29 @@ class RealEstateService extends BaseService
             'real_estates.image',
             'real_estates.order',
             'real_estates.created_at',
+            'real_estates.updated_at',
             'real_estates.code',
             'real_estates.area',
+            'real_estates.usable_area',
+            'real_estates.land_area',
+            'real_estates.bedrooms',
+            'real_estates.bathrooms',
+            'real_estates.house_direction',
+            'real_estates.balcony_direction',
+            'real_estates.ownership_type',
+            'real_estates.road_width',
+            'real_estates.floor_count',
+            'real_estates.price_sale',
+            'real_estates.price_rent',
+            'real_estates.price_unit',
+            'real_estates.transaction_type',
+            'real_estates.province_name',
+            'real_estates.district_name',
+            'real_estates.ward_name',
+            'real_estates.old_province_name',
+            'real_estates.old_district_name',
+            'real_estates.old_ward_name',
+            'real_estates.iframe_map',
             'tb2.name', 
             'tb2.description',
             'tb2.canonical',

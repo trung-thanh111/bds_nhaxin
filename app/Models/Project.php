@@ -49,6 +49,7 @@ class Project extends Model
         'old_ward_code',
         'old_ward_name',
         'street',
+        'album',
         'iframe_map',
         'lat',
         'long',

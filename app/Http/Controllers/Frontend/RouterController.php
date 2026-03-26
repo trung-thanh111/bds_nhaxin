@@ -41,8 +41,7 @@ class RouterController extends FrontendController
                     if ($ptype && $ptype->getName() === \Illuminate\Http\Request::class) {
                         $args[] = $request;
                     } elseif (stripos($pname, 'page') !== false) {
-                        // default page 1
-                        $args[] = 1;
+                        $args[] = $request->query('page', 1);
                     } else {
                         // fallback to module_id for other scalar params
                         $args[] = $this->router->module_id;
@@ -116,6 +115,7 @@ class RouterController extends FrontendController
 
     public function getRouter($canonical)
     {
+        $canonical = (str_ends_with($canonical, '.html')) ? substr($canonical, 0, -5) : $canonical;
         $this->router = $this->routerRepository->findByCondition(
             [
                 ['canonical', '=', $canonical],

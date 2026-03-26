@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="uk-width-large-2-4 uk-visible-large">
-                    <div class="gl-search-bar" style="border: 1px solid #666666;">
+                    <div class="gl-search-bar" style="border: 1px solid #888888;">
                         <button class="gl-search-trigger" data-uk-modal="{target:'#modal-location'}">
                             <span id="label-location">Toàn quốc</span>
                             <i class="fa fa-chevron-down"></i>

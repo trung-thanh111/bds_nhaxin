@@ -955,3 +955,94 @@ if (!function_exists('generate_code')) {
         return str_replace('-', '_', Str::slug($name));
     }
 }
+
+if (!function_exists('format_address')) {
+    function format_address($item, $district = '', $ward = '', $street = '')
+    {
+        if (is_object($item)) {
+            return implode(', ', array_filter([
+                $item->street ?? '',
+                $item->ward_name ?? '',
+                $item->district_name ?? '',
+                $item->province_name ?? ''
+            ]));
+        }
+        return implode(', ', array_filter([$street, $ward, $district, $item]));
+    }
+}
+
+if (!function_exists('format_time')) {
+    function format_time($date, $format = 'd/m/Y H:i')
+    {
+        if (!$date) return 'Đang cập nhật';
+        return \Carbon\Carbon::parse($date)->locale('vi')->translatedFormat($format);
+    }
+}
+
+if (!function_exists('diff_for_humans')) {
+    function diff_for_humans($date)
+    {
+        if (!$date) return 'Đang cập nhật';
+        return \Carbon\Carbon::parse($date)->locale('vi')->diffForHumans();
+    }
+}
+
+if (!function_exists('get_agent')) {
+    function get_agent($agentId = null)
+    {
+        if ($agentId) {
+            return \App\Models\Agent::find($agentId);
+        }
+        return \App\Models\Agent::where('is_primary', 1)->where('publish', 2)->first();
+    }
+}
+
+if (!function_exists('extract_map_url')) {
+    function extract_map_url($mapString)
+    {
+        if (empty($mapString)) return '';
+        
+        $url = '';
+        // Check if it's an iframe tag
+        if (stripos($mapString, '<iframe') !== false) {
+            preg_match('/src="([^"]+)"/', $mapString, $matches);
+            if (isset($matches[1])) {
+                $url = $matches[1];
+            }
+        } else if (stripos($mapString, 'http') !== false || stripos($mapString, '//') !== false) {
+            $url = $mapString;
+        }
+
+        if (empty($url)) return '';
+
+        // If it's an embed URL, it cannot be opened directly in a tab
+        if (stripos($url, '/maps/embed') !== false) {
+            return ''; // Let the card fallback to search by address
+        }
+        
+        // Ensure protocol
+        if (stripos($url, 'http') === false && stripos($url, '//') !== false) {
+            $url = 'https:' . $url;
+        }
+        
+        return $url;
+    }
+}
+
+if (!function_exists('get_hotline')) {
+    function get_hotline($agent = null, $fallback = '')
+    {
+        if (!$agent) {
+            $agent = get_agent(); // get primary or assigned
+        }
+        return !empty($agent->phone) ? $agent->phone : $fallback;
+    }
+}
+
+if (!function_exists('get_hotline_link')) {
+    function get_hotline_link($agent = null, $fallback = '')
+    {
+        $phone = get_hotline($agent, $fallback);
+        return preg_replace('/\D/', '', $phone);
+    }
+}

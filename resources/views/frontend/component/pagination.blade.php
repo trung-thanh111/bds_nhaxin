@@ -1,4 +1,8 @@
-@if ($model->hasPages())
+@php
+    $model = $model ?? $paginator;
+@endphp
+
+@if ($model && $model->hasPages())
     <ul class="pagination">
         {{-- Previous Page Link --}}
         @php

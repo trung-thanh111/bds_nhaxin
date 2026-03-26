@@ -175,6 +175,7 @@ class ProjectService extends BaseService
             'old_ward_code',
             'old_ward_name',
             'street',
+            'album',
             'iframe_map',
             'lat',
             'long',
@@ -183,6 +184,7 @@ class ProjectService extends BaseService
 
         $payload['name'] = $request->input('name');
         $payload['slug'] = Str::slug($request->input('canonical'));
+        $payload['album'] = $this->formatAlbum($request);
 
         // Handle New Address Names (After 01/07)
         if(!empty($payload['province_code'])){
@@ -260,7 +262,20 @@ class ProjectService extends BaseService
             'projects.cover_image',
             'projects.order',
             'projects.created_at',
+            'projects.updated_at',
             'projects.status',
+            'projects.code',
+            'projects.area',
+            'projects.apartment_count',
+            'projects.block_count',
+            'projects.legal_status',
+            'projects.province_name',
+            'projects.district_name',
+            'projects.ward_name',
+            'projects.old_province_name',
+            'projects.old_district_name',
+            'projects.old_ward_name',
+            'projects.iframe_map',
             'tb2.name',
             'tb2.canonical',
             'cat_lang.name as catalogue_name',

@@ -11,14 +11,20 @@
         </a>
     @endif
 
-    @if (!empty($system['social_zalo']))
-        <a href="{{ $system['social_zalo'] }}" target="_blank" class="hp-float-item hp-float-zalo" title="Zalo">
+    @php
+        $hotline = get_hotline($agent ?? null, $system['contact_hotline'] ?? '');
+        $hotlineLink = get_hotline_link($agent ?? null, $system['contact_hotline'] ?? '');
+        $zaloHotline = $system['social_zalo'] ?? $hotlineLink;
+    @endphp
+
+    @if (!empty($zaloHotline))
+        <a href="https://zalo.me/{{ preg_replace('/\D/', '', $zaloHotline) }}" target="_blank" class="hp-float-item hp-float-zalo" title="Zalo">
             <img src="{{ asset('frontend/resources/img/icon_zalo.png') }}" alt="Zalo" style="width: 25px; filter: brightness(0) invert(1);">
         </a>
     @endif
 
-    @if (!empty($system['contact_hotline']))
-        <a href="tel:{{ $system['contact_hotline'] }}" target="_blank" class="hp-float-item hp-float-hotline" title="hotline">
+    @if (!empty($hotlineLink))
+        <a href="tel:{{ $hotlineLink }}" target="_blank" class="hp-float-item hp-float-hotline" title="hotline: {{ $hotline }}">
             <img src="{{ asset('frontend/resources/img/icon_call.png') }}" alt="hotline" style="width: 25px; filter: brightness(0) invert(1);">
         </a>
     @endif

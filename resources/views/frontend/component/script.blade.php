@@ -11,6 +11,12 @@
 <script src="{{ asset('frontend/resources/plugins/wow/dist/wow.min.js') }}"></script>
 <script src="{{ asset('frontend/resources/function.js') }}"></script>
 <script src="{{ asset('frontend/resources/js/linden.js') }}"></script>
+
+@if (isset($config['js']) && is_array($config['js']))
+    @foreach ($config['js'] as $key => $val)
+        {!! '<script src="' . asset($val) . '"></script>' !!}
+    @endforeach
+@endif
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         if (typeof Fancybox !== 'undefined') {

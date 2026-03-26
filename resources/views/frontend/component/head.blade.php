@@ -12,6 +12,7 @@
 
 <link rel="stylesheet" href="{{ asset('frontend/resources/uikit/css/uikit.modify.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/resources/fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="{{ asset('frontend/resources/library/css/library.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/resources/plugins/wow/css/libs/animate.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/resources/style.css') }}">
@@ -19,6 +20,12 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
 <link rel="stylesheet" href="{{ asset('vendor/backend/css/plugins/select2/select2.min.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/resources/css/homepark.css') }}">
+
+@if (isset($config['css']) && is_array($config['css']))
+    @foreach ($config['css'] as $key => $val)
+        {!! '<link rel="stylesheet" href="' . asset($val) . '">' !!}
+    @endforeach
+@endif
 
 <script type="text/javascript">
     var BASE_URL = '{{ config('app.url') }}';

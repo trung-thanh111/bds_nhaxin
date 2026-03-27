@@ -120,7 +120,7 @@ if (!function_exists('getPromotionPrice')) {
 //         if($product->price == 0){
 
 //             $result['html'] .= '<div class="price mt10">';
-//                 $result['html'] .= '<div class="price-sale">Liên Hệ</div>';
+//                 $result['html'] .= '<div class="price-sale">Thỏa thuận</div>';
 //             $result['html'] .= '</div>';
 //             return $result;
 //         }
@@ -1001,7 +1001,7 @@ if (!function_exists('extract_map_url')) {
     function extract_map_url($mapString)
     {
         if (empty($mapString)) return '';
-        
+
         $url = '';
         // Check if it's an iframe tag
         if (stripos($mapString, '<iframe') !== false) {
@@ -1019,12 +1019,12 @@ if (!function_exists('extract_map_url')) {
         if (stripos($url, '/maps/embed') !== false) {
             return ''; // Let the card fallback to search by address
         }
-        
+
         // Ensure protocol
         if (stripos($url, 'http') === false && stripos($url, '//') !== false) {
             $url = 'https:' . $url;
         }
-        
+
         return $url;
     }
 }
@@ -1033,9 +1033,15 @@ if (!function_exists('get_hotline')) {
     function get_hotline($agent = null, $fallback = '')
     {
         if (!$agent) {
-            $agent = get_agent(); // get primary or assigned
+            $agent = get_agent(); 
         }
-        return !empty($agent->phone) ? $agent->phone : $fallback;
+        
+        if ($agent) {
+            if (!empty($agent->zalo)) return $agent->zalo;
+            if (!empty($agent->phone)) return $agent->phone;
+        }
+
+        return $fallback;
     }
 }
 

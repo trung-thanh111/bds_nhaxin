@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
         counterObserver.observe(el);
     });
 
-    document.querySelectorAll('form[id="visit-request-form"]').forEach(function (form) {
+    document.querySelectorAll('form[id="visit-request-form"], form[id="contact-request-form"]').forEach(function (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             var submitBtn = form.querySelector('.ln-btn-submit');
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (submitBtn) { submitBtn.textContent = 'Đang gửi...'; submitBtn.disabled = true; }
 
             var formData = new FormData(form);
-            var actionUrl = form.getAttribute('action') || (window.LindenConfig ? window.LindenConfig.visitRequestUrl : '');
+            var actionUrl = form.getAttribute('action');
             var csrfToken = form.querySelector('input[name="_token"]');
             csrfToken = csrfToken ? csrfToken.value : (window.LindenConfig ? window.LindenConfig.csrfToken : '');
 
@@ -201,7 +201,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     form.style.transform = 'translateY(-10px)';
                     setTimeout(function () {
                         form.style.display = 'none';
-                        var suc = form.parentElement.querySelector('.visit-form-success');
+                        var sucClass = form.id === 'contact-request-form' ? '.contact-form-success' : '.visit-form-success';
+                        var suc = form.parentElement.querySelector(sucClass);
                         if (suc) {
                             suc.style.display = 'block';
                             suc.style.opacity = '0';
@@ -212,9 +213,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     }, 400);
                     if (typeof toastr !== 'undefined') toastr.success(res.message || 'Yêu cầu đã được ghi nhận.');
                 },
-                error: function () {
+                error: function (xhr) {
                     if (submitBtn) { submitBtn.textContent = originalText || 'Gửi yêu cầu'; submitBtn.disabled = false; }
-                    if (typeof toastr !== 'undefined') toastr.error('Có lỗi xảy ra, vui lòng thử lại.');
+                    var msg = 'Có lỗi xảy ra, vui lòng thử lại.';
+                    if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    if (typeof toastr !== 'undefined') toastr.error(msg);
                 }
             });
         });

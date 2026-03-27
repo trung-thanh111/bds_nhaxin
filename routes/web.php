@@ -55,8 +55,10 @@ Route::group(['middleware' => ['locale']], function () {
     Route::post('ajax/contact-request/store', [ContactRequestController::class, 'store'])->name('contact-request.store');
     Route::get('/thumb', [App\Http\Controllers\ImageResizerController::class, 'resize'])->name('thumb');
 
-    Route::get('tim-kiem', [FeProductCatalogueController::class, 'search'])->name('product.catalogue.search');
-    Route::get('tim-kiem/trang-{page}', [FeProductCatalogueController::class, 'search'])->name('product.catalogue.search')->where('page', '[0-9]+');
+    Route::get('tim-kiem.html', [\App\Http\Controllers\Frontend\SearchController::class, 'index'])->name('search.index');
+
+    Route::get('du-an.html', [App\Http\Controllers\Frontend\ProjectCatalogueController::class, 'all'])->name('project.all');
+    Route::get('du-an/trang-{page}.html', [App\Http\Controllers\Frontend\ProjectCatalogueController::class, 'all'])->where(['page' => '[0-9]+'])->name('project.all.paginate');
 
     Route::get('{canonical}/trang-{page}', [RouterController::class, 'page'])
         ->where(['page' => '[0-9]+'])

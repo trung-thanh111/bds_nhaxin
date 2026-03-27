@@ -234,7 +234,6 @@ ol li {
 
 .uk-offcanvas-bar {
     padding: 40px 0;
-    background: rgba(254, 233, 181, 1) !important;
 }
 
 .uk-nav-offcanvas>li>a {
@@ -1789,7 +1788,7 @@ ol li {
     align-items: center;
     gap: 10px;
     transition: all 0.3s;
-    color: #333;
+    color: #888;
 }
 
 .hp-filter-btn:hover {
@@ -2009,8 +2008,8 @@ ol li {
 }
 
 .hp-mini-item .img {
-    width: 70px;
-    height: 50px;
+    width: 80px;
+    height: 60px;
     flex-shrink: 0;
 }
 

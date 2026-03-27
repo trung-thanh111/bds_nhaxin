@@ -4,18 +4,22 @@ namespace App\Http\ViewComposers;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 use App\Repositories\RealEstate\RealEstateCatalogueRepository;
+use App\Repositories\RealEstate\ProjectCatalogueRepository;
 use Illuminate\Support\Facades\Log;
 
 class LocationComposer
 {
     protected $realEstateCatalogueRepository;
+    protected $projectCatalogueRepository;
     protected $language;
 
     public function __construct(
         RealEstateCatalogueRepository $realEstateCatalogueRepository,
+        ProjectCatalogueRepository $projectCatalogueRepository,
         $language
     ){
         $this->realEstateCatalogueRepository = $realEstateCatalogueRepository;
+        $this->projectCatalogueRepository = $projectCatalogueRepository;
         $this->language = $language;
     }
 
@@ -24,23 +28,41 @@ class LocationComposer
         $provinces = $this->getProvinces('after');
         $old_provinces = $this->getProvinces('before');
         $realEstateCatalogues = $this->getCatalogues();
+        $projectCatalogues = $this->getProjectCatalogues();
         
         $view->with('provinces', $provinces);
         $view->with('old_provinces', $old_provinces);
         $view->with('realEstateCatalogues', $realEstateCatalogues);
+        $view->with('projectCatalogues', $projectCatalogues);
     }
 
     private function getCatalogues()
     {
+        $publishCondition = [config('apps.general.defaultPublish')];
+        
         return $this->realEstateCatalogueRepository->findByCondition(
-            [
-                config('apps.general.defaultPublish'),
-            ],
-            true, // flag for get()
+            $publishCondition,
+            true,
             ['languages' => function($query) {
                 $query->where('language_id', $this->language);
             }],
             ['id', 'desc'],
+            ['id', 'parent_id', 'lft', 'rgt']
+        );
+    }
+
+    private function getProjectCatalogues()
+    {
+        return $this->projectCatalogueRepository->findByCondition(
+            [
+                ['publish', '=', 2],
+                ['parent_id', '=', 0],
+            ],
+            true,
+            ['languages' => function($query) {
+                $query->where('language_id', $this->language);
+            }],
+            ['lft', 'asc'],
             ['id', 'parent_id', 'lft', 'rgt']
         );
     }

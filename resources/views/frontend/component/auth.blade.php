@@ -1,10 +1,10 @@
-
-@if(isset($customerAuth))
+@if (isset($customerAuth))
     <div class="header-top__widget">
         <div class="uk-flex uk-flex-middle">
             <i class="fi-rs-user"></i>
-            <a href="{{ route('buyer.profile') }}" title="" class="widget-link">Xin chào: {{ $customerAuth->name }}</a>
-            
+            <a href="{{ route('buyer.profile') }}" title="" class="widget-link">Xin chào:
+                {{ $customerAuth->name }}</a>
+
         </div>
     </div>
 @else

@@ -1,5 +1,13 @@
 @php
     $hotline = preg_replace('/\D/', '', $system['contact_hotline'] ?? '0903030303');
+    $menuMain = $menu['main-menu_array'] ?? [];
+    $menuMapping = [
+        'Mua bán' => ['icon' => 'fa-home', 'color' => 'var(--main-color)'],
+        'Cho thuê' => ['icon' => 'fa-key', 'color' => '#2e7d32'],
+        'Dự án' => ['icon' => 'fa-building', 'color' => '#ef6c00'],
+        'Liên hệ' => ['icon' => 'fa-edit', 'color' => '#7b1fa2'],
+    ];
+    $defaultMapping = ['icon' => 'fa-folder-open', 'color' => '#666'];
 @endphp
 
 <div id="offcanvas-desktop" class="uk-offcanvas" uk-offcanvas="overlay: true">
@@ -20,22 +28,17 @@
         </div>
 
         <div class="gl-offcanvas-menu">
-            <a href="/mua-ban.html" class="gl-offcanvas-link">
-                <i class="fa fa-home" style="color: var(--main-color);"></i>
-                <span>Mua bán</span>
-            </a>
-            <a href="/cho-thue.html" class="gl-offcanvas-link">
-                <i class="fa fa-key" style="color: #2e7d32;"></i>
-                <span>Cho thuê</span>
-            </a>
-            <a href="/du-an.html" class="gl-offcanvas-link">
-                <i class="fa fa-building" style="color: #ef6c00;"></i>
-                <span>Dự án</span>
-            </a>
-            <a href="/lien-he.html" class="gl-offcanvas-link">
-                <i class="fa fa-edit" style="color: #7b1fa2;"></i>
-                <span>Liên hệ</span>
-            </a>
+            @foreach ($menuMain as $val)
+                @php
+                    $name = $val['item']->languages->first()->pivot->name;
+                    $canonical = write_url($val['item']->languages->first()->pivot->canonical, true, true);
+                    $style = $menuMapping[$name] ?? $defaultMapping;
+                @endphp
+                <a href="{{ $canonical }}" class="gl-offcanvas-link">
+                    <i class="fa {{ $style['icon'] }}" style="color: {{ $style['color'] }};"></i>
+                    <span>{{ $name }}</span>
+                </a>
+            @endforeach
         </div>
 
         <div class="gl-offcanvas-info-box">
@@ -55,16 +58,15 @@
         </div>
 
         <div class="gl-footer-text">
-            Cho vay tài chính cầm cố nhà đất, nguồn tiền sẵn giải ngân
+            Nhiều dự án quy hoạch, pháp lý an toàn, giá tốt đang chờ bạn.
         </div>
 
         <div style="text-align: center; padding: 10px; opacity: 0.5; font-size: 10px;">
-            {{ $system['copyright'] ?? 'Copyright © 2024 HomePark' }}
+            {{ $system['copyright'] ?? 'Copyright © 2024 Guland' }}
         </div>
     </div>
 </div>
 
-{{-- Mobile Menu --}}
 <div id="offcanvas-mobile" class="uk-offcanvas" uk-offcanvas="overlay: true">
     <div class="uk-offcanvas-bar hp-offcanvas-bar">
         <a class="uk-offcanvas-close hp-offcanvas-close">
@@ -78,7 +80,20 @@
         </div>
         <nav class="hp-offcanvas-nav uk-margin-large-bottom">
             <ul class="uk-nav uk-nav-offcanvas" data-uk-nav>
-                {!! $menu['main-menu'] ?? '' !!}
+                @foreach ($menuMain as $val)
+                    @php
+                        $name = $val['item']->languages->first()->pivot->name;
+                        $canonical = write_url($val['item']->languages->first()->pivot->canonical, true, true);
+                        $style = $menuMapping[$name] ?? $defaultMapping;
+                    @endphp
+                    <li>
+                        <a href="{{ $canonical }}">
+                            <i class="fa {{ $style['icon'] }} uk-margin-small-right"
+                                style="color: {{ $style['color'] }}; width: 20px;"></i>
+                            {{ $name }}
+                        </a>
+                    </li>
+                @endforeach
             </ul>
         </nav>
     </div>

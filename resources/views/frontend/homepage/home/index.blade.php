@@ -1,25 +1,31 @@
 @extends('frontend.homepage.layout')
 @section('content')
+    @php
+        $menuMain = $menu['main-menu_array'] ?? [];
+        $menuMapping = [
+            'Mua bán' => ['icon' => 'fa-home', 'bg' => '#fff8e1', 'color' => '#ff8f00'],
+            'Cho thuê' => ['icon' => 'fa-key', 'bg' => '#e8f5e9', 'color' => '#2e7d32'],
+            'Dự án' => ['icon' => 'fa-building', 'bg' => '#fff3e0', 'color' => '#ef6c00'],
+            'Liên hệ' => ['icon' => 'fa-edit', 'bg' => '#f3e5f5', 'color' => '#7b1fa2'],
+        ];
+        $defaultMapping = ['icon' => 'fa-folder-open', 'bg' => '#f5f5f5', 'color' => '#666'];
+    @endphp
     <div class="gl-section">
         <div class="uk-container uk-container-center">
             <div class="gl-category-grid">
-                <a href="/mua-ban.html" class="gl-cat-item">
-                    <div class="gl-cat-icon"><i class="fa fa-home"></i></div>
-                    <div class="gl-cat-label">Mua bán</div>
-                </a>
-                <a href="/cho-thue.html" class="gl-cat-item">
-                    <div class="gl-cat-icon" style="background: #e8f5e9; color: #2e7d32;"><i class="fa fa-key"></i></div>
-                    <div class="gl-cat-label">Cho thuê</div>
-                </a>
-                <a href="/du-an.html" class="gl-cat-item">
-                    <div class="gl-cat-icon" style="background: #fff3e0; color: #ef6c00;"><i class="fa fa-building"></i>
-                    </div>
-                    <div class="gl-cat-label">Dự án</div>
-                </a>
-                <a href="/lien-he.html" class="gl-cat-item">
-                    <div class="gl-cat-icon" style="background: #f3e5f5; color: #7b1fa2;"><i class="fa fa-edit"></i></div>
-                    <div class="gl-cat-label">Liên hệ</div>
-                </a>
+                @foreach ($menuMain as $val)
+                    @php
+                        $name = $val['item']->languages->first()->pivot->name;
+                        $canonical = write_url($val['item']->languages->first()->pivot->canonical, true, true);
+                        $style = $menuMapping[$name] ?? $defaultMapping;
+                    @endphp
+                    <a href="{{ $canonical }}" class="gl-cat-item">
+                        <div class="gl-cat-icon" style="background: {{ $style['bg'] }}; color: {{ $style['color'] }};">
+                            <i class="fa {{ $style['icon'] }}"></i>
+                        </div>
+                        <div class="gl-cat-label">{{ $name }}</div>
+                    </a>
+                @endforeach
             </div>
         </div>
     </div>
@@ -35,7 +41,7 @@
                     an cư lý tưởng nhất.
                 </p>
                 <div class="gl-promo-actions">
-                    <a href="https://zalo.me/{{ preg_replace('/\D/', '', $system['contact_hotline'] ?? '0983284379') }}"
+                    <a href="https://zalo.me/{{ get_hotline_link($agent ?? null, $system['contact_hotline'] ?? '') }}"
                         class="gl-btn-zalo" target="_blank">
                         <img src="{{ asset('frontend/resources/img/icon_zalo_white.png') }}" alt="Zalo"
                             onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg'">
@@ -60,7 +66,10 @@
                             <div class="uk-grid uk-grid-medium" data-uk-grid-margin>
                                 @foreach ($catalogue->real_estates as $item)
                                     <div class="uk-width-large-1-3 uk-width-medium-1-2 mb20">
-                                        @include('frontend.component.real_estate_card', ['item' => $item, 'attributeMap' => $attributeMap])
+                                        @include('frontend.component.real_estate_card', [
+                                            'item' => $item,
+                                            'attributeMap' => $attributeMap,
+                                        ])
                                     </div>
                                 @endforeach
                             </div>
@@ -86,7 +95,6 @@
                 </div>
             @endif
 
-            <!-- News Section -->
             <div class="gl-section">
                 <h2 class="gl-section-title">Tin tức & Kinh nghiệm</h2>
                 <div class="uk-grid uk-grid-medium" data-uk-grid-margin>

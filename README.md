@@ -1,10 +1,10 @@
-# Homepark - Luxury Real Estate
+# Guland - Luxury Real Estate
 
-Homepark là một template website bất động sản cao cấp, được thiết kế chuyên biệt cho các dự án khu đô thị, biệt thự và căn hộ hạng sang. Giao diện tập trung vào trải nghiệm người dùng tối ưu hóa (UX) và thiết kế giao diện (UI) hiện đại, tinh tế, mang lại cảm giác xứng tầm đẳng cấp.
+Guland là một template website bất động sản cao cấp, được thiết kế chuyên biệt cho các dự án khu đô thị, biệt thự và căn hộ hạng sang. Giao diện tập trung vào trải nghiệm người dùng tối ưu hóa (UX) và thiết kế giao diện (UI) hiện đại, tinh tế, mang lại cảm giác xứng tầm đẳng cấp.
 
 ## Điểm Nhấn Thiết Kế (Design Philosophy)
 
-Mục tiêu thiết kế của Homepark là tạo ra không gian trải nghiệm "Sang Trọng - Trực Quan - Tinh Tế".
+Mục tiêu thiết kế của Guland là tạo ra không gian trải nghiệm "Sang Trọng - Trực Quan - Tinh Tế".
 
 - **Màu sắc chủ đạo**: Nền đen bí ẩn (Dark Theme), kết hợp với yếu tố vàng nhạt (Gold/Beige) tạo điểm nhấn đẳng cấp và nổi bật.
 - **Typography**: Sự kết hợp hoàn hảo giữa phông chữ có chân (Serif - Playfair Display) cho các tiêu đề (Heading) để tạo sự sang trọng cổ điển, và phông chữ không chân (Sans-Serif - Montserrat/Lato) cho nội dung (Body text) để đảm bảo độ đọc tốt nhất.
@@ -13,7 +13,7 @@ Mục tiêu thiết kế của Homepark là tạo ra không gian trải nghiệm
 
 ## Các Trang Tính Năng Chính (Main Pages)
 
-Template Homepark bao gồm hệ thống các trang được thiết kế đồng bộ và chuyên nghiệp:
+Template Guland bao gồm hệ thống các trang được thiết kế đồng bộ và chuyên nghiệp:
 
 1. **Trang Chủ (Homepage)**
     - Banner video slide toàn màn hình ấn tượng.
@@ -64,7 +64,7 @@ Ngoài các trang chính, dự án còn tập trung phát triển các thành ph
 Đây là một dự án **Laravel Blade**, tận dụng sức mạnh phía Frontend của các thư viện:
 
 - **Core**: HTML5, Blade Templating Engine.
-- **Styling**: Tùy biến sâu từ **UIkit 2**, bổ sung thêm hệ thống CSS riêng (homepark.css).
+- **Styling**: Tùy biến sâu từ **UIkit 2**, bổ sung thêm hệ thống CSS riêng (Guland.css).
 - **Icons**: FontAwesome 4.
 - **Media Viewing**: Fancybox (dành cho thư viện ảnh và video).
 - **Carousels**: Swiper.js cho các phần trượt nội dung mượt mà.

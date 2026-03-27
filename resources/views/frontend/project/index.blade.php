@@ -9,9 +9,13 @@
                     <li><a href="{{ url('/') }}">Trang chủ</a></li>
                     @if ($project->catalogue)
                         @php
-                            $canonicalCatalogue = url($project->catalogue->languages->first()->pivot->canonical . '.html');
+                            $canonicalCatalogue = url(
+                                $project->catalogue->languages->first()->pivot->canonical . '.html',
+                            );
                         @endphp
-                        <li><a href="{{ $canonicalCatalogue }}">{{ $project->catalogue->languages->first()->pivot->name }}</a></li>
+                        <li><a
+                                href="{{ $canonicalCatalogue }}">{{ $project->catalogue->languages->first()->pivot->name }}</a>
+                        </li>
                     @endif
                     <li class="uk-active"><span>{{ $project->name }}</span></li>
                 </ul>
@@ -21,10 +25,8 @@
         <section class="hp-section">
             <div class="uk-container uk-container-center">
                 <div class="uk-grid uk-grid-small hp-detail-grid" data-uk-grid-margin>
-                    {{-- Column 9: Main Content --}}
                     <div class="uk-width-large-7-10 uk-width-medium-2-3">
                         <div class="hp-property-main">
-                            {{-- Image Slider --}}
                             <div class="hp-property-gallery">
                                 @php
                                     $album = json_decode($project->album, true) ?? [];
@@ -33,7 +35,6 @@
                                     );
                                 @endphp
 
-                                {{-- Main Slider --}}
                                 <div id="sync1" class="owl-carousel owl-theme">
                                     @foreach ($fullAlbum as $img)
                                         <div class="item">
@@ -60,7 +61,6 @@
                                 @endif
                             </div>
 
-                            {{-- Title & Meta --}}
                             <div class="hp-property-info mt30">
                                 <h1 class="hp-detail-title">{{ $project->name }}</h1>
                                 <div class="hp-detail-meta-top">
@@ -72,7 +72,7 @@
                                                     ? $unitName
                                                     : '';
                                         @endphp
-                                        {{ !empty($project->price) ? formatPrice($project->price) . ' ' . $displayUnit : 'Liên hệ' }}
+                                        {{ !empty($project->price) ? formatPrice($project->price) . ' ' . $displayUnit : 'Thỏa thuận' }}
                                     </span>
                                     <span class="hp-detail-area">
                                         {{ $project->area }} m²

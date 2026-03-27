@@ -1,5 +1,5 @@
 /**
- * HomePark — Frontend Interactions
+ * Guland — Frontend Interactions
  */
 (function () {
     'use strict';

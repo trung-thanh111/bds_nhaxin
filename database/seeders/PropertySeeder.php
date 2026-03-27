@@ -33,7 +33,7 @@ class PropertySeeder extends Seeder
             'year_built' => 2022,
             'video_tour_url' => 'https://www.youtube.com/watch?v=JMyl8K2voHU',
             'image' => 'userfiles/image/bds/du-lich-ben-thuong-hai.jpg',
-            'seo_title' => 'Biệt Thự Sân Vườn 5PN Phú Mỹ Hưng Q7 — 28.5 Tỷ | HomePark',
+            'seo_title' => 'Biệt Thự Sân Vườn 5PN Phú Mỹ Hưng Q7 — 28.5 Tỷ | Guland',
             'seo_description' => 'Biệt thự cao cấp 155m² tại Phú Mỹ Hưng, 5 phòng ngủ, hồ bơi riêng, smart home, năng lượng mặt trời. Liên hệ ngay để đặt lịch xem nhà miễn phí.',
             'created_at' => '2025-01-10 08:00:00',
             'updated_at' => '2025-06-15 14:30:00'

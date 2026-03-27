@@ -1,10 +1,40 @@
 @extends('frontend.homepage.layout')
 
+<style>
+    .search-tabs-control {
+        display: inline-flex;
+        background: #f1f5f9;
+        border-radius: 50px;
+        padding: 6px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-tab {
+        padding: 6px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 15px;
+        color: #64748b;
+        text-decoration: none !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .search-tab.active {
+        background: var(--main-color);
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(3, 72, 51, 0.3);
+    }
+
+    .search-tab:not(.active):hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #334155;
+    }
+</style>
+
 @php
-    $currentCatalogue =
-        $realEstateCatalogue ?? ($attributeCatalogue ?? ($amenityCatalogue ?? ($attribute ?? $amenity)));
     $realEstates = $realEstates ?? new \Illuminate\Pagination\LengthAwarePaginator([], 0, 8);
-    $attributeMap = $attributeMap ?? [];
+    $projects = $projects ?? new \Illuminate\Pagination\LengthAwarePaginator([], 0, 8);
+    $isProject = $isProject ?? false;
 @endphp
 
 @section('header-class', 'header-inner')
@@ -14,7 +44,7 @@
         <div class="uk-container uk-container-center">
             <ul class="uk-breadcrumb uk-flex uk-flex-middle">
                 <li><a href="{{ url('/') }}">Trang chủ</a></li>
-                <li class="uk-active"><span>{{ $currentCatalogue->name }}</span></li>
+                <li class="uk-active"><span>Kết quả tìm kiếm</span></li>
             </ul>
         </div>
     </section>
@@ -22,32 +52,36 @@
     <div class="hp-full-promo-section uk-margin-bottom">
         <div class="uk-container uk-container-center">
             <div class="hp-promo-inner">
-                <h2 class="hp-promo-title">TÌM KIẾM BẤT ĐỘNG SẢN ƯNG Ý</h2>
+                <h2 class="hp-promo-title">TÌM KIẾM THEO NHU CẦU CỦA BẠN</h2>
                 <p class="hp-promo-desc">
-                    Hàng ngàn tin <strong>mua bán, cho thuê</strong> nhà đất và dự án với thông tin xác thực, vị trí đắc địa
-                    và pháp lý an toàn.<br>
-                    Chuyên trang bất động sản và quy hoạch giúp bạn tìm kiếm cơ hội đầu tư và an cư lý tưởng nhất.
+                    Kết quả tìm kiếm cho: <strong>{{ request('keyword') ?: 'Tất cả' }}</strong>
+                    @if (request('province_name') || request('old_province_name'))
+                        tại <strong>{{ request('province_name') ?: request('old_province_name') }}</strong>
+                    @endif
                 </p>
-                <div class="hp-promo-actions">
-                    <a href="https://zalo.me/{{ get_hotline_link($agent ?? null, $system['contact_hotline'] ?? '') }}"
-                        class="hp-btn-zalo-blue" target="_blank">
-                        <img src="{{ asset('frontend/resources/img/icon_zalo_white.png') }}" alt="Zalo"
-                            onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg'">
-                        TƯ VẤN NGAY
-                    </a>
+                <div class="hp-promo-actions uk-flex uk-flex-center">
+                    <div class="search-tabs-control">
+                        <a href="{{ route('search.index', array_merge(request()->all(), ['type' => 'real_estate'])) }}"
+                            class="search-tab {{ !$isProject ? 'active' : '' }}">
+                            Bất động sản
+                        </a>
+                        <a href="{{ route('search.index', array_merge(request()->all(), ['type' => 'project'])) }}"
+                            class="search-tab {{ $isProject ? 'active' : '' }}">
+                            Dự án
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="uk-container uk-container-center">
-        <div class="linden-listing-content">
-        </div>
-        </section>
-
-        <!-- Horizontal Filter System -->
         <div data-uk-sticky="{offset: 85, media: 960}">
-            @include('frontend.component.filter_horizontal')
+            @if ($isProject)
+                @include('frontend.component.filter_horizontal_project')
+            @else
+                @include('frontend.component.filter_horizontal')
+            @endif
         </div>
 
         <section class="hp-section bg-white">
@@ -55,16 +89,15 @@
                 <div class="uk-grid uk-grid-medium mt20" data-uk-grid-margin id="main-listing-grid">
                     <div class="uk-width-large-7-10">
                         <div class="hp-listing-top uk-flex uk-flex-middle uk-flex-space-between uk-margin-large-bottom">
-                            @php
-                                $currentSort = request('sort') ?: 'id:desc';
-                            @endphp
                             <div class="hp-listing-title">
-                                <h1 class="hp-category-name">{{ $currentCatalogue->name }}</h1>
+                                <h1 class="hp-category-name">
+                                    {{ $isProject ? 'Kết quả tìm kiếm dự án' : 'Kết quả tìm kiếm bất động sản' }}
+                                </h1>
                                 <div class="hp-listing-count">
-                                    <i class="fas fa-home uk-margin-small-right"></i>
-                                    Hiện có <strong
-                                        id="total-records">{{ number_format($realEstates->total(), 0, ',', '.') }}</strong>
-                                    bất động sản
+                                    <i class="fas fa-search uk-margin-small-right"></i>
+                                    Tìm thấy
+                                    <strong>{{ number_format($isProject ? $projects->total() : $realEstates->total(), 0, ',', '.') }}</strong>
+                                    kết quả
                                 </div>
                             </div>
 
@@ -89,28 +122,33 @@
                         </div>
 
                         <div id="ajax-listing-container">
-                            @include('frontend.realestate.catalogue.listing_results', [
-                                'realEstates' => $realEstates,
-                                'attributeMap' => $attributeMap,
-                            ])
+                            @if ($isProject)
+                                @include('frontend.component.project_list', ['projects' => $projects])
+                            @else
+                                @include('frontend.realestate.catalogue.listing_results', [
+                                    'realEstates' => $realEstates,
+                                    'attributeMap' => $attributeMap,
+                                ])
+                            @endif
                         </div>
                     </div>
 
+                    <!-- Sidebar -->
                     <div class="uk-width-large-3-10">
                         <aside class="hp-sidebar hp-sidebar-sticky">
                             @include('frontend.component.sidebar_filters')
-                            @if (isset($widgets['featured-products']))
+                            @if (isset($widgets['featured-projects']))
                                 <div class="hp-sidebar-widget">
                                     <h4 class="hp-sidebar-title">Dự án tiêu biểu</h4>
                                     <div class="hp-sidebar-projects">
-                                        @foreach ($widgets['featured-products']->items as $p)
+                                        @foreach ($widgets['featured-projects']->items as $p)
                                             <a href="{{ url($p->canonical . '.html') }}" class="hp-mini-item uk-flex">
                                                 <div class="img">
                                                     <img src="{{ image($p->image) }}" alt="{{ $p->name }}">
                                                 </div>
                                                 <div class="info">
                                                     <h5 class="title">{{ $p->name }}</h5>
-                                                    <div class="meta">{{ $p->area }} m² - {{ $p->status }}</div>
+                                                    <div class="meta">{{ $p->area }} m²</div>
                                                 </div>
                                             </a>
                                         @endforeach

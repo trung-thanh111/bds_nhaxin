@@ -8,7 +8,9 @@
                 <ul class="uk-breadcrumb uk-flex uk-flex-middle">
                     <li><a href="{{ url('/') }}">Trang chủ</a></li>
                     @if ($realEstate->catalogue)
-                        <li><a href="{{ url($realEstate->catalogue->languages->first()->pivot->canonical . '.html') }}">{{ $realEstate->catalogue->languages->first()->pivot->name }}</a></li>
+                        <li><a
+                                href="{{ url($realEstate->catalogue->languages->first()->pivot->canonical . '.html') }}">{{ $realEstate->catalogue->languages->first()->pivot->name }}</a>
+                        </li>
                     @endif
                     <li class="uk-active"><span>{{ $realEstate->name }}</span></li>
                 </ul>
@@ -86,7 +88,7 @@
                                     @endphp
 
                                     @if (empty($prices))
-                                        <span class="hp-detail-price">Liên hệ</span>
+                                        <span class="hp-detail-price">Thỏa thuận</span>
                                     @else
                                         @foreach ($prices as $index => $p)
                                             <span class="hp-detail-price"
@@ -133,16 +135,24 @@
                                                     href="{{ url($realEstate->project->canonical . '.html') }}">{{ $realEstate->project->name }}</a></span>
                                         </div>
                                     @endif
-                                    @if ($realEstate->usable_area)
+                                    @if ($realEstate->ownership_type)
                                         <div class="spec-item">
-                                            <span class="label"><i class="fa fa-clone"></i> Diện tích sử dụng:</span>
-                                            <span class="value">{{ $realEstate->usable_area }} m²</span>
+                                            <span class="label"><i class="fa fa-file-text-o"></i> Pháp lý:</span>
+                                            <span
+                                                class="value">{{ $attributeMap[$realEstate->ownership_type] ?? $realEstate->ownership_type }}</span>
                                         </div>
                                     @endif
-                                    @if ($realEstate->land_area)
+                                    @if ($realEstate->house_direction)
                                         <div class="spec-item">
-                                            <span class="label"><i class="fa fa-crop"></i> Diện tích đất:</span>
-                                            <span class="value">{{ $realEstate->land_area }} m²</span>
+                                            <span class="label"><i class="fa fa-compass"></i> Hướng nhà:</span>
+                                            <span
+                                                class="value">{{ $attributeMap[$realEstate->house_direction] ?? $realEstate->house_direction }}</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->view)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-eye"></i> Tầm nhìn (View):</span>
+                                            <span class="value">{{ $realEstate->view }}</span>
                                         </div>
                                     @endif
                                     @if ($realEstate->bedrooms)
@@ -153,28 +163,94 @@
                                     @endif
                                     @if ($realEstate->bathrooms)
                                         <div class="spec-item">
-                                            <span class="label"><i class="fa fa-tint"></i> Phòng tắm:</span>
+                                            <span class="label"><i class="fa fa-bath"></i> Phòng tắm:</span>
                                             <span class="value">{{ $realEstate->bathrooms }} WC</span>
                                         </div>
                                     @endif
-                                    @if ($realEstate->house_direction)
+                                    @if ($realEstate->floor || $realEstate->total_floors)
                                         <div class="spec-item">
-                                            <span class="label"><i class="fa fa-compass"></i> Hướng nhà:</span>
-                                            <span
-                                                class="value">{{ $attributeMap[$realEstate->house_direction] ?? $realEstate->house_direction }}</span>
+                                            <span class="label"><i class="fa fa-align-justify"></i> Tầng số:</span>
+                                            <span class="value">
+                                                {{ $attributeMap[$realEstate->floor] ?? $realEstate->floor }}
+                                                @if ($realEstate->total_floors)
+                                                    / {{ $realEstate->total_floors }} (Tổng tầng)
+                                                @endif
+                                            </span>
                                         </div>
                                     @endif
-                                    @if ($realEstate->floor_count)
+                                    @if ($realEstate->block_tower)
                                         <div class="spec-item">
-                                            <span class="label"><i class="fa fa-align-justify"></i> Số tầng:</span>
-                                            <span class="value">{{ $realEstate->floor_count }} tầng</span>
+                                            <span class="label"><i class="fa fa-th-large"></i> Block / Tòa:</span>
+                                            <span class="value">{{ $realEstate->block_tower }}</span>
                                         </div>
                                     @endif
-                                    @if ($realEstate->ownership_type)
+                                    @if ($realEstate->apartment_code)
                                         <div class="spec-item">
-                                            <span class="label"><i class="fa fa-file-text-o"></i> Pháp lý:</span>
+                                            <span class="label"><i class="fa fa-id-badge"></i> Mã căn hộ:</span>
+                                            <span class="value">{{ $realEstate->apartment_code }}</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->balcony_direction)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-external-link"></i> Hướng ban công:</span>
                                             <span
-                                                class="value">{{ $attributeMap[$realEstate->ownership_type] ?? $realEstate->ownership_type }}</span>
+                                                class="value">{{ $attributeMap[$realEstate->balcony_direction] ?? $realEstate->balcony_direction }}</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->interior)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-couch"></i> Nội thất:</span>
+                                            <span
+                                                class="value">{{ $attributeMap[$realEstate->interior] ?? $realEstate->interior }}</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->year_built)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-calendar"></i> Năm bàn giao:</span>
+                                            <span class="value">{{ $realEstate->year_built }}</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->land_type)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-map-o"></i> Loại đất:</span>
+                                            <span
+                                                class="value">{{ $attributeMap[$realEstate->land_type] ?? $realEstate->land_type }}</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->land_width)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-arrows-h"></i> Chiều ngang:</span>
+                                            <span class="value">{{ (float) $realEstate->land_width }} m</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->land_length)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-arrows-v"></i> Chiều dài:</span>
+                                            <span class="value">{{ (float) $realEstate->land_length }} m</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->road_frontage)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-road"></i> Mặt tiền đường:</span>
+                                            <span class="value">{{ (float) $realEstate->road_frontage }} m</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->road_width)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-car"></i> Đường rộng:</span>
+                                            <span class="value">{{ (float) $realEstate->road_width }} m</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->usable_area)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-clone"></i> Diện tích sử dụng:</span>
+                                            <span class="value">{{ (float) $realEstate->usable_area }} m²</span>
+                                        </div>
+                                    @endif
+                                    @if ($realEstate->land_area)
+                                        <div class="spec-item">
+                                            <span class="label"><i class="fa fa-crop"></i> Diện tích đất:</span>
+                                            <span class="value">{{ (float) $realEstate->land_area }} m²</span>
                                         </div>
                                     @endif
                                 </div>

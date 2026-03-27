@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\FrontendController;
+use Illuminate\Http\Request;
 
 use App\Repositories\Product\ProductCatalogueRepository;
 use App\Services\V1\Product\ProductCatalogueService;
@@ -76,7 +77,7 @@ class ProductController extends FrontendController
     }
 
 
-    public function index($id, $request)
+    public function index($id, Request $request)
     {
         $language = $this->language;
         $product = $this->productRepository->getProductById($id, $this->language, config('apps.general.defaultPublish'));

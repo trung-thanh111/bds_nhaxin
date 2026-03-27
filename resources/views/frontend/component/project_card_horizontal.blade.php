@@ -41,7 +41,9 @@
                 </h3>
 
                 <div class="gl-card-price-area-row uk-flex uk-flex-middle">
-                    <span class="gl-card-price-val" style="color: #27ae60; font-weight: 700;">Liên hệ</span>
+                    <span class="gl-card-price-val" style="color: var(--main-green); font-weight: 700;">
+                        Thỏa thuận
+                    </span>
                     <span class="gl-card-separator"><i class="fa fa-circle"></i></span>
                     @if ($item->area)
                         <span class="gl-card-area">{{ $item->area }} m²</span>
@@ -54,7 +56,7 @@
                 </div>
 
                 @if (!empty($item->old_province_name))
-                    <div class="gl-card-address" style="font-style: italic;">
+                    <div class="gl-card-address">
                         <i class="fa fa-map-marker"></i>
                         @php
                             $oldAddress = format_address(

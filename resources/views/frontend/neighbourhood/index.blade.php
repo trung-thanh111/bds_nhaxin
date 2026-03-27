@@ -105,7 +105,7 @@
                 <p class="hp-text-desc uk-margin-large-bottom"
                     style="margin-left: auto; margin-right:auto; max-width: 600px;" data-reveal="up">
                     Hãy trực tiếp đến xem và cảm nhận không gian sống tuyệt vời tại
-                    {{ $property->title ?? 'Homepark Residence' }}.
+                    {{ $property->title ?? 'Guland Residence' }}.
                 </p>
                 <div data-reveal="up">
                     <a href="/lien-he.html" class="hp-btn hp-btn-dark">

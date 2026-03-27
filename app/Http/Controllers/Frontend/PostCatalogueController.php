@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\FrontendController;
+use Illuminate\Http\Request;
 use App\Repositories\Post\PostCatalogueRepository;
 use App\Services\V1\Post\PostCatalogueService;
 use App\Services\V1\Post\PostService;
@@ -50,7 +51,7 @@ class PostCatalogueController extends FrontendController
     }
 
 
-    public function index($id, $request, $page = 1)
+    public function index($id, Request $request, $page = 1)
     {
         $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($id, $this->language);
         $postCatalogue->children = $this->postCatalogueRepository->findByCondition(
@@ -126,7 +127,7 @@ class PostCatalogueController extends FrontendController
         ));
     }
 
-    public function detail($id, $request)
+    public function detail($id, Request $request)
     {
         $language = $this->language;
         $post = $this->postRepository->getPostById($id, $this->language, config('apps.general.defaultPublish'));

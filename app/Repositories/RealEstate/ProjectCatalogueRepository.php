@@ -19,6 +19,8 @@ class ProjectCatalogueRepository extends BaseRepository
         return $this->model->select([
             'project_catalogues.id',
             'project_catalogues.parent_id',
+            'project_catalogues.lft',
+            'project_catalogues.rgt',
             'project_catalogues.image',
             'project_catalogues.publish',
             'project_catalogues.order',

@@ -60,7 +60,7 @@
         $prices[] = ['label' => $label, 'val' => formatPrice($item->price_rent) . $displayUnit];
     }
     if (empty($prices)) {
-        $prices[] = ['label' => 'Giá:', 'val' => 'Liên hệ'];
+        $prices[] = ['label' => 'Giá:', 'val' => 'Thỏa thuận'];
     }
 
     $mainPrice = $item->price_sale > 0 ? $item->price_sale : $item->price_rent;
@@ -113,7 +113,7 @@
                     <span>{{ $displayAddress }}</span>
                 </div>
                 @if (!empty($item->old_province_name))
-                    <div class="gl-card-address" style="font-style: italic;">
+                    <div class="gl-card-address">
                         <i class="fa fa-map-marker"></i>
                         @php
                             $oldAddress = format_address(

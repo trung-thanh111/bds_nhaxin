@@ -19,7 +19,7 @@
                         </h1>
                         <p class="hp-luxury-header__desc hp-hero-subtitle-main">
                             Cập nhật những thông tin mới nhất về thị trường bất động sản và các dự án của
-                            {{ $system['homepage_brand'] ?? 'Homepark' }}.
+                            {{ $system['homepage_brand'] ?? 'Guland' }}.
                         </p>
                     </div>
                     <div class="hp-luxury-breadcrumb" data-reveal="left">

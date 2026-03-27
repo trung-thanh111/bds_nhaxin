@@ -43,7 +43,7 @@
         $prices[] = ['label' => $label, 'val' => formatPrice($item->price_rent) . $displayUnit];
     }
     if (empty($prices)) {
-        $prices[] = ['label' => 'Giá:', 'val' => 'Liên hệ'];
+        $prices[] = ['label' => 'Giá:', 'val' => 'Thỏa thuận'];
     }
 
     $mainPrice = $item->price_sale > 0 ? $item->price_sale : $item->price_rent;
@@ -105,28 +105,84 @@
         @endif
 
         <div class="gl-card-features-wrapper">
-            <div class="gl-card-feature-label">Đặc điểm / Tiện ích:</div>
+            <div class="gl-card-feature-label">Đặc điểm / Thông số:</div>
             <div class="gl-card-features">
                 @php
                     $allFeatures = [];
+                    // Thông số chung
+                    if ($item->ownership_type && isset($attributeMap[$item->ownership_type])) {
+                        $allFeatures[] = '<i class="fa fa-file-text-o"></i> ' . $attributeMap[$item->ownership_type];
+                    }
+                    if ($item->house_direction && isset($attributeMap[$item->house_direction])) {
+                        $allFeatures[] = '<i class="fa fa-compass"></i> ' . $attributeMap[$item->house_direction];
+                    }
+                    if ($item->view) {
+                        $allFeatures[] = '<i class="fa fa-eye"></i> ' . $item->view;
+                    }
+
+                    // Nhà phố / Căn hộ
                     if ($item->bedrooms) {
-                        $allFeatures[] = $item->bedrooms . ' PN';
+                        $allFeatures[] = '<i class="fa fa-bed"></i> ' . $item->bedrooms . ' PN';
                     }
                     if ($item->bathrooms) {
-                        $allFeatures[] = $item->bathrooms . ' WC';
+                        $allFeatures[] = '<i class="fa fa-bath"></i> ' . $item->bathrooms . ' WC';
+                    }
+                    if ($item->floor || $item->total_floors) {
+                        $floorDisplay = 'Tầng ' . ($attributeMap[$item->floor] ?? $item->floor);
+                        if ($item->total_floors) {
+                            $floorDisplay .= '/' . $item->total_floors;
+                        }
+                        $allFeatures[] = '<i class="fa fa-building-o"></i> ' . $floorDisplay;
+                    }
+                    if ($item->block_tower) {
+                        $allFeatures[] = 'Block: ' . $item->block_tower;
+                    }
+                    if ($item->apartment_code) {
+                        $allFeatures[] = 'Mã: ' . $item->apartment_code;
+                    }
+                    if ($item->balcony_direction && isset($attributeMap[$item->balcony_direction])) {
+                        $allFeatures[] = 'BC: ' . $attributeMap[$item->balcony_direction];
+                    }
+                    if ($item->interior && isset($attributeMap[$item->interior])) {
+                        $allFeatures[] = '<i class="fa fa-couch"></i> ' . $attributeMap[$item->interior];
+                    }
+                    if ($item->year_built) {
+                        $allFeatures[] = 'Năm: ' . $item->year_built;
+                    }
+
+                    // Đất / Mặt bằng
+                    if ($item->land_type && isset($attributeMap[$item->land_type])) {
+                        $allFeatures[] = $attributeMap[$item->land_type];
+                    }
+                    if ($item->land_width && $item->land_length) {
+                        $allFeatures[] =
+                            '<i class="fa fa-arrows-h"></i> ' .
+                            (float) $item->land_width .
+                            'x' .
+                            (float) $item->land_length .
+                            'm';
+                    } elseif ($item->land_width) {
+                        $allFeatures[] = 'Ngang: ' . (float) $item->land_width . 'm';
+                    } elseif ($item->land_length) {
+                        $allFeatures[] = 'Dài: ' . (float) $item->land_length . 'm';
+                    }
+                    if ($item->road_frontage) {
+                        $allFeatures[] = 'Mặt tiền: ' . (float) $item->road_frontage . 'm';
                     }
                     if ($item->road_width) {
-                        $allFeatures[] = 'Đường ' . $item->road_width . 'm';
+                        $allFeatures[] = 'Đường ' . (float) $item->road_width . 'm';
                     }
+
                     foreach ($item->amenities as $amenity) {
                         $allFeatures[] = $amenity->languages->first()->pivot->name ?? '';
                     }
+
                     $allFeatures = array_filter($allFeatures);
-                    $displayFeatures = array_slice($allFeatures, 0, 10);
+                    $displayFeatures = array_slice($allFeatures, 0, 12);
                     $moreCount = count($allFeatures) - count($displayFeatures);
                 @endphp
                 @foreach ($displayFeatures as $feature)
-                    <span class="gl-card-feature-tag">{{ $feature }}</span>
+                    <span class="gl-card-feature-tag">{!! $feature !!}</span>
                 @endforeach
                 @if ($moreCount > 0)
                     <span class="gl-card-feature-more">+{{ $moreCount }}</span>

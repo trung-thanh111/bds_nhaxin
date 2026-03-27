@@ -110,8 +110,8 @@ a:hover {
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    background: var(--primary-light);
-    color: var(--primary-dark);
+    background: var(--main-light);
+    color: var(--main-color);
     font-size: 20px;
 }
 
@@ -251,9 +251,9 @@ a:hover {
 }
 
 .gl-search-btn {
-    background: var(--main-color);
+    color: var(--main-color);
     border: none;
-    color: var(--white);
+    background-color: var(--white);
     padding: 8px;
     border-radius: 50%;
     font-weight: 500;
@@ -902,6 +902,87 @@ input:checked+.gl-slider:before {
     justify-content: center;
 }
 
+/* Floating Social Bar */
+.hp-floating-social {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    z-index: 10005;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hp-float-zalo,
+.hp-float-messenger,
+.hp-float-hotline,
+.hp-float-home,
+.hp-back-to-top {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none !important;
+    color: #fff !important;
+    cursor: pointer;
+}
+
+.hp-float-zalo {
+    background: #0068ff !important;
+}
+
+.hp-float-messenger {
+    background: #0084ff !important;
+}
+
+.hp-float-hotline {
+    background: #e11d48 !important;
+}
+
+.hp-float-home {
+    background: #ffffff !important;
+    color: #034833 !important;
+}
+
+.hp-back-to-top {
+    background: var(--main-color);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+}
+
+.hp-back-to-top.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.hp-float-item:hover,
+.hp-float-zalo:hover,
+.hp-float-messenger:hover,
+.hp-float-hotline:hover,
+.hp-float-home:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.hp-float-item i,
+.hp-float-home i,
+.hp-back-to-top i {
+    font-size: 22px;
+}
+
+.hp-float-item img {
+    width: 25px;
+    height: 25px;
+    filter: brightness(0) invert(1);
+}
+
 .social-icon {
     width: 36px;
     height: 36px;
@@ -1194,7 +1275,7 @@ input:checked+.gl-slider:before {
 
 .hp-detail-header {
     background: #fff;
-    padding: 15px 0;
+    padding: 20px 0;
     margin-bottom: 20px;
 }
 
@@ -1809,7 +1890,8 @@ input:checked+.gl-slider:before {
 
     .hp-sidebar-sticky {
         position: sticky;
-        top: 20px;
+        top: 100px;
+        z-index: 1000;
     }
 
     .hp-detail-grid {

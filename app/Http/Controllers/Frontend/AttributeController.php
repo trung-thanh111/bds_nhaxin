@@ -60,38 +60,58 @@ class AttributeController extends FrontendController
         if ($attribute->attribute_catalogues->isNotEmpty()) {
             $breadcrumb = $this->attributeCatalogueRepository->breadcrumb($attribute->attribute_catalogues->first(), $this->language);
         }
-        
-        $realEstates = $this->realEstateService->paginate($request, $this->language, null, $page, ['path' => $attribute->canonical], null, $attribute->id);
 
-        // Filter Data
+        $priceField = $request->input('transaction_type') == '75' ? 'price_rent' : 'price_sale';
+        $sorts = [
+            'id:desc' => 'Mặc định',
+            $priceField . ':asc' => 'Giá thấp đến cao',
+            $priceField . ':desc' => 'Giá cao đến thấp',
+            'area:asc' => 'Diện tích nhỏ đến lớn',
+            'area:desc' => 'Diện tích lớn đến nhỏ',
+        ];
+
+        $sort = ['real_estates.id', 'DESC'];
+        if ($request->filled('sort')) {
+            $sortArr = explode(':', $request->input('sort'));
+            if (count($sortArr) == 2) {
+                $sort = ['real_estates.' . $sortArr[0], $sortArr[1]];
+            }
+        }
+
+        $realEstates = $this->realEstateService->paginate($request, $this->language, null, $page, ['path' => $attribute->canonical], $sort, $attribute->id);
+
         $propertyTypes = $this->realEstateCatalogueRepository->findByCondition([
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }]); 
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }]);
         $houseDirections = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 3],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
-        
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
+
         $furnitures = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 2],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
 
         $balconyDirections = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 4],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
 
         $amenities = $this->amenityRepository->findByCondition([
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['order', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['order', 'asc']);
 
-
-        $widgets = $this->widgetService->getWidget([
-            null,
-            $page,
-            ['path' => $attribute->canonical]
-        ]);
 
         $attributeIds = [];
         foreach ($realEstates as $re) {
@@ -100,16 +120,24 @@ class AttributeController extends FrontendController
             $attributeIds[] = $re->house_direction;
         }
         $attributeIds = array_unique(array_filter($attributeIds));
-        
+
         $attributeMap = [];
         if (!empty($attributeIds)) {
             $attributeMap = Attribute::whereIn('id', $attributeIds)
-                ->with(['languages' => function($q) {
+                ->with(['languages' => function ($q) {
                     $q->where('language_id', $this->language);
                 }])
                 ->get()
                 ->pluck('languages.0.pivot.name', 'id')
                 ->toArray();
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('frontend.realestate.catalogue.listing_results', compact('realEstates', 'attributeMap'))->render(),
+                'total' => number_format($realEstates->total(), 0, ',', '.'),
+                'sortLabel' => $sorts[$request->input('sort')] ?? 'Mặc định'
+            ]);
         }
 
         $widgets = $this->widgetService->getWidget([
@@ -142,6 +170,7 @@ class AttributeController extends FrontendController
             'furnitures',
             'balconyDirections',
             'amenities',
+            'sorts'
         ));
     }
 
@@ -159,6 +188,7 @@ class AttributeController extends FrontendController
                 'https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js',
                 'frontend/resources/plugins/OwlCarousel2-2.3.4/dist/owl.carousel.min.js',
                 'frontend/resources/library/js/carousel.js',
+                'frontend/resources/library/js/filter.js',
             ],
         ];
     }

@@ -1,4 +1,29 @@
 <header class="hp-header @yield('header-class')" id="hp-header">
+    <style>
+        .hp-header-top {
+            transition: all 0.3s ease;
+            background: #fff;
+            width: 100%;
+            z-index: 1010;
+        }
+
+        .hp-header-top.hp-header--sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+
+        .gl-modal-location .gl-modal-body {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .logo img {
+            max-height: 50px !important;
+        }
+    </style>
     <div class="hp-header-top">
         <div class="uk-container uk-container-center">
             <div class="uk-grid uk-grid-small uk-flex-middle uk-flex-between">
@@ -12,7 +37,7 @@
                 </div>
 
                 <div class="uk-width-large-2-4 uk-visible-large">
-                    <div class="gl-search-bar" style="border: 1px solid #888888;">
+                    <div class="gl-search-bar" style="border: 1px solid #e3e3e3;">
                         <button class="gl-search-trigger" data-uk-modal="{target:'#modal-location'}">
                             <span id="label-location">Toàn quốc</span>
                             <i class="fa fa-chevron-down"></i>
@@ -40,11 +65,10 @@
 <script>
     window.addEventListener('scroll', function() {
         const headerTop = document.querySelector('.hp-header-top');
-        const headerNav = document.querySelector('.hp-header-nav');
         if (window.scrollY > 100) {
-            headerNav.classList.add('hp-header-nav--sticky');
+            headerTop.classList.add('hp-header--sticky');
         } else {
-            headerNav.classList.remove('hp-header-nav--sticky');
+            headerTop.classList.remove('hp-header--sticky');
         }
     });
 </script>
@@ -118,9 +142,24 @@
             <div class="gl-form-group">
                 <label class="gl-form-label">Danh mục BĐS</label>
                 <select name="real_estate_catalogue_id" class="gl-select setupSelect2">
-                    <option value="">Tất cả danh mục</option>
+                    <option value="">Tất cả danh mục BĐS</option>
                     @if (isset($realEstateCatalogues) && count($realEstateCatalogues))
                         @foreach ($realEstateCatalogues as $item)
+                            @php
+                                $name = $item->languages->first()->pivot->name ?? 'N/A';
+                            @endphp
+                            <option value="{{ $item->id }}">{{ $name }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+
+            <div class="gl-form-group">
+                <label class="gl-form-label">Danh mục Dự án</label>
+                <select name="project_catalogue_id" class="gl-select setupSelect2">
+                    <option value="">Tất cả danh mục Dự án</option>
+                    @if (isset($projectCatalogues) && count($projectCatalogues))
+                        @foreach ($projectCatalogues as $item)
                             @php
                                 $name = $item->languages->first()->pivot->name ?? 'N/A';
                             @endphp
@@ -168,27 +207,68 @@
         // Apply Selection
         $('#btn-apply-location').on('click', function() {
             let label = 'Toàn quốc';
-            let isAfter = $('#switch-location-mode').is(':checked');
+            const modal = $('#modal-location');
+            const isAfter = $('#switch-location-mode').is(':checked');
 
             if (isAfter) {
-                let province = $('select[name=province_code] option:selected').text();
-                let ward = $('select[name=ward_code] option:selected').text();
-                if ($('select[name=province_code]').val() != '0') {
-                    label = province + ($('select[name=ward_code]').val() != '0' ? ' - ' + ward : '');
+                let pCode = modal.find('select[name=province_code]').val();
+                if (pCode != '0' && pCode != '') {
+                    label = modal.find('select[name=province_code] option:selected').text();
                 }
             } else {
-                let province = $('select[name=old_province_code] option:selected').text();
-                let district = $('select[name=old_district_code] option:selected').text();
-                let ward = $('select[name=old_ward_code] option:selected').text();
-
-                if ($('select[name=old_province_code]').val() != '0') {
-                    label = province;
-                    if ($('select[name=old_district_code]').val() != '0') label += ' - ' + district;
-                    if ($('select[name=old_ward_code]').val() != '0') label += ' - ' + ward;
+                let pCode = modal.find('select[name=old_province_code]').val();
+                if (pCode != '0' && pCode != '') {
+                    label = modal.find('select[name=old_province_code] option:selected').text();
                 }
             }
 
             $('#label-location').text(label);
+        });
+
+        // Search Action
+        $('.gl-search-btn').on('click', function() {
+            const keyword = $('.gl-search-input').val();
+            const modal = $('#modal-location');
+            const isAfter = $('#switch-location-mode').is(':checked');
+
+            let params = new URLSearchParams();
+            if (keyword) params.append('keyword', keyword);
+
+            if (isAfter) {
+                const p = modal.find('select[name=province_code]').val();
+                const w = modal.find('select[name=ward_code]').val();
+                if (p != '0') params.append('province_code', p);
+                if (w != '0') params.append('ward_code', w);
+            } else {
+                const p = modal.find('select[name=old_province_code]').val();
+                const d = modal.find('select[name=old_district_code]').val();
+                const w = modal.find('select[name=old_ward_code]').val();
+                if (p != '0') params.append('old_province_code', p);
+                if (d != '0') params.append('old_district_code', d);
+                if (w != '0') params.append('old_ward_code', w);
+            }
+
+            const reCat = modal.find('select[name=real_estate_catalogue_id]').val();
+            const prCat = modal.find('select[name=project_catalogue_id]').val();
+
+            let targetUrl = '/tim-kiem.html';
+
+            if (prCat) {
+                params.append('project_catalogue_id', prCat);
+                params.append('type', 'project');
+            } else if (reCat) {
+                params.append('real_estate_catalogue_id', reCat);
+                params.append('type', 'real_estate');
+            }
+
+            window.location.href = targetUrl + '?' + params.toString();
+        });
+
+        // Enter key to search
+        $('.gl-search-input').on('keypress', function(e) {
+            if (e.which == 13) {
+                $('.gl-search-btn').click();
+            }
         });
     });
 </script>

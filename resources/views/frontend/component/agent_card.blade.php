@@ -9,12 +9,16 @@
         </div>
         <div class="agent-actions">
             @php
-                $cleanPhone = preg_replace('/\D/', '', $agent->phone);
+                $zaloNum = !empty($agent->zalo) ? $agent->zalo : (!empty($agent->phone) ? $agent->phone : '');
+                $phoneNum = !empty($agent->phone) ? $agent->phone : (!empty($agent->zalo) ? $agent->zalo : '');
+                
+                $cleanZalo = preg_replace('/\D/', '', $zaloNum);
+                $cleanPhone = preg_replace('/\D/', '', $phoneNum);
             @endphp
             <a href="tel:{{ $cleanPhone }}" class="btn-agent-top btn-phone-call">
-                <i class="fa fa-phone"></i> {{ $agent->phone }}
+                <i class="fa fa-phone"></i> {{ $phoneNum }}
             </a>
-            <a href="https://zalo.me/{{ $cleanPhone }}" target="_blank" class="btn-agent-top btn-zalo-chat">
+            <a href="https://zalo.me/{{ $cleanZalo }}" target="_blank" class="btn-agent-top btn-zalo-chat">
                 <i class="fa fa-comments"></i> Nhắn Zalo
             </a>
             <a href="{{ route('contact.index') }}" class="btn-consult-request">

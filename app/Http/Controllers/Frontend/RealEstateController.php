@@ -33,7 +33,7 @@ class RealEstateController extends FrontendController
         $this->agentRepo = $agentRepo;
     }
 
-    public function index($id, $request)
+    public function index($id, Request $request, $page = 1)
     {
         $realEstate = $this->realEstateRepository->getRealEstateById($id, $this->language);
         if (!$realEstate) {
@@ -52,7 +52,8 @@ class RealEstateController extends FrontendController
             $realEstate->balcony_direction,
             $realEstate->ownership_type,
             $realEstate->interior,
-            $realEstate->land_type
+            $realEstate->land_type,
+            $realEstate->floor,
         ];
 
         if (isset($relatedRealEstates) && count($relatedRealEstates)) {
@@ -60,7 +61,11 @@ class RealEstateController extends FrontendController
                 $attributeIds[] = $related->transaction_type;
                 $attributeIds[] = $related->price_unit;
                 $attributeIds[] = $related->house_direction;
-                // Add more if needed for the cards
+                $attributeIds[] = $related->balcony_direction;
+                $attributeIds[] = $related->ownership_type;
+                $attributeIds[] = $related->interior;
+                $attributeIds[] = $related->land_type;
+                $attributeIds[] = $related->floor;
             }
         }
 

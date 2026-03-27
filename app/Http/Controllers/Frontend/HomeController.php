@@ -115,10 +115,10 @@ class HomeController extends FrontendController
             condition: [config('apps.general.defaultPublish')],
             flag: true,
             relation: [
-                'languages' => function($query) {
+                'languages' => function ($query) {
                     $query->where('language_id', $this->language);
                 },
-                'amenities.languages' => function($query) {
+                'amenities.languages' => function ($query) {
                     $query->where('language_id', $this->language);
                 }
             ],
@@ -132,15 +132,15 @@ class HomeController extends FrontendController
                 config('apps.general.defaultPublish')
             ],
             true, // flag get()
-            ['languages' => function($query) {
+            ['languages' => function ($query) {
                 $query->where('language_id', $this->language);
             }],
             ['order', 'desc']
         );
 
-        if($homepageCatalogues){
+        if ($homepageCatalogues) {
             $attributeIds = [];
-            foreach($homepageCatalogues as $key => $catalogue){
+            foreach ($homepageCatalogues as $key => $catalogue) {
                 // Get all children IDs for this catalogue using Nested Set (lft, rgt)
                 $catIds = \Illuminate\Support\Facades\DB::table('real_estate_catalogues')
                     ->where('lft', '>=', $catalogue->lft)
@@ -154,10 +154,10 @@ class HomeController extends FrontendController
                     ],
                     true,
                     [
-                        'languages' => function($query) {
+                        'languages' => function ($query) {
                             $query->where('language_id', $this->language);
                         },
-                        'amenities.languages' => function($query) {
+                        'amenities.languages' => function ($query) {
                             $query->where('language_id', $this->language);
                         }
                     ],
@@ -165,17 +165,23 @@ class HomeController extends FrontendController
                     ['whereIn' => $catIds, 'whereInField' => 'real_estate_catalogue_id']
                 )->take(9);
 
-                foreach($catalogue->real_estates as $re) {
-                    if($re->transaction_type) $attributeIds[] = $re->transaction_type;
-                    if($re->price_unit) $attributeIds[] = $re->price_unit;
+                foreach ($catalogue->real_estates as $re) {
+                    if ($re->transaction_type) $attributeIds[] = $re->transaction_type;
+                    if ($re->price_unit) $attributeIds[] = $re->price_unit;
+                    if ($re->house_direction) $attributeIds[] = $re->house_direction;
+                    if ($re->ownership_type) $attributeIds[] = $re->ownership_type;
+                    if ($re->balcony_direction) $attributeIds[] = $re->balcony_direction;
+                    if ($re->interior) $attributeIds[] = $re->interior;
+                    if ($re->land_type) $attributeIds[] = $re->land_type;
+                    if ($re->floor) $attributeIds[] = $re->floor;
                 }
             }
 
             $attributeIds = array_unique(array_filter($attributeIds));
             $attributeMap = [];
-            if(!empty($attributeIds)) {
+            if (!empty($attributeIds)) {
                 $attributeMap = \App\Models\Attribute::whereIn('id', $attributeIds)
-                    ->with(['languages' => function($q) {
+                    ->with(['languages' => function ($q) {
                         $q->where('language_id', $this->language);
                     }])
                     ->get()
@@ -216,7 +222,7 @@ class HomeController extends FrontendController
     private function buildSeo($title = null)
     {
         return [
-            'meta_title' => $title ?? ($this->system['seo_meta_title'] ?? 'HomePark'),
+            'meta_title' => $title ?? ($this->system['seo_meta_title'] ?? 'Guland'),
             'meta_keyword' => $this->system['seo_meta_keyword'] ?? '',
             'meta_description' => $this->system['seo_meta_description'] ?? '',
             'meta_image' => $this->system['seo_meta_images'] ?? '',

@@ -33,7 +33,7 @@ class ProjectController extends FrontendController
         $this->agentRepo = $agentRepo;
     }
 
-    public function index($id, $request)
+    public function index($id, Request $request)
     {
         $project = $this->projectRepository->getProjectById($id, $this->language);
         if (!$project) {

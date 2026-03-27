@@ -57,7 +57,7 @@ class GalleryController extends FrontendController
         $realEstate = $this->realEstateService->findByCondition([['publish', '=', 2]]);
 
         $system = $this->system;
-        $seo = $this->buildSeo('Thư Viện Ảnh — HomePark');
+        $seo = $this->buildSeo('Thư Viện Ảnh — Guland');
         $schema = $this->schema($seo);
         $config = $this->config();
 
@@ -78,7 +78,7 @@ class GalleryController extends FrontendController
     private function buildSeo($title = null)
     {
         return [
-            'meta_title' => $title ?? ($this->system['seo_meta_title'] ?? 'HomePark'),
+            'meta_title' => $title ?? ($this->system['seo_meta_title'] ?? 'Guland'),
             'meta_keyword' => $this->system['seo_meta_keyword'] ?? '',
             'meta_description' => $this->system['seo_meta_description'] ?? '',
             'meta_image' => $this->system['seo_meta_images'] ?? '',

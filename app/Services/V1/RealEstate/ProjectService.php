@@ -4,6 +4,7 @@ namespace App\Services\V1\RealEstate;
 
 use App\Services\V1\BaseService;
 use App\Repositories\RealEstate\ProjectRepository;
+use App\Repositories\RealEstate\ProjectCatalogueRepository;
 use App\Repositories\Core\RouterRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -17,30 +18,70 @@ use Illuminate\Support\Facades\Log;
 class ProjectService extends BaseService
 {
     protected $projectRepository;
+    protected $projectCatalogueRepository;
     protected $routerRepository;
 
     public function __construct(
         ProjectRepository $projectRepository,
+        ProjectCatalogueRepository $projectCatalogueRepository,
         RouterRepository $routerRepository
     ) {
         $this->projectRepository = $projectRepository;
+        $this->projectCatalogueRepository = $projectCatalogueRepository;
         $this->routerRepository = $routerRepository;
         $this->controllerName = 'ProjectController';
     }
 
-    public function paginate($request, $languageId)
+    public function paginate($request, $languageId, $projectCatalogue = null, $page = 1, $extend = [], $sort = null)
     {
         $perPage = $request->integer('perpage') > 0 ? $request->integer('perpage') : 20;
+        $keywords = array_filter(explode(' ', $request->input('keyword')));
         $condition = [
-            'keyword' => addslashes($request->input('keyword')),
+            'keyword' => !empty($keywords) ? $keywords : null,
             'publish' => $request->integer('publish'),
             'where' => [
                 ['tb2.language_id', '=', $languageId],
             ],
+            'fieldSearch' => ['tb2.name', 'projects.code'],
         ];
 
-        if ($request->integer('project_catalogue_id') > 0) {
+        if ($request->filled('project_catalogue_id')) {
+            $catIds = is_array($request->input('project_catalogue_id')) ? $request->input('project_catalogue_id') : [$request->input('project_catalogue_id')];
+
+            // Lấy cả danh mục con theo đệ quy
+            $catIds = array_map(function ($item) {
+                return $item->id;
+            }, $this->projectCatalogueRepository->recursiveCategory(implode(',', $catIds), 'project'));
+
+            $condition['whereInField'] = 'projects.project_catalogue_id';
+            $condition['whereIn'] = $catIds;
+        } elseif ($request->integer('project_catalogue_id') > 0) {
             $condition['where'][] = ['projects.project_catalogue_id', '=', $request->integer('project_catalogue_id')];
+        }
+
+        // Address Filter
+        foreach (['province_code', 'district_code', 'ward_code', 'old_province_code', 'old_district_code', 'old_ward_code'] as $f) {
+            if ($request->filled($f) && $request->input($f) != '0') {
+                $condition['where'][] = ['projects.' . $f, '=', $request->input($f)];
+            }
+        }
+
+        // Area Filter
+        if ($request->filled('area_min') || $request->filled('area_max')) {
+            if ($request->filled('area_min')) {
+                $condition['where'][] = ['projects.area', '>=', (float) $request->input('area_min')];
+            }
+            if ($request->filled('area_max')) {
+                $condition['where'][] = ['projects.area', '<=', (float) $request->input('area_max')];
+            }
+        } elseif ($request->filled('area') && strpos($request->input('area'), '-') !== false) {
+            $parts = explode('-', $request->input('area'));
+            if (isset($parts[0]) && is_numeric($parts[0]) && $parts[0] > 0) {
+                $condition['where'][] = ['projects.area', '>=', (float) $parts[0]];
+            }
+            if (isset($parts[1]) && is_numeric($parts[1]) && $parts[1] < 99999) {
+                $condition['where'][] = ['projects.area', '<=', (float) $parts[1]];
+            }
         }
 
         $paginationConfig = [
@@ -58,7 +99,7 @@ class ProjectService extends BaseService
             $condition,
             $perPage,
             $paginationConfig,
-            ['projects.id', 'DESC'],
+            $sort ?? ['projects.id', 'DESC'],
             $joins
         );
     }
@@ -69,22 +110,22 @@ class ProjectService extends BaseService
         try {
             $payload = $this->formatPayload($request);
             $project = $this->projectRepository->create($payload);
-                if ($project->id > 0) {
-                    $this->updateLanguageForProject($project, $request, $languageId);
-                    $this->createRouter($project, $request, $this->controllerName, $languageId);
-                    
-                    if ($request->has('related_projects')) {
-                        $project->related_projects()->sync($request->input('related_projects'));
-                    }
-                    
-                    if ($request->has('amenities')) {
-                        $project->amenities()->sync($request->input('amenities'));
-                    }
-                    
-                    if ($request->has('floorplans')) {
-                        $project->floorplans()->sync($request->input('floorplans'));
-                    }
+            if ($project->id > 0) {
+                $this->updateLanguageForProject($project, $request, $languageId);
+                $this->createRouter($project, $request, $this->controllerName, $languageId);
+
+                if ($request->has('related_projects')) {
+                    $project->related_projects()->sync($request->input('related_projects'));
                 }
+
+                if ($request->has('amenities')) {
+                    $project->amenities()->sync($request->input('amenities'));
+                }
+
+                if ($request->has('floorplans')) {
+                    $project->floorplans()->sync($request->input('floorplans'));
+                }
+            }
             DB::commit();
             return true;
         } catch (\Exception $e) {
@@ -100,23 +141,23 @@ class ProjectService extends BaseService
         try {
             $payload = $this->formatPayload($request);
             $project = $this->projectRepository->update($id, $payload);
-                if ($project) {
-                    $project = $this->projectRepository->findById($id);
-                    $this->updateLanguageForProject($project, $request, $languageId);
-                    $this->updateRouter($project, $request, $this->controllerName, $languageId);
-                    
-                    if ($request->has('related_projects')) {
-                        $project->related_projects()->sync($request->input('related_projects'));
-                    }
-                    
-                    if ($request->has('amenities')) {
-                        $project->amenities()->sync($request->input('amenities'));
-                    }
-                    
-                    if ($request->has('floorplans')) {
-                        $project->floorplans()->sync($request->input('floorplans'));
-                    }
+            if ($project) {
+                $project = $this->projectRepository->findById($id);
+                $this->updateLanguageForProject($project, $request, $languageId);
+                $this->updateRouter($project, $request, $this->controllerName, $languageId);
+
+                if ($request->has('related_projects')) {
+                    $project->related_projects()->sync($request->input('related_projects'));
                 }
+
+                if ($request->has('amenities')) {
+                    $project->amenities()->sync($request->input('amenities'));
+                }
+
+                if ($request->has('floorplans')) {
+                    $project->floorplans()->sync($request->input('floorplans'));
+                }
+            }
             DB::commit();
             return true;
         } catch (\Exception $e) {
@@ -187,50 +228,52 @@ class ProjectService extends BaseService
         $payload['album'] = $this->formatAlbum($request);
 
         // Handle New Address Names (After 01/07)
-        if(!empty($payload['province_code'])){
+        if (!empty($payload['province_code'])) {
             $payload['province_name'] = $this->getLocationNameFromJson('after', $payload['province_code']);
         }
-        if(!empty($payload['district_code'])){
+        if (!empty($payload['district_code'])) {
             $payload['district_name'] = $this->getLocationNameFromJson('after', $payload['district_code']);
         }
-        if(!empty($payload['ward_code'])){
+        if (!empty($payload['ward_code'])) {
             $payload['ward_name'] = $this->getLocationNameFromJson('after', $payload['ward_code']);
         }
 
         // Handle Old Address Names (Before 01/07)
-        if(!empty($payload['old_province_code'])){
+        if (!empty($payload['old_province_code'])) {
             $payload['old_province_name'] = $this->getLocationNameFromJson('before', $payload['old_province_code']);
         }
-        if(!empty($payload['old_district_code'])){
+        if (!empty($payload['old_district_code'])) {
             $payload['old_district_name'] = $this->getLocationNameFromJson('before', $payload['old_district_code']);
         }
-        if(!empty($payload['old_ward_code'])){
+        if (!empty($payload['old_ward_code'])) {
             $payload['old_ward_name'] = $this->getLocationNameFromJson('before', $payload['old_ward_code']);
         }
 
         return $payload;
     }
 
-    private function getLocationNameFromJson($source, $codename){
+    private function getLocationNameFromJson($source, $codename)
+    {
         $filePath = resource_path('json/vie_address_' . $source . '_1_7.json');
-        if(!\Illuminate\Support\Facades\File::exists($filePath)) return '';
+        if (!\Illuminate\Support\Facades\File::exists($filePath)) return '';
         $data = json_decode(\Illuminate\Support\Facades\File::get($filePath), true);
-        
+
         return $this->searchNameRecursive($data, $codename);
     }
 
-    private function searchNameRecursive($items, $codename){
-        foreach($items as $item){
-            if($item['codename'] == $codename){
+    private function searchNameRecursive($items, $codename)
+    {
+        foreach ($items as $item) {
+            if ($item['codename'] == $codename) {
                 return $item['name'];
             }
-            if(isset($item['districts'])){
+            if (isset($item['districts'])) {
                 $res = $this->searchNameRecursive($item['districts'], $codename);
-                if($res) return $res;
+                if ($res) return $res;
             }
-            if(isset($item['wards'])){
+            if (isset($item['wards'])) {
                 $res = $this->searchNameRecursive($item['wards'], $codename);
-                if($res) return $res;
+                if ($res) return $res;
             }
         }
         return null;
@@ -280,5 +323,20 @@ class ProjectService extends BaseService
             'tb2.canonical',
             'cat_lang.name as catalogue_name',
         ];
+    }
+
+    public function getProjectByCondition($condition = [], $languageId = 1, $limit = 5, $orderBy = ['projects.id', 'DESC'])
+    {
+        return $this->projectRepository->findByCondition(
+            $condition,
+            true,
+            ['languages' => function ($query) use ($languageId) {
+                $query->where('language_id', $languageId);
+            }],
+            $orderBy,
+            [],
+            [],
+            $limit
+        );
     }
 }

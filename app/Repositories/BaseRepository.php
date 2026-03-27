@@ -34,10 +34,11 @@ class BaseRepository
     ){
         $query = $this->model->select($column);
         return $query  
-                ->keyword($condition['keyword'] ?? null)
+                ->keyword($condition['keyword'] ?? null, $condition['fieldSearch'] ?? [])
                 ->publish($condition['publish'] ?? null)
                 ->relationCount($relations ?? null)
                 ->CustomWhere($condition['where'] ?? null)
+                ->CustomWhereIn($condition['whereInField'] ?? '', $condition['whereIn'] ?? [])
                 ->customWhereRaw($rawQuery['whereRaw'] ?? null)
                 ->customJoin($join ?? null)
                 ->customGroupBy($extend['groupBy'] ?? null)

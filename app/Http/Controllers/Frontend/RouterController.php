@@ -52,11 +52,12 @@ class RouterController extends FrontendController
                 $args = [$this->router->module_id, $request];
             }
 
-            echo $controller->{$method}(...$args);
+            $response = $controller->{$method}(...$args);
+            if ($response instanceof \Symfony\Component\HttpFoundation\Response) {
+                return $response;
+            }
+            echo $response;
         } else {
-            // fallback: try to resolve as a Post canonical
-            // Accept canonicals both with and without trailing .html and
-            // fully qualify the pivot column to avoid ambiguous column error.
             $slug = $canonical;
             $slugNoHtml = (str_ends_with($slug, '.html')) ? substr($slug, 0, -5) : $slug;
 
@@ -70,7 +71,6 @@ class RouterController extends FrontendController
             })->first();
 
             if ($post) {
-                // call the PostCatalogueController detail method
                 $controller = app(PostCatalogueController::class);
                 echo $controller->detail($post->id, $request);
                 return;
@@ -107,7 +107,11 @@ class RouterController extends FrontendController
                 $args = [$this->router->module_id, $request, $page];
             }
 
-            echo $controller->{$method}(...$args);
+            $response = $controller->{$method}(...$args);
+            if ($response instanceof \Symfony\Component\HttpFoundation\Response) {
+                return $response;
+            }
+            echo $response;
         } else {
             abort(404);
         }

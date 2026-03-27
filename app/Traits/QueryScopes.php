@@ -6,18 +6,29 @@ trait QueryScopes
 {
     public function scopeKeyword($query, $keyword, $fieldSearch = [], $whereHas = []){
         if(!empty($keyword)){
-            if(count($fieldSearch)){
-                foreach($fieldSearch as $key => $val){
-                    $query->orWhere($val, 'LIKE', '%'.$keyword.'%');
+            $keywords = is_array($keyword) ? $keyword : [$keyword];
+            $query->where(function($q) use ($keywords, $fieldSearch) {
+                foreach($keywords as $word) {
+                    $q->where(function($subQ) use ($word, $fieldSearch) {
+                        if(count($fieldSearch)){
+                            foreach($fieldSearch as $val){
+                                $subQ->orWhere($val, 'LIKE', '%'.$word.'%');
+                            }
+                        } else {
+                            $subQ->where('name', 'LIKE', '%'.$word.'%');
+                        }
+                    });
                 }
-            }else{
-                $query->where('name', 'LIKE', '%'.$keyword.'%');
-            }
+            });
         }
+        
         if(isset($whereHas) && count($whereHas)){
             $field = $whereHas['field'];
-            $query->orWhereHas($whereHas['relation'], function($query) use ($field, $keyword){
-                $query->where($field, 'LIKE', '%'.$keyword.'%');
+            $keywords = is_array($keyword) ? $keyword : [$keyword];
+            $query->orWhereHas($whereHas['relation'], function($q) use ($field, $keywords){
+                foreach($keywords as $word) {
+                    $q->where($field, 'LIKE', '%'.$word.'%');
+                }
             });
         }
 
@@ -36,6 +47,13 @@ trait QueryScopes
             foreach($where as $key => $val){
                 $query->where($val[0], $val[1], $val[2]);
             }
+        }
+        return $query;
+    }
+
+    public function scopeCustomWhereIn($query, $whereInField = '', $whereIn = []){
+        if(!empty($whereInField) && !empty($whereIn)){
+            $query->whereIn($whereInField, $whereIn);
         }
         return $query;
     }

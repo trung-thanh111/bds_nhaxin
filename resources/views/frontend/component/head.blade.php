@@ -35,20 +35,20 @@
         contactRequestUrl: '{{ route('contact-request.store') }}'
     };
 </script>
-<link rel="canonical" href="{{ $seo['canonical'] }}" />
+<link rel="canonical" href="{{ $seo['canonical'] ?? '' }}" />
 <meta property="og:locale" content="vi_VN" />
 
-<meta property="og:title" content="{{ $seo['meta_title'] }}" />
+<meta property="og:title" content="{{ $seo['meta_title'] ?? '' }}" />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="{{ $seo['meta_image'] }}" />
-<meta property="og:url" content="{{ $seo['canonical'] }}" />
-<meta property="og:description" content="{{ $seo['meta_description'] }}" />
+<meta property="og:image" content="{{ $seo['meta_image'] ?? '' }}" />
+<meta property="og:url" content="{{ $seo['canonical'] ?? '' }}" />
+<meta property="og:description" content="{{ $seo['meta_description'] ?? '' }}" />
 <meta property="og:site_name" content="" />
 <meta property="fb:admins" content="" />
 <meta property="fb:app_id" content="" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="{{ $seo['meta_title'] }}" />
-<meta name="twitter:description" content="{{ $seo['meta_description'] }}" />
-<meta name="twitter:image" content="{{ $seo['meta_image'] }}" />
+<meta name="twitter:title" content="{{ $seo['meta_title'] ?? '' }}" />
+<meta name="twitter:description" content="{{ $seo['meta_description'] ?? '' }}" />
+<meta name="twitter:image" content="{{ $seo['meta_image'] ?? '' }}" />
 
 <script src="{{ asset('vendor/frontend/library/js/jquery.js') }}"></script>

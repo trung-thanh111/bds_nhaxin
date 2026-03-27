@@ -8,7 +8,7 @@
 @endphp
 <div class="product-item">
     <a href="{{ $canonical }}" title="{{ $name }}" class="image img-scaledown img-zoomin">
-        <img  src="{{ $image }}" alt="{{ $name }}">
+        <img src="{{ $image }}" alt="{{ $name }}">
     </a>
     <div class="info">
         <h3 class="title"><a href="{{ $canonical }}" title="{{ $name }}">{{ $name }}</a></h3>

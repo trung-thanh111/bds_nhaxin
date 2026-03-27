@@ -1,28 +1,105 @@
 @extends('frontend.homepage.layout')
 @section('header-class', 'header-inner')
 @section('content')
+    <style>
+        .hp-contact-title {
+            font-weight: 700;
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .hp-contact-subtitle {
+            color: var(--main-color);
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 13px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .hp-line {
+            height: 2px;
+            width: 40px;
+            background: var(--main-color);
+        }
+
+        .hp-contact-info-block {
+            padding: 20px 0;
+        }
+
+        .hp-contact-info-block h4 {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            text-transform: uppercase;
+        }
+
+        .hp-contact-info-block p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .hp-contact-map-wrap {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eee;
+            margin-right: -1px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hp-contact-form-wrap {
+            background: #fff;
+            padding: 50px;
+            border-radius: 0 16px 16px 0;
+            box-shadow: 20px 10px 50px rgba(0, 0, 0, 0.04);
+            border: 1px solid #eee;
+            border-left: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 959px) {
+            .hp-contact-form-wrap {
+                border-radius: 16px;
+                border-left: 1px solid #eee;
+                padding: 30px;
+                margin-top: 30px;
+            }
+        }
+
+        .hp-section-padding {
+            padding: 20px 0;
+        }
+
+        .uk-form-controls input,
+        .uk-form-controls textarea {
+            border-radius: 5px !important;
+        }
+
+        .uk-form-controls input:focus,
+        .uk-form-controls textarea:focus {
+            border-color: var(--main-color) !important;
+        }
+    </style>
+
     <div id="scroll-progress"></div>
     <div class="linden-page">
 
-        <section class="hp-luxury-header"
-            style="background-image: url('{{ $property->image ?? asset('frontend/resources/img/homely/slider/1.webp') }}');">
-            <div class="hp-hero-overlay"></div>
-            <div class="hp-luxury-header__content">
-                <div class="uk-container uk-container-center">
-                    <div class="hp-luxury-header__title-wrap" data-reveal="up">
-                        <h1 class="hp-luxury-header__title">Liên Hệ</h1>
-                        <p class="hp-luxury-header__desc hp-hero-subtitle-main">
-                            Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn
-                        </p>
-                    </div>
-                    <div class="hp-luxury-breadcrumb" data-reveal="left">
-                        <div class="content-breadcrumb">
-                            <a href="{{ route('home.index') }}">Trang chủ</a>
-                            <span class="separator">»</span>
-                            <span class="current">Liên hệ</span>
-                        </div>
-                    </div>
-                </div>
+        <section class="hp-detail-header">
+            <div class="uk-container uk-container-center">
+                <ul class="uk-breadcrumb uk-flex uk-flex-middle">
+                    <li><a href="{{ url('/') }}">Trang chủ</a></li>
+                    <li class="uk-active"><span>Liên hệ</span></li>
+                </ul>
             </div>
         </section>
 
@@ -41,15 +118,18 @@
                     </div>
                     <div class="uk-width-large-1-4 uk-width-medium-1-2">
                         <div class="hp-contact-info-block" data-reveal="up">
-                            <h4>Địa chỉ</h4>
-                            <p>{{ $property->address ?? '742 Evergreen Terrace, Quận 7, TP. HCM' }}</p>
+                            <h4><i class="fa fa-map-marker uk-margin-small-right"
+                                    style="color: var(--main-color); width: 20px;"></i> Địa chỉ</h4>
+                            <p>{{ $system['contact_address'] ?? '88 Nguyễn Hữu Cảnh, Phường 22, Bình Thạnh, Hồ Chí Minh' }}
+                            </p>
                         </div>
                     </div>
                     <div class="uk-width-large-1-4 uk-width-medium-1-2">
                         <div class="hp-contact-info-block" data-reveal="up">
-                            <h4>Liên hệ</h4>
-                            <p>{{ $system['contact_email'] ?? 'hello@homepark.com' }}</p>
-                            <p>{{ $system['contact_hotline'] ?? '(+84) 123 456 789' }}</p>
+                            <h4><i class="fa fa-phone uk-margin-small-right"
+                                    style="color: var(--main-color); width: 20px;"></i> Liên hệ</h4>
+                            <p><strong>Email:</strong> {{ $system['contact_email'] ?? 'homepark@gmail.com' }}</p>
+                            <p><strong>Hotline:</strong> {{ $system['contact_hotline'] ?? '(+84) 0987 654 321' }}</p>
                         </div>
                     </div>
                 </div>
@@ -57,7 +137,7 @@
         </section>
 
         <!-- Map & Form Section -->
-        <section class="hp-section bg-white">
+        <section class="hp-section hp-section-padding" style="background: #f9fbff; border-top: 1px solid #f0f0f0;">
             <div class="uk-container uk-container-center">
                 <div class="uk-grid uk-grid-collapse uk-flex-middle">
                     <!-- Map Column -->
@@ -67,7 +147,7 @@
                             <div class="hp-map-inner">
                                 <iframe
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4602324243567!2d106.718144975838!3d10.776019489372922!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f44dc1b78ad%3A0xc07ce67822989f92!2sLinden%20Residences!5e0!3m2!1svi!2s!4v1710145241085!5m2!1svi!2s"
-                                    width="100%" height="450" style="border:0;" allowfullscreen=""
+                                    width="100%" height="550" style="border:0;" allowfullscreen=""
                                     loading="lazy"></iframe>
                             </div>
                         </div>
@@ -75,57 +155,74 @@
                     <!-- Form Column -->
                     <div class="uk-width-large-1-2">
                         <div class="hp-contact-form-wrap" data-reveal="right">
-                            <form id="visit-request-form" method="post" action="{{ route('visit-request.store') }}">
+                            <div class="hp-form-header uk-margin-bottom">
+                                <h3 style="font-weight: 700; margin-bottom: 5px;">Gửi tin nhắn cho chúng tôi</h3>
+                                <p style="color: #777; font-size: 14px;">Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng
+                                    24h làm việc.</p>
+                            </div>
+                            <form id="contact-request-form" class="uk-form uk-form-stacked ajax-contact-form" method="post"
+                                action="{{ route('contact-request.store') }}">
                                 @csrf
-                                <input type="hidden" name="property_id" value="{{ $property->id ?? '' }}">
-
-                                <div class="hp-form-group">
-                                    <label>Họ và tên (bắt buộc)</label>
-                                    <input type="text" name="full_name" required class="hp-luxury-input"
-                                        placeholder="Nhập họ và tên...">
+                                <div class="uk-form-row">
+                                    <label class="uk-form-label">Họ và tên <span class="uk-text-danger">*</span></label>
+                                    <div class="uk-form-controls">
+                                        <input type="text" name="full_name" required class="uk-width-1-1 uk-form-large"
+                                            placeholder="Nhập họ và tên...">
+                                    </div>
                                 </div>
 
-                                <div class="hp-form-group">
-                                    <label>Email (bắt buộc)</label>
-                                    <input type="email" name="email" required class="hp-luxury-input"
-                                        placeholder="Nhập địa chỉ email...">
-                                </div>
-
-                                <div class="hp-form-group">
-                                    <label>Số điện thoại (bắt buộc)</label>
-                                    <input type="text" name="phone" required class="hp-luxury-input"
-                                        placeholder="Nhập số điện thoại...">
-                                </div>
-
-                                <div class="uk-grid uk-grid-small" data-uk-grid-margin>
-                                    <div class="uk-width-1-2">
-                                        <div class="hp-form-group">
-                                            <label>Ngày hẹn</label>
-                                            <input type="date" name="preferred_date" class="hp-luxury-input">
+                                <div class="uk-grid uk-grid-small uk-margin-top" data-uk-grid-margin>
+                                    <div class="uk-width-medium-1-2">
+                                        <div class="uk-form-row">
+                                            <label class="uk-form-label">Email</label>
+                                            <div class="uk-form-controls">
+                                                <input type="email" name="email" class="uk-width-1-1 uk-form-large"
+                                                    placeholder="Nhập địa chỉ email...">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="uk-width-1-2">
-                                        <div class="hp-form-group">
-                                            <label>Giờ hẹn</label>
-                                            <input type="time" name="preferred_time" class="hp-luxury-input">
+                                    <div class="uk-width-medium-1-2">
+                                        <div class="uk-form-row">
+                                            <label class="uk-form-label">Số điện thoại <span
+                                                    class="uk-text-danger">*</span></label>
+                                            <div class="uk-form-controls">
+                                                <input type="text" name="phone" required
+                                                    class="uk-width-1-1 uk-form-large" placeholder="Nhập số điện thoại...">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="hp-form-group">
-                                    <label>Lời nhắn của bạn</label>
-                                    <textarea name="message" class="hp-luxury-input hp-luxury-textarea" placeholder="Nhập lời nhắn..."></textarea>
+                                <div class="uk-form-row uk-margin-top">
+                                    <label class="uk-form-label">Tiêu đề</label>
+                                    <div class="uk-form-controls">
+                                        <input type="text" name="subject" class="uk-width-1-1 uk-form-large"
+                                            placeholder="Bạn quan tâm về vấn đề gì?">
+                                    </div>
                                 </div>
 
-                                <div class="hp-form-action">
-                                    <button type="submit" class="hp-btn hp-btn-dark" style="padding: 15px 50px;">
-                                        GỬI YÊU CẦU
+                                <div class="uk-form-row uk-margin-top">
+                                    <label class="uk-form-label">Lời nhắn của bạn <span
+                                            class="uk-text-danger">*</span></label>
+                                    <div class="uk-form-controls">
+                                        <textarea name="content" required class="uk-width-1-1" rows="5" placeholder="Nhập nội dung yêu cầu..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="uk-form-row uk-margin-large-top">
+                                    <button type="submit"
+                                        class="uk-button uk-button-primary uk-button-large uk-width-1-1 ln-btn-submit"
+                                        style="background: var(--main-color); border: none; font-weight: 700; height: 55px; border-radius: 8px;">
+                                        GỬI YÊU CẦU LIÊN HỆ
                                     </button>
                                 </div>
 
-                                <div class="visit-form-success"
-                                    style="display:none; margin-top:20px; padding:20px; background:#f9f5f0; color:var(--color-black); text-align:center;">
-                                    <h4 style="margin:0;">Yêu cầu của bạn đã được gửi thành công!</h4>
+                                <div class="contact-form-success"
+                                    style="display:none; margin-top:20px; padding:20px; background:#f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color:#166534; text-align:center;">
+                                    <h4 style="margin:0; color:#166534; font-weight: 700;">Yêu cầu của bạn đã được gửi thành
+                                        công!</h4>
+                                    <p style="margin-top: 10px;">Chúng tôi đã tiếp nhận thông tin và sẽ liên hệ lại sớm
+                                        nhất.</p>
                                 </div>
                             </form>
                         </div>

@@ -14,18 +14,20 @@
     @php
         $hotline = get_hotline($agent ?? null, $system['contact_hotline'] ?? '');
         $hotlineLink = get_hotline_link($agent ?? null, $system['contact_hotline'] ?? '');
-        $zaloHotline = $system['social_zalo'] ?? $hotlineLink;
+        $zaloHotline = $hotlineLink ?: $system['social_zalo'] ?? '';
     @endphp
 
     @if (!empty($zaloHotline))
-        <a href="https://zalo.me/{{ preg_replace('/\D/', '', $zaloHotline) }}" target="_blank" class="hp-float-item hp-float-zalo" title="Zalo">
-            <img src="{{ asset('frontend/resources/img/icon_zalo.png') }}" alt="Zalo" style="width: 25px; filter: brightness(0) invert(1);">
+        <a href="https://zalo.me/{{ preg_replace('/\D/', '', $zaloHotline) }}" target="_blank"
+            class="hp-float-item hp-float-zalo" title="Zalo">
+            <img src="{{ asset('frontend/resources/img/icon_zalo.png') }}" alt="Zalo">
         </a>
     @endif
 
     @if (!empty($hotlineLink))
-        <a href="tel:{{ $hotlineLink }}" target="_blank" class="hp-float-item hp-float-hotline" title="hotline: {{ $hotline }}">
-            <img src="{{ asset('frontend/resources/img/icon_call.png') }}" alt="hotline" style="width: 25px; filter: brightness(0) invert(1);">
+        <a href="tel:{{ $hotlineLink }}" target="_blank" class="hp-float-item hp-float-hotline"
+            title="hotline: {{ $hotline }}">
+            <img src="{{ asset('frontend/resources/img/icon_call.png') }}" alt="hotline">
         </a>
     @endif
 

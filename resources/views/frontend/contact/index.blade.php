@@ -39,6 +39,11 @@
             text-transform: uppercase;
         }
 
+        .hp-contact-info-block h4 i {
+            color: var(--main-color);
+            width: 20px;
+        }
+
         .hp-contact-info-block p {
             color: #666;
             margin: 5px 0;
@@ -65,6 +70,51 @@
             border-left: none;
             position: relative;
             z-index: 1;
+        }
+
+        .hp-form-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .hp-form-desc {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .hp-btn-submit {
+            background: var(--main-color) !important;
+            border: none !important;
+            font-weight: 700 !important;
+            height: 55px !important;
+            border-radius: 8px !important;
+        }
+
+        .contact-form-success {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            color: #166534;
+            text-align: center;
+        }
+
+        .hp-success-title {
+            margin: 0;
+            color: #166534;
+            font-weight: 700;
+            margin-right: 30px;
+        }
+
+        .hp-success-desc {
+            margin-top: 10px;
+        }
+
+        .hp-section-secondary {
+            background: #f9fbff;
+            border-top: 1px solid #f0f0f0;
         }
 
         @media (max-width: 959px) {
@@ -118,16 +168,14 @@
                     </div>
                     <div class="uk-width-large-1-4 uk-width-medium-1-2">
                         <div class="hp-contact-info-block" data-reveal="up">
-                            <h4><i class="fa fa-map-marker uk-margin-small-right"
-                                    style="color: var(--main-color); width: 20px;"></i> Địa chỉ</h4>
+                            <h4><i class="fa fa-map-marker uk-margin-small-right"></i> Địa chỉ</h4>
                             <p>{{ $system['contact_address'] ?? '88 Nguyễn Hữu Cảnh, Phường 22, Bình Thạnh, Hồ Chí Minh' }}
                             </p>
                         </div>
                     </div>
                     <div class="uk-width-large-1-4 uk-width-medium-1-2">
                         <div class="hp-contact-info-block" data-reveal="up">
-                            <h4><i class="fa fa-phone uk-margin-small-right"
-                                    style="color: var(--main-color); width: 20px;"></i> Liên hệ</h4>
+                            <h4><i class="fa fa-phone uk-margin-small-right"></i> Liên hệ</h4>
                             <p><strong>Email:</strong> {{ $system['contact_email'] ?? 'homepark@gmail.com' }}</p>
                             <p><strong>Hotline:</strong> {{ $system['contact_hotline'] ?? '(+84) 0987 654 321' }}</p>
                         </div>
@@ -137,7 +185,7 @@
         </section>
 
         <!-- Map & Form Section -->
-        <section class="hp-section hp-section-padding" style="background: #f9fbff; border-top: 1px solid #f0f0f0;">
+        <section class="hp-section hp-section-padding hp-section-secondary">
             <div class="uk-container uk-container-center">
                 <div class="uk-grid uk-grid-collapse uk-flex-middle">
                     <!-- Map Column -->
@@ -156,9 +204,8 @@
                     <div class="uk-width-large-1-2">
                         <div class="hp-contact-form-wrap" data-reveal="right">
                             <div class="hp-form-header uk-margin-bottom">
-                                <h3 style="font-weight: 700; margin-bottom: 5px; margin-left: 30px;">Chúng tôi đã nhận được
-                                    yêu cầu của bạn</h3>
-                                <p style="color: #777; font-size: 14px;">Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng
+                                <h2 class="hp-form-title">Gửi yêu cầu tư vấn</h2>
+                                <p class="hp-form-desc">Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng
                                     24h làm việc.</p>
                             </div>
                             <form id="contact-request-form" class="uk-form uk-form-stacked ajax-contact-form" method="post"
@@ -212,17 +259,16 @@
 
                                 <div class="uk-form-row uk-margin-large-top">
                                     <button type="submit"
-                                        class="uk-button uk-button-primary uk-button-large uk-width-1-1 ln-btn-submit"
-                                        style="background: var(--main-color); border: none; font-weight: 700; height: 55px; border-radius: 8px;">
-                                        GỬI YÊU CẦU LIÊN HỆ
+                                        class="uk-button uk-button-primary uk-button-large uk-width-1-1 ln-btn-submit hp-btn-submit">
+                                        GỬI YÊU CẦU
                                     </button>
                                 </div>
 
-                                <div class="contact-form-success"
-                                    style="display:none; margin-top:20px; padding:20px; background:#f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color:#166534; text-align:center;">
-                                    <h4 style="margin:0; color:#166534; font-weight: 700;">Yêu cầu của bạn đã được gửi thành
+                                <div class="contact-form-success">
+                                    <h4 class="hp-success-title">Yêu cầu của
+                                        bạn đã được gửi thành
                                         công!</h4>
-                                    <p style="margin-top: 10px;">Chúng tôi đã tiếp nhận thông tin và sẽ liên hệ lại sớm
+                                    <p class="hp-success-desc">Chúng tôi đã tiếp nhận thông tin và sẽ liên hệ lại sớm
                                         nhất.</p>
                                 </div>
                             </form>

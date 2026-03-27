@@ -74,11 +74,9 @@
                 </div>
 
                 <div class="gl-card-footer uk-flex uk-flex-middle uk-flex-space-between">
-                    <div class="gl-card-meta">
-                        <span class="gl-card-id">Mã: {{ $item->code }}</span>
-                        <span class="gl-card-time uk-margin-left"><i class="fa fa-clock-o"></i> Cập nhật
-                            {{ $timeUpdate }}</span>
-                    </div>
+                    <span class="gl-card-id">Mã: {{ $item->code }}</span>
+                    <span class="gl-card-time uk-margin-left"><i class="fa fa-clock-o"></i>
+                        <span class="uk-visible-large">Cập nhật&nbsp;</span>{{ $timeUpdate }}</span>
                 </div>
             </div>
         </div>

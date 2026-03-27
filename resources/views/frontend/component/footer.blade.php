@@ -1,6 +1,6 @@
 <footer class="hp-footer">
     <div class="uk-container uk-container-center">
-        <div class="uk-grid uk-grid-large uk-flex-center" data-uk-grid-margin>
+        <div class="uk-grid uk-grid-large" data-uk-grid-margin>
             <div class="uk-width-large-1-3 uk-width-medium-1-2">
                 @if (isset($menu['footer-menu'][2]))
                     <h4 class="hp-footer-title">{{ $menu['footer-menu'][2]['item']->languages->first()->pivot->name }}

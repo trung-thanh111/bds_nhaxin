@@ -12,23 +12,6 @@
     $unitName = $attributeMap[$unitId] ?? '';
     $displayUnit = $unitName != '' && !in_array($unitName, ['Tổng', '[Chọn đơn vị]']) ? $unitName : '';
 
-    $allFeatures = [];
-    if ($item->bedrooms) {
-        $allFeatures[] = $item->bedrooms . ' PN';
-    }
-    if ($item->bathrooms) {
-        $allFeatures[] = $item->bathrooms . ' WC';
-    }
-    if ($item->road_width) {
-        $allFeatures[] = 'Đường ' . $item->road_width . 'm';
-    }
-    foreach ($item->amenities ?? [] as $amenity) {
-        $allFeatures[] = $amenity->languages->first()->pivot->name ?? '';
-    }
-    $allFeatures = array_filter($allFeatures);
-    $displayFeatures = array_slice($allFeatures, 0, 10);
-    $moreCount = count($allFeatures) - count($displayFeatures);
-
     $typeId = $item->transaction_type;
     $typeName = $attributeMap[$typeId] ?? '';
 
@@ -65,6 +48,75 @@
 
     $mainPrice = $item->price_sale > 0 ? $item->price_sale : $item->price_rent;
     $pricePerM2 = $mainPrice > 0 && $area > 0 ? $mainPrice / $area : 0;
+
+    $allFeatures = [];
+    // Thông số chung
+    if ($item->ownership_type && isset($attributeMap[$item->ownership_type])) {
+        $allFeatures[] = '<i class="fa fa-file-text-o"></i> ' . $attributeMap[$item->ownership_type];
+    }
+    if ($item->house_direction && isset($attributeMap[$item->house_direction])) {
+        $allFeatures[] = '<i class="fa fa-compass"></i> ' . $attributeMap[$item->house_direction];
+    }
+    if ($item->view) {
+        $allFeatures[] = '<i class="fa fa-eye"></i> ' . $item->view;
+    }
+
+    // Nhà phố / Căn hộ
+    if ($item->bedrooms) {
+        $allFeatures[] = '<i class="fa fa-bed"></i> ' . $item->bedrooms . ' PN';
+    }
+    if ($item->bathrooms) {
+        $allFeatures[] = '<i class="fa fa-bath"></i> ' . $item->bathrooms . ' WC';
+    }
+    if ($item->floor || $item->total_floors) {
+        $floorDisplay = 'Tầng ' . ($attributeMap[$item->floor] ?? $item->floor);
+        if ($item->total_floors) {
+            $floorDisplay .= '/' . $item->total_floors;
+        }
+        $allFeatures[] = '<i class="fa fa-building-o"></i> ' . $floorDisplay;
+    }
+    if ($item->block_tower) {
+        $allFeatures[] = 'Block: ' . $item->block_tower;
+    }
+    if ($item->apartment_code) {
+        $allFeatures[] = 'Mã: ' . $item->apartment_code;
+    }
+    if ($item->balcony_direction && isset($attributeMap[$item->balcony_direction])) {
+        $allFeatures[] = 'BC: ' . $attributeMap[$item->balcony_direction];
+    }
+    if ($item->interior && isset($attributeMap[$item->interior])) {
+        $allFeatures[] = '<i class="fa fa-couch"></i> ' . $attributeMap[$item->interior];
+    }
+    if ($item->year_built) {
+        $allFeatures[] = 'Năm: ' . $item->year_built;
+    }
+
+    // Đất / Mặt bằng
+    if ($item->land_type && isset($attributeMap[$item->land_type])) {
+        $allFeatures[] = $attributeMap[$item->land_type];
+    }
+    if ($item->land_width && $item->land_length) {
+        $allFeatures[] =
+            '<i class="fa fa-arrows-h"></i> ' . (float) $item->land_width . 'x' . (float) $item->land_length . 'm';
+    } elseif ($item->land_width) {
+        $allFeatures[] = 'Ngang: ' . (float) $item->land_width . 'm';
+    } elseif ($item->land_length) {
+        $allFeatures[] = 'Dài: ' . (float) $item->land_length . 'm';
+    }
+    if ($item->road_frontage) {
+        $allFeatures[] = 'Mặt tiền: ' . (float) $item->road_frontage . 'm';
+    }
+    if ($item->road_width) {
+        $allFeatures[] = 'Đường ' . (float) $item->road_width . 'm';
+    }
+
+    foreach ($item->amenities ?? [] as $amenity) {
+        $allFeatures[] = $amenity->languages->first()->pivot->name ?? '';
+    }
+
+    $allFeatures = array_filter($allFeatures);
+    $displayFeatures = array_slice($allFeatures, 0, 8);
+    $moreCount = count($allFeatures) - count($displayFeatures);
 @endphp
 
 <div class="gl-property-card-horizontal">
@@ -74,7 +126,7 @@
                 <a href="{{ url($lang->canonical . '.html') }}">
                     <img src="{{ image($item->image) }}" alt="{{ $lang->name }}">
                 </a>
-                <a href="{{ route('contact.index') }}" class="gl-card-badge">LIÊN HỆ NGAY</a>
+                <a href="{{ route('contact.index') }}" class="gl-card-badge">Liên hệ ngay</a>
                 <a href="{{ $mapUrl }}" target="_blank" class="gl-card-map-btn">
                     <i class="fa fa-location-arrow"></i> Chỉ đường
                 </a>
@@ -126,17 +178,25 @@
                     </div>
                 @endif
 
+                <div class="gl-card-features-wrapper mt10">
+                    <div class="gl-card-features">
+                        @foreach ($displayFeatures as $feature)
+                            <span class="gl-card-feature-tag">{!! $feature !!}</span>
+                        @endforeach
+                        @if ($moreCount > 0)
+                            <span class="gl-card-feature-more">+{{ $moreCount }}</span>
+                        @endif
+                    </div>
+                </div>
 
                 <div class="gl-card-description">
                     {!! strip_tags($lang->content ?: $lang->description) !!}
                 </div>
 
                 <div class="gl-card-footer uk-flex uk-flex-middle uk-flex-space-between">
-                    <div class="gl-card-meta">
-                        <span class="gl-card-id">Mã: {{ $item->code }}</span>
-                        <span class="gl-card-time uk-margin-left"><i class="fa fa-clock-o"></i> Cập nhật
-                            {{ $timeUpdate }}</span>
-                    </div>
+                    <span class="gl-card-id">Mã: {{ $item->code }}</span>
+                    <span class="gl-card-time uk-margin-left"><i class="fa fa-clock-o"></i>
+                        <span class="uk-visible-large">Cập nhật&nbsp;</span>{{ $timeUpdate }}</span>
                 </div>
             </div>
         </div>

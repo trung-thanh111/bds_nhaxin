@@ -212,7 +212,7 @@ a:hover {
 .gl-section-title {
     font-size: 24px;
     font-weight: 700;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
     position: relative;
     padding-left: 15px;
 }
@@ -664,6 +664,7 @@ input:checked+.gl-slider:before {
     display: flex;
     align-items: baseline;
     gap: 4px;
+    white-space: nowrap;
 }
 
 .gl-card-price-label {
@@ -677,6 +678,7 @@ input:checked+.gl-slider:before {
     /* Bright Green */
     font-size: 18px;
     font-weight: 800;
+    white-space: nowrap;
 }
 
 .gl-card-separator {
@@ -800,6 +802,13 @@ input:checked+.gl-slider:before {
     padding-bottom: 8px;
     position: relative;
     border-bottom: 1px solid #eee;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.gl-section-header .gl-section-title {
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .gl-section-header::after {
@@ -837,8 +846,7 @@ input:checked+.gl-slider:before {
     border-top: 1px solid #eeeeee;
     color: #555555;
     font-size: 13px;
-    text-align: center;
-    /* Center text by default */
+    text-align: left;
 }
 
 .hp-footer-title {
@@ -846,7 +854,6 @@ input:checked+.gl-slider:before {
     font-weight: 700;
     color: #333333;
     margin-bottom: 20px;
-    margin-left: -60px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -899,7 +906,7 @@ input:checked+.gl-slider:before {
 .hp-footer-socials {
     display: flex;
     gap: 12px;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 /* Floating Social Bar */
@@ -1010,10 +1017,8 @@ input:checked+.gl-slider:before {
 
 /* Footer Bottom */
 .hp-footer-bottom {
-    margin-top: 40px;
-    padding-top: 25px;
     border-top: 1px solid #f5f5f5;
-    text-align: center;
+    text-align: left;
 }
 
 .footer-logo-bottom {
@@ -1035,22 +1040,33 @@ input:checked+.gl-slider:before {
     font-size: 11px;
     color: #888888;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 0;
     line-height: 1.6;
 }
 
 @media (max-width: 959px) {
     .hp-footer {
         padding: 40px 0 20px;
+        text-align: left;
     }
 
     .hp-footer-title {
         margin-top: 20px;
         margin-bottom: 15px;
+        margin-left: 0;
+    }
+
+    .gl-section-title {
+        font-size: 20px;
+    }
+
+    .gl-section-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
     }
 }
 
-/* Promo Section */
 .gl-promo-section {
     background: #f0f7ff linear-gradient(135deg, #f0f7ff 0%, #e1f5fe 100%);
     padding: 50px 0;
@@ -1319,6 +1335,27 @@ input:checked+.gl-slider:before {
 .uk-active span {
     color: #111 !important;
     font-weight: 700 !important;
+}
+
+@media (max-width: 959px) {
+    .uk-breadcrumb {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding: 5px 0 12px 0 !important;
+        line-height: normal !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .uk-breadcrumb::-webkit-scrollbar {
+        display: none;
+    }
+
+    .uk-breadcrumb li {
+        flex-shrink: 0 !important;
+        display: inline-flex !important;
+    }
 }
 
 /* Property Gallery */
@@ -2088,9 +2125,12 @@ input:checked+.gl-slider:before {
 }
 
 .gl-card-price-area-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 12px;
-    gap: 10px;
-    font-size: 14px;
+    flex-wrap: wrap;
+    line-height: 1.2;
 }
 
 .gl-property-card-horizontal .gl-card-title {

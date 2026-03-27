@@ -27,7 +27,7 @@
             <div class="hp-sidebar-widget">
                 <h4 class="hp-sidebar-title">Danh mục dự án</h4>
                 <ul class="hp-sidebar-list">
-                    @foreach ($projectCatalogues as $cat)
+                    @foreach ($projectCatalogues->take(8) as $cat)
                         <li>
                             <a href="{{ url($cat->languages->first()->pivot->canonical . '.html') }}">
                                 {{ $cat->languages->first()->pivot->name }}
@@ -42,7 +42,7 @@
             <div class="hp-sidebar-widget">
                 <h4 class="hp-sidebar-title">Danh mục BĐS</h4>
                 <ul class="hp-sidebar-list">
-                    @foreach ($realEstateCatalogues as $cat)
+                    @foreach ($realEstateCatalogues->take(8) as $cat)
                         <li>
                             <a href="{{ url($cat->languages->first()->pivot->canonical . '.html') }}">
                                 {{ $cat->languages->first()->pivot->name }}
@@ -58,7 +58,7 @@
         <div class="hp-sidebar-widget">
             <h4 class="hp-sidebar-title">BĐS Mới Nhất</h4>
             <div class="hp-sidebar-projects">
-                @foreach ($newestRealEstates as $re)
+                @foreach ($newestRealEstates->take(8) as $re)
                     @php
                         $reName = $re->languages->first()->pivot->name ?? 'Untitled';
                         $reCanonical = $re->languages->first()->pivot->canonical ?? '#';
@@ -98,7 +98,7 @@
         <div class="hp-sidebar-widget">
             <h4 class="hp-sidebar-title">Dự Án Nổi Bật</h4>
             <div class="hp-sidebar-projects">
-                @foreach ($featuredProjects as $pro)
+                @foreach ($featuredProjects->take(8) as $pro)
                     @php
                         $proName = $pro->languages->first()->pivot->name ?? 'Untitled';
                         $proCanonical = $pro->languages->first()->pivot->canonical ?? '#';

@@ -15,8 +15,7 @@
     @endif
 @else
     <div class="hp-empty-state uk-text-center">
-        <i class="fa-solid fa-box-open"
-            style="font-size: 80px; color: #ddd; margin-bottom: 20px; display: block;"></i>
+        <i class="fa-solid fa-box-open" style="font-size: 80px; color: #ddd; margin-bottom: 20px; display: block;"></i>
         <p class="uk-text-muted uk-margin-top">Không tìm thấy bản ghi phù hợp.
         </p>
         <a href="{{ request()->url() }}" class="uk-button uk-button-link">Đặt lại bộ lọc</a>

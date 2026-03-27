@@ -1914,7 +1914,7 @@ ol li {
 }
 
 .gl-card-address i {
-    color: var(--main-color);
+    color: #0056b3;
     margin-top: 3px;
 }
 
@@ -1945,6 +1945,9 @@ ol li {
 }
 
 .gl-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-top: 1px solid #f0f0f0;
 }
 

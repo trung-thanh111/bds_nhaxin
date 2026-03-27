@@ -827,6 +827,10 @@
             transition: 0.3s;
             color: #555;
             border: 1px solid transparent;
+            font-size: 12px;
+            line-height: 1.1;
+            text-align: center;
+            padding: 2px;
         }
 
         .hp-spec-selector input:checked+.spec-item {
@@ -1118,6 +1122,94 @@
             background-color: var(--main-light) !important;
             color: var(--main-color) !important;
         }
+
+        /* Responsive Filter Bar */
+        @media (max-width: 959px) {
+            .hp-filter-horizontal {
+                height: auto;
+                padding: 10px 0;
+            }
+
+            .hp-filter-wrapper {
+                gap: 10px;
+                overflow: hidden;
+            }
+
+            .hp-filter-main {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 5px;
+                scrollbar-width: none;
+            }
+
+            .hp-filter-main::-webkit-scrollbar {
+                display: none;
+            }
+
+            .hp-filter-btn {
+                flex-shrink: 0;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .hp-filter-reset {
+                display: none;
+            }
+
+            /* Dropdown as pseudo-modal on mobile to avoid clipping */
+            .hp-dropdown-panel {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: 90% !important;
+                max-width: 350px !important;
+                margin: 0 !important;
+                z-index: 2000 !important;
+            }
+
+            .uk-dropdown-shown .hp-dropdown-panel {
+                display: block !important;
+            }
+
+            /* Modal UI Refinements */
+            .hp-modal-filter .uk-modal-header {
+                padding: 15px 20px;
+            }
+            .hp-modal-filter .uk-modal-body {
+                padding: 0 15px 15px;
+            }
+            .hp-spec-selector {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 5px;
+                scrollbar-width: none;
+                display: flex;
+            }
+            .hp-spec-selector::-webkit-scrollbar {
+                display: none;
+            }
+            .spec-item {
+                width: 42px;
+                height: 42px;
+                flex-shrink: 0;
+                margin-right: 10px;
+                font-size: 11px;
+                line-height: 1.1;
+                text-align: center;
+                padding: 2px;
+            }
+            .hp-input-box {
+                padding: 10px 15px;
+                border-radius: 8px;
+            }
+            .group-label {
+                font-size: 14px;
+                margin-bottom: 8px;
+                margin-top: 15px;
+            }
+        }
     </style>
 
     <script>
@@ -1203,7 +1295,7 @@
                         }
                         $(this).select2({
                             placeholder: "[Chọn]",
-                            allowClear: true,
+                            allowClear: false,
                             width: '100%',
                             dropdownParent: $('body')
                         });

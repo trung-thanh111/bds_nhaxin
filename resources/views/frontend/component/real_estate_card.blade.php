@@ -197,7 +197,7 @@
         <div class="gl-card-footer">
             <span class="gl-card-id">Mã: {{ $item->code }}</span>
             <span class="gl-card-time"><i class="fa fa-clock-o uk-margin-small-right"></i>
-                Cập nhật {{ $timeUpdate }}</span>
+                <span class="uk-visible-large">Cập nhật&nbsp;</span>{{ $timeUpdate }}</span>
         </div>
     </div>
 </div>

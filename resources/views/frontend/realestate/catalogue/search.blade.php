@@ -91,7 +91,7 @@
                         <div class="hp-listing-top uk-flex uk-flex-middle uk-flex-space-between uk-margin-large-bottom">
                             <div class="hp-listing-title">
                                 <h1 class="hp-category-name">
-                                    {{ $isProject ? 'Kết quả tìm kiếm dự án' : 'Kết quả tìm kiếm bất động sản' }}
+                                    {{ $isProject ?? 'Kết quả tìm kiếm' }}
                                 </h1>
                                 <div class="hp-listing-count">
                                     <i class="fas fa-search uk-margin-small-right"></i>

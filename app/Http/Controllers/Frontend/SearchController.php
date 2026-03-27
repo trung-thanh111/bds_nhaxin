@@ -104,9 +104,19 @@ class SearchController extends FrontendController
                 'houseDirections', 'furnitures', 'balconyDirections', 'amenities', 'newestRealEstates', 'featuredProjects'
             ));
         } else {
+            $transactionType = $request->input('transaction_type', '74');
+            $rootId = ($transactionType == '75') ? 16 : 1;
+            $propertyTypes = $this->realEstateCatalogueRepository->findByCondition([
+                ['parent_id', '=', $rootId],
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }]);
+
             return $this->renderRealEstateSearch($request, compact(
                 'system', 'config', 'agent', 'widgets', 'realEstateCatalogues', 'projectCatalogues',
-                'houseDirections', 'furnitures', 'balconyDirections', 'amenities', 'newestRealEstates', 'featuredProjects'
+                'houseDirections', 'furnitures', 'balconyDirections', 'amenities', 'newestRealEstates', 'featuredProjects',
+                'propertyTypes'
             ));
         }
     }

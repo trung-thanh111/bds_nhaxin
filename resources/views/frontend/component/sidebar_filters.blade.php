@@ -18,14 +18,11 @@
     }
 </style>
 <div class="hp-sidebar-filters">
-    <!-- Sidebar Categories -->
     @php
-        // Use explicitly passed $isProject from controller, fallback to calculation if not set
         $isProject = $isProject ?? isset($projectCatalogue) || (isset($projects) && !isset($realEstates));
     @endphp
 
     @if ($isProject)
-        {{-- Show ONLY Project Categories on Project Pages --}}
         @if (isset($projectCatalogues) && count($projectCatalogues))
             <div class="hp-sidebar-widget">
                 <h4 class="hp-sidebar-title">Danh mục dự án</h4>
@@ -41,7 +38,6 @@
             </div>
         @endif
     @else
-        {{-- Show ONLY RE Categories on RE Pages --}}
         @if (isset($realEstateCatalogues) && count($realEstateCatalogues))
             <div class="hp-sidebar-widget">
                 <h4 class="hp-sidebar-title">Danh mục BĐS</h4>
@@ -58,9 +54,8 @@
         @endif
     @endif
 
-    <!-- Newest Real Estates Widget -->
     @if (isset($newestRealEstates) && count($newestRealEstates))
-        <div class="hp-sidebar-widget uk-margin-top">
+        <div class="hp-sidebar-widget">
             <h4 class="hp-sidebar-title">BĐS Mới Nhất</h4>
             <div class="hp-sidebar-projects">
                 @foreach ($newestRealEstates as $re)
@@ -99,9 +94,8 @@
         </div>
     @endif
 
-    <!-- Featured Projects Widget -->
     @if (isset($featuredProjects) && count($featuredProjects))
-        <div class="hp-sidebar-widget uk-margin-top">
+        <div class="hp-sidebar-widget">
             <h4 class="hp-sidebar-title">Dự Án Nổi Bật</h4>
             <div class="hp-sidebar-projects">
                 @foreach ($featuredProjects as $pro)

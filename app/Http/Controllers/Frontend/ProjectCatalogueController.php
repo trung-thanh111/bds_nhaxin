@@ -68,7 +68,7 @@ class ProjectCatalogueController extends FrontendController
                 'canonical' => url($cat->languages->first()->pivot->canonical . '.html')
             ];
         }
-        
+
         // Merge project_catalogue_id into request for service paginate logic
         $request->merge(['project_catalogue_id' => $id]);
 
@@ -95,25 +95,35 @@ class ProjectCatalogueController extends FrontendController
         // Filter Data
         $propertyTypes = $this->realEstateCatalogueRepository->findByCondition([
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }]); 
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }]);
         $houseDirections = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 3],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
-        
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
+
         $furnitures = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 2],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
 
         $balconyDirections = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 4],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
 
         $amenities = $this->amenityRepository->findByCondition([
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['order', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['order', 'asc']);
 
         $widgets = $this->widgetService->getWidget([
             ['keyword' => 'featured-projects'],
@@ -129,16 +139,35 @@ class ProjectCatalogueController extends FrontendController
         $config = $this->config();
 
         $template = 'frontend.project.catalogue.index';
-        
+
         // Sidebar Categories
         $projectCatalogues = $this->projectCatalogueRepository->findByCondition([
             ['publish', '=', 2],
-        ], true, ['languages' => function($q) {
+        ], true, ['languages' => function ($q) {
             $q->where('language_id', $this->language);
         }], ['lft', 'asc']);
 
         $provinces = $this->provinceRepository->all()->pluck('name', 'code');
         $old_provinces = $provinces;
+
+        $newestRealEstates = $this->realEstateRepository->findByCondition([
+            ['publish', '=', 2]
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'DESC'])->take(8);
+
+        $featuredProjects = $this->projectRepository->findByCondition([
+            ['publish', '=', 2]
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'DESC'])->take(8);
+
+        $realEstateCatalogues = $this->realEstateCatalogueRepository->findByCondition([
+            ['publish', '=', 2],
+            ['parent_id', '=', 0]
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }]);
 
         $sorts = [
             'id:desc' => 'Mặc định',
@@ -155,8 +184,8 @@ class ProjectCatalogueController extends FrontendController
                 'total' => $projects->total(),
                 'sortLabel' => $sorts[$currentSort] ?? 'Mặc định'
             ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
-              ->header('Pragma', 'no-cache')
-              ->header('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT');
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT');
         }
 
         return view($template, compact(
@@ -201,26 +230,36 @@ class ProjectCatalogueController extends FrontendController
         // Filter Data
         $propertyTypes = $this->realEstateCatalogueRepository->findByCondition([
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }]); 
-        
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }]);
+
         $houseDirections = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 3],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
-        
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
+
         $furnitures = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 2],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
 
         $balconyDirections = $this->attributeRepository->findByCondition([
             ['attribute_catalogue_id', '=', 4],
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['id', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['id', 'asc']);
 
         $amenities = $this->amenityRepository->findByCondition([
             ['publish', '=', 2]
-        ], true, ['languages' => function($q) { $q->where('language_id', $this->language); }], ['order', 'asc']);
+        ], true, ['languages' => function ($q) {
+            $q->where('language_id', $this->language);
+        }], ['order', 'asc']);
 
         $widgets = $this->widgetService->getWidget([
             ['keyword' => 'featured-projects'],
@@ -236,7 +275,7 @@ class ProjectCatalogueController extends FrontendController
 
         $template = 'frontend.project.catalogue.index';
         $currentSort = $request->input('sort') ?: 'id:desc';
-        
+
         // Sorting logic
         $sort = ['projects.id', 'DESC'];
         if ($request->filled('sort')) {
@@ -265,7 +304,7 @@ class ProjectCatalogueController extends FrontendController
         // Sidebar Categories
         $projectCatalogues = $this->projectCatalogueRepository->findByCondition([
             ['publish', '=', 2],
-        ], true, ['languages' => function($q) {
+        ], true, ['languages' => function ($q) {
             $q->where('language_id', $this->language);
         }], ['lft', 'asc']);
 
@@ -306,8 +345,8 @@ class ProjectCatalogueController extends FrontendController
                 'total' => $projects->total(),
                 'sortLabel' => $sorts[$currentSort] ?? 'Mặc định'
             ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0')
-              ->header('Pragma', 'no-cache')
-              ->header('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT');
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT');
         }
 
         return view($template, compact(

@@ -6,6 +6,7 @@ use App\Http\Controllers\FrontendController;
 use Illuminate\Http\Request;
 use App\Repositories\Core\RouterRepository;
 use App\Models\Post;
+use App\Models\PostCatalogue;
 use App\Http\Controllers\Frontend\PostCatalogueController;
 
 class RouterController extends FrontendController
@@ -73,6 +74,53 @@ class RouterController extends FrontendController
             if ($post) {
                 $controller = app(PostCatalogueController::class);
                 echo $controller->detail($post->id, $request);
+                return;
+            }
+
+            $postCatalogue = PostCatalogue::whereHas('languages', function ($q) use ($slug, $slugNoHtml) {
+                $q->where(function ($q2) use ($slug, $slugNoHtml) {
+                    $q2->where('post_catalogue_language.canonical', $slug)
+                        ->orWhere('post_catalogue_language.canonical', $slugNoHtml);
+                });
+            })->whereHas('languages', function ($q) {
+                $q->where('post_catalogue_language.language_id', $this->language);
+            })->first();
+
+            if ($postCatalogue) {
+                $controller = app(PostCatalogueController::class);
+                echo $controller->index($postCatalogue->id, $request);
+                return;
+            }
+
+            // Project Fallback
+            $project = \App\Models\Project::whereHas('languages', function ($q) use ($slug, $slugNoHtml) {
+                $q->where(function ($q2) use ($slug, $slugNoHtml) {
+                    $q2->where('project_language.canonical', $slug)
+                        ->orWhere('project_language.canonical', $slugNoHtml);
+                });
+            })->whereHas('languages', function ($q) {
+                $q->where('project_language.language_id', $this->language);
+            })->first();
+
+            if ($project) {
+                $controller = app(\App\Http\Controllers\Frontend\ProjectController::class);
+                echo $controller->index($project->id, $request);
+                return;
+            }
+
+            // RealEstate Fallback
+            $realEstate = \App\Models\RealEstate::whereHas('languages', function ($q) use ($slug, $slugNoHtml) {
+                $q->where(function ($q2) use ($slug, $slugNoHtml) {
+                    $q2->where('real_estate_language.canonical', $slug)
+                        ->orWhere('real_estate_language.canonical', $slugNoHtml);
+                });
+            })->whereHas('languages', function ($q) {
+                $q->where('real_estate_language.language_id', $this->language);
+            })->first();
+
+            if ($realEstate) {
+                $controller = app(\App\Http\Controllers\Frontend\RealEstateController::class);
+                echo $controller->index($realEstate->id, $request);
                 return;
             }
 

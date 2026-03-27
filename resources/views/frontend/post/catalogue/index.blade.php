@@ -1,161 +1,194 @@
 @extends('frontend.homepage.layout')
-
 @section('header-class', 'header-inner')
+
 @section('content')
-    <div id="scroll-progress"></div>
     <div class="linden-page">
-        <section class="hp-luxury-header"
-            style="background-image: url('{{ $property->image ?? asset('frontend/resources/img/homely/slider/1.webp') }}');">
-            <div class="hp-hero-overlay"></div>
-            <div class="hp-luxury-header__content">
-                <div class="uk-container uk-container-center">
-                    <div class="hp-luxury-header__title-wrap" data-reveal="up">
-                        <h1 class="hp-luxury-header__title">
-                            @if (isset($postCatalogue) && $postCatalogue && $postCatalogue->parent_id != 0)
-                                {{ $postCatalogue->languages->first()->pivot->name ?? 'Bài viết' }}
-                            @else
-                                Bài Viết
-                            @endif
-                        </h1>
-                        <p class="hp-luxury-header__desc hp-hero-subtitle-main">
-                            Cập nhật những thông tin mới nhất về thị trường bất động sản và các dự án của
-                            {{ $system['homepage_brand'] ?? 'Guland' }}.
-                        </p>
-                    </div>
-                    <div class="hp-luxury-breadcrumb" data-reveal="left">
-                        <div class="content-breadcrumb">
-                            <a href="{{ route('home.index') }}">Trang chủ</a>
-                            <span class="separator">»</span>
-                            <span class="current">
-                                @if (isset($postCatalogue) && $postCatalogue && $postCatalogue->parent_id != 0)
-                                    {{ $postCatalogue->languages->first()->pivot->name ?? 'Tin tức' }}
-                                @else
-                                    Tin tức
-                                @endif
-                            </span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Minimalist Header & Breadcrumbs -->
+        <section class="hp-detail-header">
+            <div class="uk-container uk-container-center">
+                <ul class="uk-breadcrumb uk-flex uk-flex-middle">
+                    <li><a href="{{ url('/') }}">Trang chủ</a></li>
+                    <li><a href="{{ url('bai-viet.html') }}">Bài viết</a></li>
+                    @if (isset($breadcrumb) && is_array($breadcrumb))
+                        @foreach ($breadcrumb as $key => $val)
+                            <li><a href="{{ $val['canonical'] }}">{{ $val['name'] }}</a></li>
+                        @endforeach
+                    @endif
+                    @if (isset($postCatalogue) && $postCatalogue)
+                        <li class="uk-active"><span>{{ $postCatalogue->languages->first()->pivot->name }}</span></li>
+                    @endif
+                </ul>
             </div>
         </section>
 
-        <section class="hp-section bg-white hp-section-padding">
+        <!-- Full-width Zalo Promo Section -->
+        <div class="hp-full-promo-section uk-margin-bottom">
             <div class="uk-container uk-container-center">
-                <div class="uk-grid uk-grid-large" data-uk-grid-margin>
-                    <div class="uk-width-large-2-3">
-                        @if (!empty($posts) && $posts->count() > 0)
-                            <div class="uk-grid uk-grid-medium" data-uk-grid-margin>
-                                @foreach ($posts as $index => $post)
-                                    @php
-                                        $postImage = !empty($post->image)
-                                            ? asset($post->image)
-                                            : asset('images/placeholder-news.jpg');
-                                        $postUrl = !empty($post->canonical)
-                                            ? url(
-                                                rtrim($post->canonical, '/') .
-                                                    (str_ends_with($post->canonical, '.html') ? '' : '.html'),
-                                            )
-                                            : '#';
-                                        $postName = $post->name ?? 'Untitled';
-                                        $publishedAt = !empty($post->released_at)
-                                            ? \Carbon\Carbon::parse($post->released_at)
-                                            : \Carbon\Carbon::parse($post->created_at);
-                                        $dateFormatted = $publishedAt->format('d/m/Y');
+                <div class="hp-promo-inner">
+                    <h2 class="hp-promo-title">TÌM KIẾM BẤT ĐỘNG SẢN ƯNG Ý</h2>
+                    <p class="hp-promo-desc">
+                        Hàng ngàn tin <strong>mua bán, cho thuê</strong> nhà đất và dự án với thông tin xác thực, vị trí đắc
+                        địa và pháp lý an toàn.<br>
+                        Chuyên trang bất động sản và quy hoạch giúp bạn tìm kiếm cơ hội đầu tư và an cư lý tưởng nhất.
+                    </p>
+                    <div class="hp-promo-actions">
+                        <a href="https://zalo.me/{{ get_hotline_link($agent ?? null, $system['contact_hotline'] ?? '') }}"
+                            class="hp-btn-zalo-blue" target="_blank">
+                            <img src="{{ asset('frontend/resources/img/icon_zalo_white.png') }}" alt="Zalo"
+                                onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg'">
+                            TƯ VẤN NGAY
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                                        $categoryName = '';
-                                        if ($post->post_catalogues->count() > 0) {
-                                            $cat = $post->post_catalogues->first();
-                                            $categoryName = $cat->languages->first()->pivot->name ?? '';
-                                        }
-                                    @endphp
+        <section class="hp-section bg-white">
+            <div class="uk-container uk-container-center">
+                <div class="uk-grid uk-grid-medium" data-uk-grid-margin>
+                    <!-- Main Content (75%) -->
+                    <div class="uk-width-large-3-4">
+                        <div class="hp-listing-top uk-flex uk-flex-middle uk-flex-space-between uk-margin-large-bottom">
+                            <div class="hp-listing-title">
+                                <h1 class="hp-category-name">
+                                    @if (request('keyword'))
+                                        Kết quả tìm kiếm: "{{ request('keyword') }}"
+                                    @else
+                                        {{ isset($postCatalogue) && $postCatalogue ? $postCatalogue->languages->first()->pivot->name : 'Tin tức & Sự kiện' }}
+                                    @endif
+                                </h1>
+                                <div class="hp-listing-count">
+                                    <i class="fa fa-newspaper-o uk-margin-small-right"></i>
+                                    {{ $posts->total() }} bài viết
+                                </div>
+                            </div>
+                        </div>
+
+                        @if ($posts->count() > 0)
+                            <div class="uk-grid uk-grid-medium" data-uk-grid-margin>
+                                @foreach ($posts as $post)
                                     <div class="uk-width-medium-1-2 uk-margin-bottom">
-                                        <article class="hp-post-card" data-reveal="up">
-                                            <div class="hp-post-card__img">
-                                                <a href="{{ $postUrl }}">
-                                                    <img src="{{ $postImage }}" alt="{{ $postName }}">
-                                                </a>
-                                                @if ($categoryName)
-                                                    <span class="hp-post-card__badge">{{ $categoryName }}</span>
-                                                @endif
-                                            </div>
-                                            <div class="hp-post-card__body">
-                                                <div class="hp-post-card__meta">
-                                                    <i class="fa fa-calendar-o"></i> {{ $dateFormatted }}
-                                                </div>
-                                                <h3 class="hp-post-card__title">
-                                                    <a href="{{ $postUrl }}">{{ $postName }}</a>
-                                                </h3>
-                                                <div class="hp-post-card__excerpt">
-                                                    {!! Str::limit(strip_tags($post->languages->first()->pivot->description ?? ''), 100) !!}
-                                                </div>
-                                            </div>
-                                        </article>
+                                        @include('frontend.component.post_card', ['post' => $post])
                                     </div>
                                 @endforeach
                             </div>
 
-                            @if ($posts->hasPages())
-                                <div class="uk-margin-large-top">
-                                    {{ $posts->links('frontend.component.pagination') }}
-                                </div>
-                            @endif
-                        @else
-                            <div class="hp-empty-state">
-                                <p>Không tìm thấy bài viết nào trong chuyên mục này.</p>
+                            <div class="uk-margin-large-top">
+                                {{ $posts->links('frontend.component.pagination') }}
                             </div>
+                        @else
+                            <div class="uk-alert uk-alert-warning">Đang cập nhật bài viết...</div>
                         @endif
                     </div>
 
-                    <!-- Sidebar (4) -->
-                    <div class="uk-width-large-1-3">
-                        <aside class="hp-sidebar">
-                            <!-- Search -->
-                            <div class="hp-sidebar-widget">
-                                <h4 class="hp-sidebar-title">Tìm kiếm</h4>
-                                <form action="{{ request()->url() }}" method="GET" class="hp-sidebar-search">
-                                    <input type="text" name="keyword" value="{{ request('keyword') }}"
-                                        placeholder="Nhập từ khóa...">
-                                    <button type="submit"><i class="fa fa-search"></i></button>
-                                </form>
-                            </div>
-
-                            <!-- Categories -->
-                            <div class="hp-sidebar-widget">
-                                <h4 class="hp-sidebar-title">Danh mục</h4>
-                                <ul class="hp-sidebar-list">
-                                    @php
-                                        $rootCanonical = 'bai-viet.html';
-                                        if (isset($postCatalogue) && $postCatalogue && $postCatalogue->parent_id != 0) {
-                                            if (isset($breadcrumb)) {
-                                                foreach ($breadcrumb as $item) {
-                                                    if ($item->parent_id == 0) {
-                                                        $rootCanonical = rtrim($item->canonical, '/') . '.html';
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    @endphp
-                                    <li
-                                        class="{{ !isset($postCatalogue) || $postCatalogue->parent_id == 0 ? 'active' : '' }}">
-                                        <a href="{{ url($rootCanonical) }}">Tất cả bài viết</a>
-                                    </li>
-                                    @if (isset($categories))
-                                        @foreach ($categories as $cat)
-                                            <li
-                                                class="{{ isset($postCatalogue) && $postCatalogue && $postCatalogue->id == $cat->id ? 'active' : '' }}">
-                                                <a href="{{ url(rtrim($cat->canonical, '/') . '.html') }}">
-                                                    {{ $cat->name }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    @endif
-                                </ul>
-                            </div>
-                        </aside>
+                    <div class="uk-width-large-1-4">
+                        @include('frontend.component.sidebar_posts')
                     </div>
                 </div>
             </div>
         </section>
     </div>
+
+    <style>
+        .hp-section {
+            padding: 40px 0;
+        }
+
+        .hp-category-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+        }
+
+        .hp-listing-count {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* Sidebar Styling */
+        .hp-sidebar-sticky {
+            position: sticky;
+            top: 100px;
+            z-index: 10;
+        }
+
+        .hp-sidebar-widget {
+            background: #fff;
+            border-radius: 15px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f5f5f5;
+        }
+
+        .hp-sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .hp-sidebar-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .hp-sidebar-list li {
+            margin-bottom: 8px;
+        }
+
+        .hp-sidebar-list li a {
+            color: #555;
+            font-size: 15px;
+            transition: all 0.3s;
+            display: block;
+            text-decoration: none;
+        }
+
+        .hp-sidebar-list li.active a,
+        .hp-sidebar-list li a:hover {
+            color: var(--main-color);
+            font-weight: 600;
+        }
+
+        /* Custom Search Box */
+        .hp-search-container {
+            position: relative;
+        }
+
+        .hp-search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            z-index: 5;
+        }
+
+        .hp-search-container input {
+            background: #f8f8f8 !important;
+            border: 1px solid #eee !important;
+            border-radius: 8px !important;
+            padding: 12px 15px 12px 45px !important;
+            font-size: 14px !important;
+            height: auto !important;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .hp-search-container input:focus {
+            background: #fff !important;
+            border-color: var(--main-color) !important;
+            outline: none;
+        }
+
+        @media (max-width: 959px) {
+            .hp-sidebar-sticky {
+                position: static;
+                margin-top: 40px;
+            }
+        }
+    </style>
 @endsection

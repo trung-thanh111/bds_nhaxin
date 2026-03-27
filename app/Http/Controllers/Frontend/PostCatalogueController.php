@@ -16,6 +16,11 @@ use Jenssegers\Agent\Facades\Agent;
 use App\Models\Introduce;
 use App\Models\Post;
 use App\Repositories\Post\PostRepository;
+use App\Repositories\RealEstate\RealEstateCatalogueRepository;
+use App\Repositories\RealEstate\RealEstateRepository;
+use App\Repositories\RealEstate\ProjectCatalogueRepository as ProjectCatalogueRepo;
+use App\Repositories\RealEstate\ProjectRepository;
+use App\Repositories\RealEstate\AgentRepo;
 use App\Services\V2\Impl\RealEstate\PropertyService;
 use App\View\Components\TableOfContents;
 
@@ -30,6 +35,11 @@ class PostCatalogueController extends FrontendController
     protected $slideService;
     protected $postRepository;
     protected $propertyService;
+    protected $realEstateCatalogueRepository;
+    protected $realEstateRepository;
+    protected $projectCatalogueRepo;
+    protected $projectRepository;
+    protected $agentRepo;
 
     public function __construct(
         PostCatalogueRepository $postCatalogueRepository,
@@ -38,7 +48,12 @@ class PostCatalogueController extends FrontendController
         WidgetService $widgetService,
         SlideService $slideService,
         PostRepository $postRepository,
-        PropertyService $propertyService
+        PropertyService $propertyService,
+        RealEstateCatalogueRepository $realEstateCatalogueRepository,
+        RealEstateRepository $realEstateRepository,
+        ProjectCatalogueRepo $projectCatalogueRepo,
+        ProjectRepository $projectRepository,
+        AgentRepo $agentRepo
     ) {
         $this->postCatalogueRepository = $postCatalogueRepository;
         $this->postCatalogueService = $postCatalogueService;
@@ -47,6 +62,11 @@ class PostCatalogueController extends FrontendController
         $this->slideService = $slideService;
         $this->postRepository = $postRepository;
         $this->propertyService = $propertyService;
+        $this->realEstateCatalogueRepository = $realEstateCatalogueRepository;
+        $this->realEstateRepository = $realEstateRepository;
+        $this->projectCatalogueRepo = $projectCatalogueRepo;
+        $this->projectRepository = $projectRepository;
+        $this->agentRepo = $agentRepo;
         parent::__construct();
     }
 
@@ -89,18 +109,41 @@ class PostCatalogueController extends FrontendController
 
         $lastestNews = Post::with(['languages'])->orderBy('order', 'desc')->orderBy('id', 'desc')->where(['publish' => 2])->limit(8)->get();
 
-        $rootId = ($postCatalogue->parent_id == 0) ? $postCatalogue->id : $postCatalogue->parent_id;
         $categories = $this->postCatalogueRepository->findByCondition(
             [
                 ['publish', '=', 2],
-                ['parent_id', '=', $rootId]
+                ['parent_id', '=', 0]
             ],
             true,
             ['languages'],
             ['order', 'desc']
-        )->take(4);
+        )->take(10);
 
-        $property = $this->propertyService->findByCondition([['publish', 2]]);
+        $property = $this->propertyService->findByCondition([['publish', '=', 2]]);
+
+        // Sidebar data
+        $realEstateCatalogues = $this->realEstateCatalogueRepository->findByCondition([
+            ['publish', '=', 2],
+            ['parent_id', '=', 0]
+        ], true, ['languages']);
+
+        $projectCatalogues = $this->projectCatalogueRepo->findByCondition([
+            ['publish', '=', 2],
+            ['parent_id', '=', 0]
+        ], true, ['languages']);
+
+        $agent = $this->agentRepo->findByCondition([
+            ['is_primary', '=', 1],
+            ['publish', '=', 2]
+        ], false);
+
+        $newestRealEstates = $this->realEstateRepository->findByCondition([
+            ['publish', '=', 2]
+        ], true, ['languages'], ['id', 'DESC'])->take(8);
+
+        $featuredProjects = $this->projectRepository->findByCondition([
+            ['publish', '=', 2]
+        ], true, ['languages'], ['id', 'DESC'])->take(8);
 
         $template = 'frontend.post.catalogue.index';
 
@@ -123,7 +166,12 @@ class PostCatalogueController extends FrontendController
             'introduce',
             'lastestNews',
             'categories',
-            'property'
+            'property',
+            'realEstateCatalogues',
+            'projectCatalogues',
+            'agent',
+            'newestRealEstates',
+            'featuredProjects'
         ));
     }
 
@@ -184,16 +232,39 @@ class PostCatalogueController extends FrontendController
             ->orderBy('id', 'asc')
             ->first();
 
-        $rootId = ($postCatalogue->parent_id == 0) ? $postCatalogue->id : $postCatalogue->parent_id;
         $categories = $this->postCatalogueRepository->findByCondition(
             [
                 ['publish', '=', 2],
-                ['parent_id', '=', $rootId]
+                ['parent_id', '=', 0]
             ],
             true,
             ['languages'],
             ['order', 'desc']
-        )->take(10); // Take more for sidebar
+        )->take(10);
+
+        // Sidebar data
+        $realEstateCatalogues = $this->realEstateCatalogueRepository->findByCondition([
+            ['publish', '=', 2],
+            ['parent_id', '=', 0]
+        ], true, ['languages']);
+
+        $projectCatalogues = $this->projectCatalogueRepo->findByCondition([
+            ['publish', '=', 2],
+            ['parent_id', '=', 0]
+        ], true, ['languages']);
+
+        $agent = $this->agentRepo->findByCondition([
+            ['is_primary', '=', 1],
+            ['publish', '=', 2]
+        ], false);
+
+        $newestRealEstates = $this->realEstateRepository->findByCondition([
+            ['publish', '=', 2]
+        ], true, ['languages'], ['id', 'DESC'])->take(8);
+
+        $featuredProjects = $this->projectRepository->findByCondition([
+            ['publish', '=', 2]
+        ], true, ['languages'], ['id', 'DESC'])->take(8);
 
         $template = 'frontend.post.post.index';
 
@@ -213,7 +284,12 @@ class PostCatalogueController extends FrontendController
             'previous',
             'next',
             'items',
-            'categories' // Added categories
+            'categories', // Added categories
+            'realEstateCatalogues',
+            'projectCatalogues',
+            'agent',
+            'newestRealEstates',
+            'featuredProjects'
         ));
     }
 

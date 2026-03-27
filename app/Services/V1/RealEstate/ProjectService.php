@@ -67,19 +67,20 @@ class ProjectService extends BaseService
         }
 
         // Area Filter
-        if ($request->filled('area_min') || $request->filled('area_max')) {
-            if ($request->filled('area_min')) {
-                $condition['where'][] = ['projects.area', '>=', (float) $request->input('area_min')];
-            }
-            if ($request->filled('area_max')) {
-                $condition['where'][] = ['projects.area', '<=', (float) $request->input('area_max')];
-            }
-        } elseif ($request->filled('area') && strpos($request->input('area'), '-') !== false) {
+        // Area Filter
+        if ($request->filled('area_min')) {
+            $condition['where'][] = ['projects.area', '>=', $request->input('area_min')];
+        }
+        if ($request->filled('area_max')) {
+            $condition['where'][] = ['projects.area', '<=', $request->input('area_max')];
+        }
+
+        if (!$request->filled('area_min') && !$request->filled('area_max') && $request->filled('area')) {
             $parts = explode('-', $request->input('area'));
-            if (isset($parts[0]) && is_numeric($parts[0]) && $parts[0] > 0) {
+            if (isset($parts[0]) && is_numeric($parts[0])) {
                 $condition['where'][] = ['projects.area', '>=', (float) $parts[0]];
             }
-            if (isset($parts[1]) && is_numeric($parts[1]) && $parts[1] < 99999) {
+            if (isset($parts[1]) && is_numeric($parts[1]) && (float)$parts[1] > 0 && (float)$parts[1] < 99999) {
                 $condition['where'][] = ['projects.area', '<=', (float) $parts[1]];
             }
         }

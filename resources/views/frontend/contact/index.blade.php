@@ -156,7 +156,8 @@
                     <div class="uk-width-large-1-2">
                         <div class="hp-contact-form-wrap" data-reveal="right">
                             <div class="hp-form-header uk-margin-bottom">
-                                <h3 style="font-weight: 700; margin-bottom: 5px;">Gửi tin nhắn cho chúng tôi</h3>
+                                <h3 style="font-weight: 700; margin-bottom: 5px; margin-left: 30px;">Chúng tôi đã nhận được
+                                    yêu cầu của bạn</h3>
                                 <p style="color: #777; font-size: 14px;">Chúng tôi sẽ phản hồi yêu cầu của bạn trong vòng
                                     24h làm việc.</p>
                             </div>

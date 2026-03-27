@@ -51,8 +51,6 @@
                     <div class="uk-flex uk-flex-middle uk-flex-right">
                         <a class="hp-hamburger uk-flex uk-flex-middle" href="#offcanvas-desktop"
                             data-uk-offcanvas="{target:'#offcanvas-desktop'}">
-                            <span class="uk-margin-small-right uk-visible-large"
-                                style="font-weight: 600; font-size: 15px;">Danh mục</span>
                             <i class="fa fa-bars" style="font-size: 24px; color: var(--text-main);"></i>
                         </a>
                     </div>

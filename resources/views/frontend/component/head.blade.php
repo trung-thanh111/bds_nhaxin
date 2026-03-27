@@ -9,7 +9,6 @@
 <link rel="icon" href="{{ $system['homepage_favicon'] ?? '' }}" type="image/png" sizes="30x30">
 <title>{{ $seo['meta_title'] ?? '' }}</title>
 
-
 <link rel="stylesheet" href="{{ asset('frontend/resources/uikit/css/uikit.modify.css') }}">
 <link rel="stylesheet" href="{{ asset('frontend/resources/fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -37,7 +36,6 @@
 </script>
 <link rel="canonical" href="{{ $seo['canonical'] ?? '' }}" />
 <meta property="og:locale" content="vi_VN" />
-
 <meta property="og:title" content="{{ $seo['meta_title'] ?? '' }}" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="{{ $seo['meta_image'] ?? '' }}" />

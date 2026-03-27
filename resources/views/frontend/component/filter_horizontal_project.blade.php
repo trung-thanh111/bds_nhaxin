@@ -24,9 +24,9 @@
                                         @php $catName = $cat->languages->first()->pivot->name ?? ''; @endphp
                                         <label class="hp-selection-item uk-flex uk-flex-middle uk-flex-space-between">
                                             <span>{{ $catName }}</span>
-                                            <input type="checkbox" class="bar-sync-input" data-name="project_catalogue_id[]"
-                                                value="{{ $cat->id }}" form="filter-form"
-                                                @if (is_array(request('project_catalogue_id')) && in_array($cat->id, request('project_catalogue_id'))) checked @endif>
+                                            <input type="checkbox" class="bar-sync-input"
+                                                data-name="project_catalogue_id[]" value="{{ $cat->id }}"
+                                                form="filter-form" @if (is_array(request('project_catalogue_id')) && in_array($cat->id, request('project_catalogue_id'))) checked @endif>
                                         </label>
                                     @endforeach
                                 @endif
@@ -102,7 +102,7 @@
         border-bottom: 1px solid #eee;
         position: sticky;
         top: 0;
-        z-index: 1000;
+        z-index: 100;
         height: 65px;
         display: flex;
         align-items: center;

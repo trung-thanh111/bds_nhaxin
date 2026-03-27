@@ -2,7 +2,9 @@
     $lang = $item->languages->first()->pivot;
     $timeUpdate = diff_for_humans($item->updated_at);
     $displayAddress = format_address($item);
-    $mapUrl = extract_map_url($item->iframe_map) ?: 'https://www.google.com/maps/search/?api=1&query=' . urlencode($displayAddress);
+    $mapUrl =
+        extract_map_url($item->iframe_map) ?:
+        'https://www.google.com/maps/search/?api=1&query=' . urlencode($displayAddress);
 @endphp
 
 <div class="gl-property-card">
@@ -41,7 +43,11 @@
             <div class="gl-card-address">
                 <i class="fa fa-map-marker"></i>
                 @php
-                    $oldAddress = format_address($item->old_province_name, $item->old_district_name, $item->old_ward_name);
+                    $oldAddress = format_address(
+                        $item->old_province_name,
+                        $item->old_district_name,
+                        $item->old_ward_name,
+                    );
                 @endphp
                 <span>{{ $oldAddress }} (Cũ)</span>
             </div>
@@ -53,8 +59,12 @@
             <div class="gl-card-features">
                 @php
                     $allFeatures = [];
-                    if ($item->apartment_count > 0) { $allFeatures[] = $item->apartment_count . ' Căn hộ'; }
-                    if ($item->block_count > 0) { $allFeatures[] = $item->block_count . ' Tòa'; }
+                    if ($item->apartment_count > 0) {
+                        $allFeatures[] = $item->apartment_count . ' Căn hộ';
+                    }
+                    if ($item->block_count > 0) {
+                        $allFeatures[] = $item->block_count . ' Tòa';
+                    }
                     foreach ($item->amenities as $amenity) {
                         $allFeatures[] = $amenity->languages->first()->pivot->name ?? '';
                     }
@@ -72,7 +82,7 @@
         </div>
 
         <div class="gl-card-description">
-            {!! Str::limit(strip_tags($lang->description), 100) !!}
+            {!! Str::limit(strip_tags($lang->content), 200) !!}
         </div>
 
         <div class="gl-card-footer">

@@ -56,7 +56,6 @@ class LocationComposer
         return $this->projectCatalogueRepository->findByCondition(
             [
                 ['publish', '=', 2],
-                ['parent_id', '=', 0],
             ],
             true,
             ['languages' => function($query) {

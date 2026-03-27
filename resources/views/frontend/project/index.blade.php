@@ -197,7 +197,7 @@
                             @include('frontend.component.agent_card', ['agent' => $agent])
 
                             @if (isset($projectCatalogues) && count($projectCatalogues))
-                                <div class="hp-sidebar-widget mt30">
+                                <div class="hp-sidebar-widget">
                                     <h4 class="hp-sidebar-title">Danh mục dự án</h4>
                                     <ul class="hp-sidebar-list">
                                         @foreach ($projectCatalogues as $cat)
@@ -212,7 +212,7 @@
                             @endif
 
                             @if (isset($realEstateCatalogues) && count($realEstateCatalogues))
-                                <div class="hp-sidebar-widget mt30">
+                                <div class="hp-sidebar-widget">
                                     <h4 class="hp-sidebar-title">Danh mục BĐS</h4>
                                     <ul class="hp-sidebar-list">
                                         @foreach ($realEstateCatalogues as $cat)

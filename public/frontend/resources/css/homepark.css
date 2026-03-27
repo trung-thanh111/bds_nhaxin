@@ -1761,6 +1761,7 @@ input:checked+.gl-slider:before {
     background: #fff;
     border-radius: 12px;
     padding: 20px;
+    margin: 20px 0;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.04);
 }
 
@@ -1779,8 +1780,9 @@ input:checked+.gl-slider:before {
 }
 
 .hp-sidebar-list li {
-    padding: 12px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #f8f8f8;
+    margin-bottom: 0px !important;
 }
 
 .hp-sidebar-list li:last-child {
@@ -1891,7 +1893,7 @@ input:checked+.gl-slider:before {
     .hp-sidebar-sticky {
         position: sticky;
         top: 100px;
-        z-index: 1000;
+        z-index: 100;
     }
 
     .hp-detail-grid {

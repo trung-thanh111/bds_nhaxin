@@ -20,11 +20,6 @@
                                 e($item->email) .
                                 '</small>',
                         ],
-                        'project' => [
-                            'label' => 'Dự án quan tâm',
-                            'render' => fn($item) => $item->projects?->languages->first()->pivot->name ??
-                                ($item->projects?->name ?? 'N/A'),
-                        ],
                         'subject' => [
                             'label' => 'Tiêu đề',
                             'render' => fn($item) => e($item->subject) ?: '<i class="text-muted">Không có tiêu đề</i>',

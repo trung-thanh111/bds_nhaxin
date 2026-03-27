@@ -34,33 +34,39 @@
                 <div class="hp-footer-socials">
                     @if (!empty($system['social_facebook']))
                         <a href="{{ $system['social_facebook'] }}" target="_blank" class="social-icon facebook">
-                            <i class="fa fa-facebook"></i>
-                        </a>
-                    @endif
-                    @if (!empty($system['social_youtube']))
-                        <a href="{{ $system['social_youtube'] }}" target="_blank" class="social-icon youtube">
-                            <i class="fa fa-youtube"></i>
-                        </a>
-                    @endif
-                    @if (!empty($system['social_zalo']))
-                        <a href="{{ $system['social_zalo'] }}" target="_blank" class="social-icon zalo">
-                            <i class="fa fa-zalo"></i>
+                            <i class="fa-brands fa-facebook-f"></i>
                         </a>
                     @endif
                     @if (!empty($system['social_messenger']))
                         <a href="{{ $system['social_messenger'] }}" target="_blank" class="social-icon messenger">
-                            <i class="fa fa-messenger"></i>
+                            <i class="fa-brands fa-facebook-messenger"></i>
                         </a>
                     @endif
-
+                    @if (!empty($system['social_zalo']))
+                        <a href="https://zalo.me/{{ preg_replace('/\D/', '', $system['social_zalo']) }}"
+                            target="_blank" class="social-icon zalo">
+                            <img src="{{ asset('frontend/resources/img/icon_zalo.png') }}" alt="Zalo"
+                                style="width: 20px; height: 20px; filter: brightness(0) invert(1);">
+                        </a>
+                    @endif
+                    @if (!empty($system['social_youtube']))
+                        <a href="{{ $system['social_youtube'] }}" target="_blank" class="social-icon youtube">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                    @endif
                     @if (!empty($system['social_twitter']))
                         <a href="{{ $system['social_twitter'] }}" target="_blank" class="social-icon twitter">
-                            <i class="fa fa-twitter"></i>
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                    @endif
+                    @if (!empty($system['social_tiktok']))
+                        <a href="{{ $system['social_tiktok'] }}" target="_blank" class="social-icon tiktok">
+                            <i class="fa-brands fa-tiktok"></i>
                         </a>
                     @endif
                     @if (!empty($system['social_instagram']))
                         <a href="{{ $system['social_instagram'] }}" target="_blank" class="social-icon instagram">
-                            <i class="fa fa-instagram"></i>
+                            <i class="fa-brands fa-instagram"></i>
                         </a>
                     @endif
                 </div>

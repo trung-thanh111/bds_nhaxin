@@ -841,7 +841,7 @@ input:checked+.gl-slider:before {
 
 /* New GULAND Style Footer */
 .hp-footer {
-    background: #ffffff !important;
+    background: #f8f9fa !important;
     padding: 60px 0 30px;
     border-top: 1px solid #eeeeee;
     color: #555555;
@@ -1006,8 +1006,28 @@ input:checked+.gl-slider:before {
     background: #3b5998;
 }
 
+.social-icon.messenger {
+    background: #0084ff;
+}
+
+.social-icon.zalo {
+    background: #0068ff;
+}
+
 .social-icon.youtube {
     background: #ff0000;
+}
+
+.social-icon.twitter {
+    background: #000000;
+}
+
+.social-icon.tiktok {
+    background: #000000;
+}
+
+.social-icon.instagram {
+    background: #e4405f;
 }
 
 .social-icon:hover {

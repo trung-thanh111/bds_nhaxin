@@ -40,9 +40,14 @@ class ProjectController extends FrontendController
             abort(404);
         }
 
-        $project->load(['catalogue.languages' => function($q) {
-            $q->where('language_id', $this->language);
-        }]);
+        $project->load([
+            'catalogue.languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            },
+            'amenities.languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }
+        ]);
 
         // Increment view_count
         try {
@@ -58,49 +63,6 @@ class ProjectController extends FrontendController
             $project->status
         ];
 
-        if (isset($relatedProjects) && count($relatedProjects)) {
-            foreach ($relatedProjects as $related) {
-                $attributeIds[] = $related->price_unit;
-                $attributeIds[] = $related->legal_status;
-                $attributeIds[] = $related->status;
-            }
-        }
-
-        $attributeIds = array_unique(array_filter($attributeIds));
-
-        $attributeMap = [];
-        if (!empty($attributeIds)) {
-            $attributeMap = \App\Models\Attribute::whereIn('id', $attributeIds)
-                ->with(['languages' => function($q) {
-                    $q->where('language_id', $this->language);
-                }])
-                ->get()
-                ->pluck('languages.0.pivot.name', 'id')
-                ->toArray();
-        }
-
-        // Get Primary Agent
-        $agent = $this->agentRepo->findByCondition([
-            ['is_primary', '=', 1],
-            ['publish', '=', 2]
-        ], false);
-
-        // Sidebar data: Get all catalogues
-        $realEstateCatalogues = $this->realEstateCatalogueRepository->findByCondition([
-            ['publish', '=', 2],
-            ['parent_id', '=', 0]
-        ], true, ['languages' => function($q) {
-            $q->where('language_id', $this->language);
-        }]);
-
-        $projectCatalogues = $this->projectCatalogueRepository->findByCondition([
-            ['publish', '=', 2],
-            ['parent_id', '=', 0]
-        ], true, ['languages' => function($q) {
-            $q->where('language_id', $this->language);
-        }]);
-
-        // Related Projects
         $relatedProjects = $this->projectRepository->pagination(
             ['*'],
             [
@@ -114,8 +76,55 @@ class ProjectController extends FrontendController
             ['path' => $project->canonical . '.html'],
             ['id', 'DESC'],
             [],
-            ['languages' => function($q) { $q->where('language_id', $this->language); }]
+            [
+                'languages' => function ($q) {
+                    $q->where('language_id', $this->language);
+                }
+            ]
         );
+
+        if (isset($relatedProjects) && count($relatedProjects)) {
+            foreach ($relatedProjects as $related) {
+                $attributeIds[] = $related->price_unit;
+                $attributeIds[] = $related->legal_status;
+                $attributeIds[] = $related->status;
+            }
+        }
+
+        $attributeIds = array_unique(array_filter($attributeIds));
+
+        $attributeMap = [];
+        if (!empty($attributeIds)) {
+            $attributeMap = \App\Models\Attribute::whereIn('id', $attributeIds)
+                ->with(['languages' => function ($q) {
+                    $q->where('language_id', $this->language);
+                }])
+                ->get()
+                ->pluck('languages.0.pivot.name', 'id')
+                ->toArray();
+        }
+
+        $agent = $this->agentRepo->findByCondition([
+            ['is_primary', '=', 1],
+            ['publish', '=', 2]
+        ], false);
+        $realEstateCatalogues = \Illuminate\Support\Facades\Cache::remember('global_real_estate_catalogues_' . $this->language, 3600, function () {
+            return $this->realEstateCatalogueRepository->findByCondition([
+                ['publish', '=', 2],
+                ['parent_id', '=', 0]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }]);
+        });
+
+        $projectCatalogues = \Illuminate\Support\Facades\Cache::remember('global_project_catalogues_' . $this->language, 3600, function () {
+            return $this->projectCatalogueRepository->findByCondition([
+                ['publish', '=', 2],
+                ['parent_id', '=', 0]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }]);
+        });
 
         $config = $this->config();
         $system = $this->system;

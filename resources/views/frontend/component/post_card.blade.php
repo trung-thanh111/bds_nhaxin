@@ -3,7 +3,7 @@
         <img src="{{ asset($post->image) }}" alt="{{ $post->name }}">
     </a>
     <div class="gl-post-body">
-        @if ($post->post_catalogues->first())
+        @if ($post->post_catalogues->isNotEmpty())
             <span class="gl-post-cat-tag">
                 {{ $post->post_catalogues->first()->languages->first()->pivot->name ?? '' }}
             </span>
@@ -12,7 +12,7 @@
             <a href="{{ url($post->canonical . '.html') }}">{{ $post->name }}</a>
         </h3>
         <div class="gl-post-desc">
-            {!! Str::limit(strip_tags($post->languages->first()->pivot->description ?? ''), 240) !!}
+            {!! Str::limit(strip_tags($post->description ?? ''), 240) !!}
         </div>
         <div class="gl-post-footer">
             <span class="gl-post-time">

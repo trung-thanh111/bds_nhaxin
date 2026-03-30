@@ -36,6 +36,7 @@ class RealEstateRepository extends BaseRepository
         )
             ->join('real_estate_language as tb2', 'tb2.real_estate_id', '=', 'real_estates.id')
             ->where('tb2.language_id', '=', $language_id)
+            ->with(['languages', 'amenities.languages'])
             ->find($id);
     }
 }

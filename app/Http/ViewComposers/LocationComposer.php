@@ -13,6 +13,9 @@ class LocationComposer
     protected $projectCatalogueRepository;
     protected $language;
 
+    protected static $cachedRealEstateCatalogues = null;
+    protected static $cachedProjectCatalogues = null;
+
     public function __construct(
         RealEstateCatalogueRepository $realEstateCatalogueRepository,
         ProjectCatalogueRepository $projectCatalogueRepository,
@@ -27,43 +30,50 @@ class LocationComposer
     {
         $provinces = $this->getProvinces('after');
         $old_provinces = $this->getProvinces('before');
-        $realEstateCatalogues = $this->getCatalogues();
-        $projectCatalogues = $this->getProjectCatalogues();
+        
+        if (static::$cachedRealEstateCatalogues === null) {
+            static::$cachedRealEstateCatalogues = $this->getCatalogues();
+        }
+        
+        if (static::$cachedProjectCatalogues === null) {
+            static::$cachedProjectCatalogues = $this->getProjectCatalogues();
+        }
         
         $view->with('provinces', $provinces);
         $view->with('old_provinces', $old_provinces);
-        $view->with('realEstateCatalogues', $realEstateCatalogues);
-        $view->with('projectCatalogues', $projectCatalogues);
+        $view->with('realEstateCatalogues', static::$cachedRealEstateCatalogues);
+        $view->with('projectCatalogues', static::$cachedProjectCatalogues);
     }
 
     private function getCatalogues()
     {
-        $publishCondition = [config('apps.general.defaultPublish')];
-        
-        return $this->realEstateCatalogueRepository->findByCondition(
-            $publishCondition,
-            true,
-            ['languages' => function($query) {
-                $query->where('language_id', $this->language);
-            }],
-            ['id', 'desc'],
-            ['id', 'parent_id', 'lft', 'rgt']
-        );
+        return \Illuminate\Support\Facades\Cache::remember('global_real_estate_catalogues_' . $this->language, 3600, function() {
+            $publishCondition = [config('apps.general.defaultPublish')];
+            return $this->realEstateCatalogueRepository->findByCondition(
+                $publishCondition,
+                true,
+                ['languages' => function($query) {
+                    $query->where('language_id', $this->language);
+                }],
+                ['id', 'desc']
+            );
+        });
     }
 
     private function getProjectCatalogues()
     {
-        return $this->projectCatalogueRepository->findByCondition(
-            [
-                ['publish', '=', 2],
-            ],
-            true,
-            ['languages' => function($query) {
-                $query->where('language_id', $this->language);
-            }],
-            ['lft', 'asc'],
-            ['id', 'parent_id', 'lft', 'rgt']
-        );
+        return \Illuminate\Support\Facades\Cache::remember('global_project_catalogues_' . $this->language, 3600, function() {
+            return $this->projectCatalogueRepository->findByCondition(
+                [
+                    ['publish', '=', 2],
+                ],
+                true,
+                ['languages' => function($query) {
+                    $query->where('language_id', $this->language);
+                }],
+                ['lft', 'asc']
+            );
+        });
     }
 
     private function getProvinces(string $source): array

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Language;
 use App\Models\System;
+use Illuminate\Support\Facades\Cache;
 
 class FrontendController extends Controller
 {
@@ -30,7 +31,9 @@ class FrontendController extends Controller
     }
 
     public function setSystem(){
-        $this->system = convert_array(System::where('language_id', $this->language)->get(), 'keyword', 'content');
+        $this->system = Cache::remember('system_settings_' . $this->language, 3600, function() {
+            return convert_array(System::where('language_id', $this->language)->get(), 'keyword', 'content');
+        });
     }
    
 

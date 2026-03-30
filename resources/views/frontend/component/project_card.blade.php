@@ -53,34 +53,6 @@
             </div>
         @endif
 
-        <!-- Features/Amenities -->
-        <div class="gl-card-features-wrapper">
-            <div class="gl-card-feature-label">Quy mô / Tiện ích:</div>
-            <div class="gl-card-features">
-                @php
-                    $allFeatures = [];
-                    if ($item->apartment_count > 0) {
-                        $allFeatures[] = $item->apartment_count . ' Căn hộ';
-                    }
-                    if ($item->block_count > 0) {
-                        $allFeatures[] = $item->block_count . ' Tòa';
-                    }
-                    foreach ($item->amenities as $amenity) {
-                        $allFeatures[] = $amenity->languages->first()->pivot->name ?? '';
-                    }
-                    $allFeatures = array_filter($allFeatures);
-                    $displayFeatures = array_slice($allFeatures, 0, 8);
-                    $moreCount = count($allFeatures) - count($displayFeatures);
-                @endphp
-                @foreach ($displayFeatures as $feature)
-                    <span class="gl-card-feature-tag">{{ $feature }}</span>
-                @endforeach
-                @if ($moreCount > 0)
-                    <span class="gl-card-feature-more">+{{ $moreCount }}</span>
-                @endif
-            </div>
-        </div>
-
         <div class="gl-card-description">
             {!! Str::limit(strip_tags($lang->content), 200) !!}
         </div>

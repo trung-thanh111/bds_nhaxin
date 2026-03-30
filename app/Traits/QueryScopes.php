@@ -71,7 +71,7 @@ trait QueryScopes
         if(!empty($relation)){
             foreach($relation as $key => $item){
                 $relationName = is_string($key) ? $key : $item;
-                if (is_string($relationName)) {
+                if (is_string($relationName) && !str_contains($relationName, '.')) {
                     $query->withCount($relationName);
                 }
                 $query->with([$key => $item]);

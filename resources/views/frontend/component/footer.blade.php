@@ -43,8 +43,8 @@
                         </a>
                     @endif
                     @if (!empty($system['social_zalo']))
-                        <a href="https://zalo.me/{{ preg_replace('/\D/', '', $system['social_zalo']) }}"
-                            target="_blank" class="social-icon zalo">
+                        <a href="https://zalo.me/{{ preg_replace('/\D/', '', $system['social_zalo']) }}" target="_blank"
+                            class="social-icon zalo">
                             <img src="{{ asset('frontend/resources/img/icon_zalo.png') }}" alt="Zalo"
                                 style="width: 20px; height: 20px; filter: brightness(0) invert(1);">
                         </a>

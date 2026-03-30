@@ -3,13 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\FrontendController;
-use App\Services\V2\Impl\RealEstate\PropertyService;
-use App\Services\V2\Impl\RealEstate\PropertyFacilityService;
-use App\Services\V2\Impl\RealEstate\FloorplanService;
-use App\Services\V2\Impl\RealEstate\GalleryService;
-use App\Services\V2\Impl\RealEstate\LocationHighlightService;
 use App\Services\V2\Impl\RealEstate\AgentService;
-use App\Services\V1\Core\SlideService;
 use App\Services\V1\Post\PostService;
 use App\Repositories\Core\SystemRepository;
 use App\Repositories\RealEstate\RealEstateRepository;
@@ -20,13 +14,7 @@ use Illuminate\Http\Request;
 class HomeController extends FrontendController
 {
     protected $systemRepository;
-    protected $propertyService;
-    protected $facilityService;
-    protected $floorplanService;
-    protected $galleryService;
-    protected $locationHighlightService;
     protected $agentService;
-    protected $slideService;
     protected $postService;
     protected $realEstateRepository;
     protected $realEstateCatalogueRepository;
@@ -34,26 +22,14 @@ class HomeController extends FrontendController
 
     public function __construct(
         SystemRepository $systemRepository,
-        PropertyService $propertyService,
-        PropertyFacilityService $facilityService,
-        FloorplanService $floorplanService,
-        GalleryService $galleryService,
-        LocationHighlightService $locationHighlightService,
         AgentService $agentService,
-        SlideService $slideService,
         PostService $postService,
         RealEstateRepository $realEstateRepository,
         RealEstateCatalogueRepository $realEstateCatalogueRepository,
         ProjectRepository $projectRepository
     ) {
         $this->systemRepository = $systemRepository;
-        $this->propertyService = $propertyService;
-        $this->facilityService = $facilityService;
-        $this->floorplanService = $floorplanService;
-        $this->galleryService = $galleryService;
-        $this->locationHighlightService = $locationHighlightService;
         $this->agentService = $agentService;
-        $this->slideService = $slideService;
         $this->postService = $postService;
         $this->realEstateRepository = $realEstateRepository;
         $this->realEstateCatalogueRepository = $realEstateCatalogueRepository;
@@ -62,109 +38,87 @@ class HomeController extends FrontendController
     }
 
     /**
-     * Homepage — 9 sections
+     * Homepage
      */
     public function index()
     {
-        $property = $this->propertyService->findByCondition([['publish', '=', 2]]);
+        $homepageData = \Illuminate\Support\Facades\Cache::remember('homepage_complete_data_' . $this->language, 3600, function () {
+            $data = [];
 
-        $facilities = $this->facilityService->findByCondition(
-            condition: [['publish', '=', 2]],
-            flag: true,
-            orderBy: ['sort_order', 'asc']
-        );
+            $data['primaryAgent'] = $this->agentService->findByCondition(
+                condition: [['publish', '=', 2], ['is_primary', '=', 1]],
+                flag: false
+            );
 
-        $floorplans = $this->floorplanService->findByCondition(
-            condition: [['publish', '=', 2]],
-            flag: true,
-            orderBy: ['order', 'asc']
-        );
+            $data['projects'] = $this->projectRepository->findByCondition(
+                condition: [config('apps.general.defaultPublish')],
+                flag: true,
+                relation: [
+                    'languages' => function ($query) {
+                        $query->where('language_id', $this->language);
+                    },
+                    'amenities.languages' => function ($query) {
+                        $query->where('language_id', $this->language);
+                    }
+                ],
+                orderBy: ['id', 'desc']
+            )->take(9);
 
-        $galleries = $this->galleryService->findByCondition(
-            condition: [['publish', '=', 2]],
-            flag: true,
-            orderBy: ['id', 'desc']
-        );
-
-        $locationHighlights = $this->locationHighlightService->findByCondition(
-            condition: [['publish', '=', 2]],
-            flag: true,
-            orderBy: ['sort_order', 'asc']
-        );
-
-        $primaryAgent = $this->agentService->findByCondition(
-            condition: [['is_primary', '=', true], ['publish', '=', 2]]
-        );
-
-        $agents = $this->agentService->findByCondition(
-            condition: [['publish', '=', 2]],
-            flag: true
-        );
-
-        $slides = $this->slideService->getSlide(['main-slider']);
-        $slides = $slides['main-slider'] ?? null;
-
-        $posts = $this->postService->paginate(
-            new Request(['publish' => 2]),
-            $this->language,
-            null,
-            1
-        );
-
-        $projects = $this->projectRepository->findByCondition(
-            condition: [config('apps.general.defaultPublish')],
-            flag: true,
-            relation: [
-                'languages' => function ($query) {
+            $catalogues = $this->realEstateCatalogueRepository->findByCondition(
+                condition: [['parent_id', '=', 0], config('apps.general.defaultPublish')],
+                flag: true,
+                relation: ['languages' => function ($query) {
                     $query->where('language_id', $this->language);
-                },
-                'amenities.languages' => function ($query) {
-                    $query->where('language_id', $this->language);
+                }],
+                orderBy: ['order', 'desc']
+            );
+
+            if ($catalogues) {
+                foreach ($catalogues as $catalogue) {
+                    $catIds = \Illuminate\Support\Facades\DB::table('real_estate_catalogues')
+                        ->where('lft', '>=', $catalogue->lft)
+                        ->where('rgt', '<=', $catalogue->rgt)
+                        ->pluck('id')->toArray();
+
+                    $catalogue->real_estates = $this->realEstateRepository->findByCondition(
+                        condition: [config('apps.general.defaultPublish')],
+                        flag: true,
+                        relation: [
+                            'languages' => function ($query) {
+                                $query->where('language_id', $this->language);
+                            },
+                            'amenities.languages' => function ($query) {
+                                $query->where('language_id', $this->language);
+                            }
+                        ],
+                        orderBy: ['id', 'desc'],
+                        param: ['whereIn' => $catIds, 'whereInField' => 'real_estate_catalogue_id']
+                    )->take(9);
                 }
-            ],
-            orderBy: ['id', 'desc']
-        )->take(9);
+            }
+            $data['homepageCatalogues'] = $catalogues;
 
-        // Fetch top-level categories and their 9 latest real estates
-        $homepageCatalogues = $this->realEstateCatalogueRepository->findByCondition(
-            [
-                ['parent_id', '=', 0],
-                config('apps.general.defaultPublish')
-            ],
-            true, // flag get()
-            ['languages' => function ($query) {
-                $query->where('language_id', $this->language);
-            }],
-            ['order', 'desc']
-        );
+            return $data;
+        });
 
+        $projects = $homepageData['projects'];
+        $homepageCatalogues = $homepageData['homepageCatalogues'];
+        $primaryAgent = $homepageData['primaryAgent'];
+
+        // Cache latest posts
+        $posts = \Illuminate\Support\Facades\Cache::remember('homepage_latest_posts_' . $this->language, 1800, function () {
+            return $this->postService->paginate(
+                new Request(['publish' => 2]),
+                $this->language,
+                null,
+                1
+            );
+        });
+
+        $attributeMap = [];
         if ($homepageCatalogues) {
             $attributeIds = [];
-            foreach ($homepageCatalogues as $key => $catalogue) {
-                // Get all children IDs for this catalogue using Nested Set (lft, rgt)
-                $catIds = \Illuminate\Support\Facades\DB::table('real_estate_catalogues')
-                    ->where('lft', '>=', $catalogue->lft)
-                    ->where('rgt', '<=', $catalogue->rgt)
-                    ->pluck('id')
-                    ->toArray();
-
-                $catalogue->real_estates = $this->realEstateRepository->findByCondition(
-                    [
-                        config('apps.general.defaultPublish')
-                    ],
-                    true,
-                    [
-                        'languages' => function ($query) {
-                            $query->where('language_id', $this->language);
-                        },
-                        'amenities.languages' => function ($query) {
-                            $query->where('language_id', $this->language);
-                        }
-                    ],
-                    ['id', 'desc'],
-                    ['whereIn' => $catIds, 'whereInField' => 'real_estate_catalogue_id']
-                )->take(9);
-
+            foreach ($homepageCatalogues as $catalogue) {
                 foreach ($catalogue->real_estates as $re) {
                     if ($re->transaction_type) $attributeIds[] = $re->transaction_type;
                     if ($re->price_unit) $attributeIds[] = $re->price_unit;
@@ -178,7 +132,6 @@ class HomeController extends FrontendController
             }
 
             $attributeIds = array_unique(array_filter($attributeIds));
-            $attributeMap = [];
             if (!empty($attributeIds)) {
                 $attributeMap = \App\Models\Attribute::whereIn('id', $attributeIds)
                     ->with(['languages' => function ($q) {
@@ -201,23 +154,13 @@ class HomeController extends FrontendController
             'seo',
             'system',
             'schema',
-            'property',
-            'facilities',
-            'floorplans',
-            'galleries',
-            'locationHighlights',
             'primaryAgent',
-            'agents',
-            'slides',
             'posts',
             'projects',
             'homepageCatalogues',
             'attributeMap'
         ));
     }
-
-
-    // ------ Helpers ------
 
     private function buildSeo($title = null)
     {

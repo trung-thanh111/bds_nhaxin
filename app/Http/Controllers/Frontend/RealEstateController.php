@@ -88,20 +88,24 @@ class RealEstateController extends FrontendController
             ['publish', '=', 2]
         ], false);
 
-        // Sidebar data: Get all catalogues
-        $realEstateCatalogues = $this->realEstateCatalogueRepository->findByCondition([
-            ['publish', '=', 2],
-            ['parent_id', '=', 0]
-        ], true, ['languages' => function($q) {
-            $q->where('language_id', $this->language);
-        }]);
+        // Sidebar data: Use shared global cache for maximum performance
+        $realEstateCatalogues = \Illuminate\Support\Facades\Cache::remember('global_real_estate_catalogues_' . $this->language, 3600, function() {
+            return $this->realEstateCatalogueRepository->findByCondition(
+                [config('apps.general.defaultPublish')], 
+                true, 
+                ['languages' => function($q) { $q->where('language_id', $this->language); }], 
+                ['id', 'desc']
+            );
+        });
 
-        $projectCatalogues = $this->projectCatalogueRepository->findByCondition([
-            ['publish', '=', 2],
-            ['parent_id', '=', 0]
-        ], true, ['languages' => function($q) {
-            $q->where('language_id', $this->language);
-        }]);
+        $projectCatalogues = \Illuminate\Support\Facades\Cache::remember('global_project_catalogues_' . $this->language, 3600, function() {
+            return $this->projectCatalogueRepository->findByCondition(
+                [config('apps.general.defaultPublish')], 
+                true, 
+                ['languages' => function($q) { $q->where('language_id', $this->language); }], 
+                ['lft', 'asc']
+            );
+        });
 
         // Related Real Estates (same category)
         $relatedRealEstates = $this->realEstateRepository->pagination(
@@ -117,7 +121,7 @@ class RealEstateController extends FrontendController
             ['path' => $realEstate->canonical . '.html'],
             ['id', 'DESC'],
             [],
-            ['languages' => function($q) { $q->where('language_id', $this->language); }]
+            ['languages', 'amenities.languages', 'catalogue']
         );
 
         // SEO

@@ -92,82 +92,21 @@ class ProjectCatalogueController extends FrontendController
             $sort
         );
 
-        // Filter Data
-        $propertyTypes = $this->realEstateCatalogueRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }]);
-        $houseDirections = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 3],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
-
-        $furnitures = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 2],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
-
-        $balconyDirections = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 4],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
-
-        $amenities = $this->amenityRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['order', 'asc']);
-
-        $widgets = $this->widgetService->getWidget([
-            ['keyword' => 'featured-projects'],
-        ], $this->language);
-
-        $agent = $this->agentRepo->findByCondition([
-            ['is_primary', '=', 1],
-            ['publish', '=', 2]
-        ], false);
-
         $system = $this->system;
         $seo = seo($projectCatalogue, $page);
         $config = $this->config();
 
         $template = 'frontend.project.catalogue.index';
 
-        // Sidebar Categories
-        $projectCatalogues = $this->projectCatalogueRepository->findByCondition([
-            ['publish', '=', 2],
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['lft', 'asc']);
+        // Use unified caching for filters and sidebars to eliminate duplicate SQL
+        $cachedData = $this->getProjectFilterAndSidebarData();
 
-        $provinces = $this->provinceRepository->all()->pluck('name', 'code');
-        $old_provinces = $provinces;
-
-        $newestRealEstates = $this->realEstateRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'DESC'])->take(8);
-
-        $featuredProjects = $this->projectRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'DESC'])->take(8);
-
-        $realEstateCatalogues = $this->realEstateCatalogueRepository->findByCondition([
-            ['publish', '=', 2],
-            ['parent_id', '=', 0]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }]);
+        $newestRealEstates = $cachedData['newestRealEstates'];
+        $featuredProjects = $cachedData['featuredProjects'];
+        $realEstateCatalogues = $cachedData['realEstateCatalogues'];
+        $projectCatalogues = $cachedData['projectCatalogues'];
+        $provinces = $cachedData['provinces'];
+        $old_provinces = $cachedData['old_provinces'];
 
         $sorts = [
             'id:desc' => 'Mặc định',
@@ -195,16 +134,6 @@ class ProjectCatalogueController extends FrontendController
             'breadcrumb',
             'projectCatalogue',
             'projects',
-            'widgets',
-            'agent',
-            'propertyTypes',
-            'houseDirections',
-            'furnitures',
-            'balconyDirections',
-            'amenities',
-            'newestRealEstates',
-            'featuredProjects',
-            'realEstateCatalogues',
             'projectCatalogues',
             'sorts',
             'isProject',
@@ -226,49 +155,6 @@ class ProjectCatalogueController extends FrontendController
                 'canonical' => url('du-an.html')
             ]
         ];
-
-        // Filter Data
-        $propertyTypes = $this->realEstateCatalogueRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }]);
-
-        $houseDirections = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 3],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
-
-        $furnitures = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 2],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
-
-        $balconyDirections = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 4],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
-
-        $amenities = $this->amenityRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['order', 'asc']);
-
-        $widgets = $this->widgetService->getWidget([
-            ['keyword' => 'featured-projects'],
-        ], $this->language);
-
-        $agent = $this->agentRepo->findByCondition([
-            ['is_primary', '=', 1],
-            ['publish', '=', 2]
-        ], false);
 
         $system = $this->system;
         $config = $this->config();
@@ -301,34 +187,15 @@ class ProjectCatalogueController extends FrontendController
             'meta_image' => $system['seo_meta_image'] ?? '',
         ];
 
-        // Sidebar Categories
-        $projectCatalogues = $this->projectCatalogueRepository->findByCondition([
-            ['publish', '=', 2],
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['lft', 'asc']);
+        // Use unified caching for filters and sidebars to eliminate duplicate SQL
+        $cachedData = $this->getProjectFilterAndSidebarData();
 
-        $provinces = $this->provinceRepository->all()->pluck('name', 'code');
-        $old_provinces = $provinces;
-
-        $newestRealEstates = $this->realEstateRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'DESC'], [], [], 5);
-
-        $featuredProjects = $this->projectRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'DESC'], [], [], 5);
-
-        $realEstateCatalogues = $this->realEstateCatalogueRepository->findByCondition([
-            ['publish', '=', 2],
-            ['parent_id', '=', 0]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }]);
+        $newestRealEstates = $cachedData['newestRealEstates'];
+        $featuredProjects = $cachedData['featuredProjects'];
+        $realEstateCatalogues = $cachedData['realEstateCatalogues'];
+        $projectCatalogues = $cachedData['projectCatalogues'];
+        $provinces = $cachedData['provinces'];
+        $old_provinces = $cachedData['old_provinces'];
 
         $sorts = [
             'id:desc' => 'Mặc định',
@@ -356,16 +223,6 @@ class ProjectCatalogueController extends FrontendController
             'breadcrumb',
             'projectCatalogue',
             'projects',
-            'widgets',
-            'agent',
-            'propertyTypes',
-            'houseDirections',
-            'furnitures',
-            'balconyDirections',
-            'amenities',
-            'newestRealEstates',
-            'featuredProjects',
-            'realEstateCatalogues',
             'projectCatalogues',
             'sorts',
             'isProject',
@@ -391,5 +248,78 @@ class ProjectCatalogueController extends FrontendController
                 'frontend/resources/library/js/filter.js',
             ],
         ];
+    }
+
+    private function getProjectFilterAndSidebarData()
+    {
+        return \Illuminate\Support\Facades\Cache::remember('project_filter_sidebar_complete_' . $this->language, 3600, function () {
+            $data = [];
+
+            // 1. Property Types (Real Estate Catalogues) - Reuse global key
+            $data['propertyTypes'] = \Illuminate\Support\Facades\Cache::remember('global_real_estate_catalogues_' . $this->language, 3600, function () {
+                return $this->realEstateCatalogueRepository->findByCondition(
+                    [config('apps.general.defaultPublish')],
+                    true,
+                    [
+                        'languages' => function ($q) {
+                            $q->where('language_id', $this->language);
+                        }
+                    ],
+                    ['id', 'desc']
+                );
+            });
+
+            $data['realEstateCatalogues'] = $data['propertyTypes']; // Same data
+
+            // 2. Project Catalogues - Reuse global key from LocationComposer
+            $data['projectCatalogues'] = \Illuminate\Support\Facades\Cache::remember('global_project_catalogues_' . $this->language, 3600, function () {
+                return $this->projectCatalogueRepository->findByCondition(
+                    [['publish', '=', 2]],
+                    true,
+                    ['languages' => function ($q) {
+                        $q->where('language_id', $this->language);
+                    }],
+                    ['lft', 'asc']
+                );
+            });
+
+            $data['houseDirections'] = $this->attributeRepository->findByCondition([
+                ['attribute_catalogue_id', '=', 3],
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['id', 'asc']);
+
+            $data['furnitures'] = $this->attributeRepository->findByCondition([
+                ['attribute_catalogue_id', '=', 2],
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['id', 'asc']);
+
+            $data['balconyDirections'] = $this->attributeRepository->findByCondition([
+                ['attribute_catalogue_id', '=', 4],
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['id', 'asc']);
+
+            $data['newestRealEstates'] = $this->realEstateRepository->findByCondition([
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['id', 'DESC'])->take(8);
+
+            $data['featuredProjects'] = $this->projectRepository->findByCondition([
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['id', 'DESC'])->take(8);
+
+            $data['provinces'] = $this->provinceRepository->all()->pluck('name', 'code');
+            $data['old_provinces'] = $data['provinces'];
+
+            return $data;
+        });
     }
 }

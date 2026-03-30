@@ -5,20 +5,6 @@
     $mapUrl =
         extract_map_url($item->iframe_map) ?:
         'https://www.google.com/maps/search/?api=1&query=' . urlencode($displayAddress);
-
-    $allFeatures = [];
-    if ($item->apartment_count > 0) {
-        $allFeatures[] = $item->apartment_count . ' Căn hộ';
-    }
-    if ($item->block_count > 0) {
-        $allFeatures[] = $item->block_count . ' Tòa';
-    }
-    foreach ($item->amenities ?? [] as $amenity) {
-        $allFeatures[] = $amenity->languages->first()->pivot->name ?? '';
-    }
-    $allFeatures = array_filter($allFeatures);
-    $displayFeatures = array_slice($allFeatures, 0, 8);
-    $moreCount = count($allFeatures) - count($displayFeatures);
 @endphp
 
 <div class="gl-property-card-horizontal gl-project-card-horizontal">

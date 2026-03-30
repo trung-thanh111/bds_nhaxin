@@ -80,50 +80,75 @@ class AttributeController extends FrontendController
 
         $realEstates = $this->realEstateService->paginate($request, $this->language, null, $page, ['path' => $attribute->canonical], $sort, $attribute->id);
 
-        $propertyTypes = $this->realEstateCatalogueRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }]);
-        $houseDirections = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 3],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
+        // Cache all filter and sidebar data in one block to ensure maximum performance
+        $filterData = \Illuminate\Support\Facades\Cache::remember('realestate_filter_sidebar_' . $this->language, 3600, function () {
+            $data = [];
+            
+            // Consolidate with LocationComposer's cache to prevent duplicate SQL
+            $data['propertyTypes'] = \Illuminate\Support\Facades\Cache::remember('global_real_estate_catalogues_' . $this->language, 3600, function() {
+                return $this->realEstateCatalogueRepository->findByCondition(
+                    [config('apps.general.defaultPublish')],
+                    true,
+                    ['languages' => function ($q) {
+                        $q->where('language_id', $this->language);
+                    }],
+                    ['id', 'desc']
+                );
+            });
 
-        $furnitures = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 2],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
+            $data['houseDirections'] = $this->attributeRepository->findByCondition([
+                ['attribute_catalogue_id', '=', 3],
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['id', 'asc']);
 
-        $balconyDirections = $this->attributeRepository->findByCondition([
-            ['attribute_catalogue_id', '=', 4],
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['id', 'asc']);
+            $data['furnitures'] = $this->attributeRepository->findByCondition([
+                ['attribute_catalogue_id', '=', 2],
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['id', 'asc']);
 
-        $amenities = $this->amenityRepository->findByCondition([
-            ['publish', '=', 2]
-        ], true, ['languages' => function ($q) {
-            $q->where('language_id', $this->language);
-        }], ['order', 'asc']);
+            $data['balconyDirections'] = $this->attributeRepository->findByCondition([
+                ['attribute_catalogue_id', '=', 4],
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['id', 'asc']);
 
+            $data['amenities'] = $this->amenityRepository->findByCondition([
+                ['publish', '=', 2]
+            ], true, ['languages' => function ($q) {
+                $q->where('language_id', $this->language);
+            }], ['order', 'asc']);
 
+            return $data;
+        });
+
+        $propertyTypes = $filterData['propertyTypes'];
+        $houseDirections = $filterData['houseDirections'];
+        $furnitures = $filterData['furnitures'];
+        $balconyDirections = $filterData['balconyDirections'];
+        $amenities = $filterData['amenities'];
+
+        // Optimize attributeMap fetching (IDs used for units, directions, etc. in real_estate_card)
         $attributeIds = [];
         foreach ($realEstates as $re) {
-            $attributeIds[] = $re->price_unit;
-            $attributeIds[] = $re->transaction_type;
-            $attributeIds[] = $re->house_direction;
+            $fields = [
+                'price_unit', 'transaction_type', 'house_direction', 
+                'balcony_direction', 'ownership_type', 'land_type', 
+                'interior', 'floor'
+            ];
+            foreach ($fields as $field) {
+                if (!empty($re->$field)) $attributeIds[] = $re->$field;
+            }
         }
         $attributeIds = array_unique(array_filter($attributeIds));
 
         $attributeMap = [];
         if (!empty($attributeIds)) {
-            $attributeMap = Attribute::whereIn('id', $attributeIds)
+            $attributeMap = \App\Models\Attribute::whereIn('id', $attributeIds)
                 ->with(['languages' => function ($q) {
                     $q->where('language_id', $this->language);
                 }])

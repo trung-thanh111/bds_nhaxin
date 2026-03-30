@@ -96,6 +96,15 @@
 
 <style>
     /* New Filter Bar Styles */
+    .hp-filter-horizontal, 
+    .hp-filter-horizontal *:not(.fa),
+    .hp-modal-filter,
+    .hp-modal-filter *:not(.fa),
+    .select2-container *,
+    .select2-dropdown * {
+        font-family: inherit !important;
+    }
+
     .hp-filter-horizontal {
         background: #fff;
         padding: 10px 0;
@@ -132,6 +141,7 @@
         gap: 8px;
         white-space: nowrap;
         height: 40px;
+        font-family: inherit;
     }
 
     .hp-filter-btn:hover,
@@ -161,6 +171,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
+        font-family: inherit;
     }
 
     .hp-filter-link:hover {
@@ -211,6 +222,7 @@
         border: none !important;
         height: auto !important;
         line-height: 1.5 !important;
+        font-family: inherit;
     }
 
     .hp-mini-input {
@@ -221,6 +233,7 @@
         font-size: 14px;
         outline: none;
         transition: 0.2s;
+        font-family: inherit;
     }
 
     .hp-mini-input:focus {
@@ -284,6 +297,7 @@
         padding: 14px 20px;
         cursor: pointer;
         transition: 0.2s;
+        font-family: inherit;
     }
 
     .hp-input-box:hover {
@@ -298,6 +312,7 @@
         font-weight: 600;
         transition: 0.3s;
         border-radius: 8px;
+        font-family: inherit;
     }
 
     .hp-toggle-btn.active {
@@ -464,6 +479,7 @@
         padding: 12px 20px;
         border: none;
         transition: 0.3s;
+        font-family: inherit;
     }
 
     .hp-btn-modal-apply:hover,
@@ -482,6 +498,7 @@
         padding: 12px 20px;
         border: none;
         margin-right: 10px;
+        font-family: inherit;
     }
 
     .hp-listing-top {
@@ -527,6 +544,7 @@
         color: #444;
         transition: all 0.2s;
         cursor: pointer;
+        font-family: inherit;
     }
 
     .hp-sort-btn:hover {
@@ -649,6 +667,7 @@
         padding: 12px 15px;
         font-size: 14px;
         transition: 0.2s;
+        font-family: inherit;
     }
 
     .hp-location-select:focus,

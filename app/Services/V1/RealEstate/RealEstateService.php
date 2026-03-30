@@ -172,7 +172,7 @@ class RealEstateService extends BaseService
 
 
         $orderBy = isset($sort) ? $sort : ['real_estates.id', 'DESC'];
-        $relations = ['catalogue'];
+        $relations = ['languages', 'amenities.languages', 'catalogue'];
         $rawQuery = $this->whereRaw($request, $languageId, $realEstateCatalogue);
 
         if (!is_null($attributeId)) {

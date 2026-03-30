@@ -101,7 +101,12 @@ class ProjectService extends BaseService
             $perPage,
             $paginationConfig,
             $sort ?? ['projects.id', 'DESC'],
-            $joins
+            $joins,
+            [
+                'languages' => function($q) use ($languageId) {
+                    $q->where('language_id', $languageId);
+                }
+            ]
         );
     }
 

@@ -990,10 +990,17 @@ if (!function_exists('diff_for_humans')) {
 if (!function_exists('get_agent')) {
     function get_agent($agentId = null)
     {
+        static $cachedAgent = null;
+
         if ($agentId) {
             return \App\Models\Agent::find($agentId);
         }
-        return \App\Models\Agent::where('is_primary', 1)->where('publish', 2)->first();
+
+        if ($cachedAgent === null) {
+            $cachedAgent = \App\Models\Agent::where('is_primary', 1)->where('publish', 2)->first();
+        }
+
+        return $cachedAgent;
     }
 }
 
@@ -1032,13 +1039,11 @@ if (!function_exists('extract_map_url')) {
 if (!function_exists('get_hotline')) {
     function get_hotline($agent = null, $fallback = '')
     {
-        if (!$agent) {
-            $agent = get_agent(); 
-        }
+        $agentInstance = $agent ?: get_agent();
         
-        if ($agent) {
-            if (!empty($agent->zalo)) return $agent->zalo;
-            if (!empty($agent->phone)) return $agent->phone;
+        if ($agentInstance) {
+            if (!empty($agentInstance->zalo)) return $agentInstance->zalo;
+            if (!empty($agentInstance->phone)) return $agentInstance->phone;
         }
 
         return $fallback;

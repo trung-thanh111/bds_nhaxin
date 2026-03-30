@@ -56,9 +56,10 @@ class AppServiceProvider extends ServiceProvider
             error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
         }
 
-        
         $locale = app()->getLocale(); // vn en cn
-        $language = Language::where('canonical', $locale)->first();
+        $language = \Illuminate\Support\Facades\Cache::remember('default_language_' . $locale, 3600, function() use ($locale) {
+            return Language::where('canonical', $locale)->first();
+        });
         Carbon::setLocale('vi');
 
         Validator::extend('custom_date_format', function($attribute, $value, $parameters, $validator){
@@ -73,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
 
-        view()->composer(['frontend.*', 'mobile.*'], function($view) use ($language){
+        view()->composer(['frontend.*'], function($view) use ($language){
             $composerClasses = [
                 MenuComposer::class,
                 CartComposer::class,

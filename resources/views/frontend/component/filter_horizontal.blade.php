@@ -573,6 +573,15 @@
 
     <style>
         /* New Filter Bar Styles */
+        .hp-filter-horizontal, 
+        .hp-filter-horizontal *:not(.fa),
+        .hp-modal-filter,
+        .hp-modal-filter *:not(.fa),
+        .select2-container *,
+        .select2-dropdown * {
+            font-family: inherit !important;
+        }
+
         .hp-filter-horizontal {
             background: #fff;
             padding: 10px 0;
